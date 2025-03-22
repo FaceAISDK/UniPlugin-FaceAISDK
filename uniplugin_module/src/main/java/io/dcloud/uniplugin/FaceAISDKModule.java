@@ -1,9 +1,16 @@
 package io.dcloud.uniplugin;
 
+import static com.ai.face.addFaceImage.AddFaceImageActivity.ADD_FACE_IMAGE_TYPE_KEY;
+import static com.ai.face.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.ai.face.AboutFaceAppActivity;
+import com.ai.face.FaceAIConfig;
+import com.ai.face.addFaceImage.AddFaceImageActivity;
+import com.ai.face.verify.FaceVerifyWelcomeActivity;
 import com.alibaba.fastjson.JSONObject;
 
 import io.dcloud.feature.uniapp.annotation.UniJSMethod;
@@ -49,10 +56,14 @@ public class FaceAISDKModule extends UniModule {
     }
 
 
+    /**
+     * 调整关于
+     *
+     */
     @UniJSMethod (uiThread = true)
     public void gotoAboutFaceAIPage(){
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
-            Intent intent = new Intent(mUniSDKInstance.getContext(), NativePageActivity.class);
+            Intent intent = new Intent(mUniSDKInstance.getContext(), AboutFaceAppActivity.class);
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
         }
     }
@@ -61,11 +72,19 @@ public class FaceAISDKModule extends UniModule {
 
     //run ui thread
     @UniJSMethod(uiThread = true)
-    public void testAsyncFunc(JSONObject options, UniJSCallback callback) {
+    public void addFaceImage(JSONObject options, UniJSCallback callback) {
 
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             faceVerifyCallBack=callback;
-            Intent intent = new Intent(mUniSDKInstance.getContext(), NativePageActivity.class);
+
+            //人脸图保存路径初始化
+            FaceAIConfig.init(mUniSDKInstance.getContext());
+
+            Intent intent=new Intent(mUniSDKInstance.getContext(), AddFaceImageActivity.class)
+                    .putExtra(ADD_FACE_IMAGE_TYPE_KEY, AddFaceImageActivity.AddFaceImageTypeEnum.FACE_VERIFY.name());
+
+            intent.putExtra(USER_FACE_ID_KEY,options.getString("USER_FACE_ID_KEY"));
+
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
         }
 
@@ -77,7 +96,7 @@ public class FaceAISDKModule extends UniModule {
     @UniJSMethod (uiThread = false)
     public JSONObject testSyncFunc(){
         JSONObject data = new JSONObject();
-        data.put("code", "success 2222");
+        data.put("code", "success testSyncFunc");
         return data;
     }
 }
