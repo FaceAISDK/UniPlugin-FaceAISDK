@@ -5,10 +5,11 @@ plugins {
 
 android {
     namespace 'com.example.uts_toast'
-    compileSdkVersion 34
+    compileSdkVersion 35
 
     defaultConfig {
         minSdkVersion 21
+        targetSdkVersion 35
     }
 
     buildTypes {

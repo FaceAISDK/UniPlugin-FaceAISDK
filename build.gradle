@@ -4,12 +4,13 @@ buildscript {
     
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.3'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0'
+//        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0'
 
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -19,8 +20,14 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
-        maven { url = uri("https://jitpack.io") }
+        mavenCentral()
+        //多放几个国内的依赖托管镜像源，工程师可以根据公司的网络屏蔽情况自行替换
+        maven {url "https://maven.aliyun.com/nexus/content/groups/public/"}
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url "https://jitpack.io" }
+
+
     }
 }
 

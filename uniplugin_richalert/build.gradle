@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 35
     namespace 'uni.dcloud.io.uniplugin_richalert'
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
 
