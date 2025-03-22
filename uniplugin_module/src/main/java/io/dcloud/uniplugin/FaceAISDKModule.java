@@ -83,7 +83,7 @@ public class FaceAISDKModule extends UniModule {
             Intent intent=new Intent(mUniSDKInstance.getContext(), AddFaceImageActivity.class)
                     .putExtra(ADD_FACE_IMAGE_TYPE_KEY, AddFaceImageActivity.AddFaceImageTypeEnum.FACE_VERIFY.name());
 
-            intent.putExtra(USER_FACE_ID_KEY,options.getString("USER_FACE_ID_KEY"));
+            intent.putExtra(USER_FACE_ID_KEY,options.getString("faceID"));
 
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
         }
