@@ -1,0 +1,54 @@
+<template>
+	<div>
+		<button type="primary" @click="testAsyncFunc">testAsyncFunc</button>
+		<button type="primary" @click="testSyncFunc">testSyncFunc</button>
+		<button type="primary" @click="gotoAboutFaceAIPage">跳转原生两轮充电Activity</button>
+	</div>
+</template>
+
+<script>
+	// 获取 module 
+	var faceAIModule = uni.requireNativePlugin("FaceAISDKModule")
+	const modal = uni.requireNativePlugin('modal');
+	export default {
+		onLoad() {
+			plus.globalEvent.addEventListener('TestEvent', function(e){
+				modal.toast({
+					message: "TestEvent收到："+e.msg,
+					duration: 1.5
+				});
+			});
+		},
+		methods: {
+			testAsyncFunc() {
+				// 调用异步方法
+				faceAIModule.testAsyncFunc({
+						'name': 'unimp',
+						'age': 1
+					},
+					(ret) => {
+						modal.toast({
+							message: ret,
+							duration: 1.5
+						});
+					})
+			},
+
+			testSyncFunc() {
+				// 调用同步方法
+				var ret = faceAIModule.testSyncFunc({
+					'name': 'unimp2222',
+					'age': 1
+				})
+				modal.toast({
+					message: ret,
+					duration: 1.5
+				});
+			},
+
+			gotoAboutFaceAIPage() {
+				faceAIModule.gotoAboutFaceAIPage();
+			}
+		}
+	}
+</script>
