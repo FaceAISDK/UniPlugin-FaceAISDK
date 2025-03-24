@@ -311,6 +311,28 @@
 						}))
 					},
 
+					isFaceExist: function() {
+						n.isFaceExist({
+                                         "faceID": "yourFaceID_uniApp"
+                                       }, (function(t) {
+							i.toast({
+								message: t,
+								duration: 1.5
+							})
+						}))
+					},
+
+					insertFace: function() {
+						n.insertFace({
+                                         "faceID": "yourFaceID_uniApp",
+                                         "faceURL":"yourFaceURL"
+                                       }, (function(t) {
+							i.toast({
+								message: t,
+								duration: 1.5
+							})
+						}))
+					},
 
 					gotoAboutFaceAIPage: function() {
 						n.gotoAboutFaceAIPage()
@@ -354,6 +376,27 @@
 					click: this.faceVerify
 				}
 			}, [this._v("faceVerify")]),
+
+			 e("button", {
+				attrs: {
+					type: "primary"
+				},
+				on: {
+					click: this.isFaceExist
+				}
+			}, [this._v("isFaceExist")]),
+
+
+			 e("button", {
+				attrs: {
+					type: "primary"
+				},
+				on: {
+					click: this.insertFace
+				}
+			}, [this._v("insertFace")]),
+
+
 
 			 e("button", {
 				attrs: {

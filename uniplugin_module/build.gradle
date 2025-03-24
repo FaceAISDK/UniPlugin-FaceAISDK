@@ -1,5 +1,3 @@
-//apply plugin: 'com.android.library'
-
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
@@ -8,7 +6,6 @@ plugins {
 
 android {
     compileSdk 35
-//    namespace 'uni.dcloud.io.uniplugin_module'
     namespace 'com.ai.face'
 
     defaultConfig {
@@ -29,7 +26,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -59,8 +55,10 @@ dependencies {
     implementation 'com.facebook.fresco:fresco:1.13.0'
 
 
+
     //SDK 主页介绍：  https://github.com/AnyLifeZLB/FaceVerificationSDK
-    implementation 'io.github.anylifezlb:FaceAISDK:1.9.6.st3'
+    implementation 'io.github.anylifezlb:FaceAISDK:1.9.6.release'
+
 
 
     // 以下为业务需要其他依赖，不是SDK 运行的必须依赖

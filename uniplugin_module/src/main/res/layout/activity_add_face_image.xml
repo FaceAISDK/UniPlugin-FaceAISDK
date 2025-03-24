@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
 
@@ -66,10 +67,10 @@
         android:layout_width="wrap_content"
         android:layout_height="47dp"
         android:layout_toRightOf="@+id/back"
-        android:textSize="15sp"
+        android:textSize="16sp"
         android:gravity="center_vertical"
         android:textColor="@color/green"
-        android:text="Add Face Image"
+        android:text="@string/add_a_face_image"
         android:textStyle="bold"
         android:layout_alignTop="@+id/back"
         />

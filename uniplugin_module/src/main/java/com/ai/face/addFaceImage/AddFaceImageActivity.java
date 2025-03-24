@@ -54,9 +54,17 @@ public  class AddFaceImageActivity extends AppCompatActivity {
     private String faceID,addFaceImageType;
 
     //是1:1 还是1:N 人脸搜索添加人脸
-    public enum AddFaceImageTypeEnum
-    {
+    public enum AddFaceImageTypeEnum {
         FACE_VERIFY,FACE_SEARCH;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent().putExtra("code",0 ).putExtra("msg", "用户取消");
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @Override
@@ -67,7 +75,7 @@ public  class AddFaceImageActivity extends AppCompatActivity {
         tipsTextView = findViewById(R.id.tips_view);
         secondTips=findViewById(R.id.second_tips_view);
 
-        findViewById(R.id.back).setOnClickListener(v -> this.finish());
+        findViewById(R.id.back).setOnClickListener(v -> onBackPressed());
 
         addFaceImageType= getIntent().getStringExtra(ADD_FACE_IMAGE_TYPE_KEY);
         faceID = getIntent().getStringExtra(USER_FACE_ID_KEY);
@@ -121,7 +129,6 @@ public  class AddFaceImageActivity extends AppCompatActivity {
                         case NOT_REAL_HUMAN:
 //                            tipsTextView.setText(R.string.not_real_face);
                             secondTips.setText(R.string.not_real_face);
-
                             break;
                     }
                 });
@@ -142,7 +149,6 @@ public  class AddFaceImageActivity extends AppCompatActivity {
          * 第三个参数是摄像头旋转角度 {@Link Surface.ROTATION_0}
          */
         CameraXFragment cameraXFragment = CameraXFragment.newInstance(cameraLensFacing, 0.001f,degree);
-
 
 
         cameraXFragment.setOnAnalyzerListener(imageProxy -> {
@@ -186,11 +192,15 @@ public  class AddFaceImageActivity extends AppCompatActivity {
 
              if (!TextUtils.isEmpty(faceID)) {
                  if (addFaceImageType.equals(AddFaceImageTypeEnum.FACE_VERIFY.name())) {
-                     Toast.makeText(getBaseContext(), faceID+"添加成功", Toast.LENGTH_SHORT).show();
+//                     Toast.makeText(getBaseContext(), faceID+"添加成功", Toast.LENGTH_SHORT).show();
                      //1:1 人脸识别保存人脸底图
                      baseImageDispose.saveBaseImage(bitmap, CACHE_BASE_FACE_DIR, faceID, 300);
                      dialog.dismiss();
+                     Intent intent = new Intent().putExtra("code",1).putExtra("msg", "人脸添加成功");
+                     setResult(RESULT_OK, intent);
                      finish();
+
+
                  } else{
                      //1:N ，M：N 人脸搜索保存人脸
                      dialog.dismiss();

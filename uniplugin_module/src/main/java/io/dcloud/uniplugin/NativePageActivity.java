@@ -24,7 +24,7 @@ public class NativePageActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.putExtra("respond", "我是原生页面,hello world");
-                setResult(FaceAISDKModule.REQUEST_CODE_FOR_FACE_VERIFY, intent);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });

@@ -3,6 +3,7 @@ package com.ai.face.verify;
 import static com.ai.face.FaceAIConfig.CACHE_BASE_FACE_DIR;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -79,7 +80,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
         baseFaceImageView=findViewById(R.id.base_face);
 
         findViewById(R.id.back).setOnClickListener(v -> {
-            FaceVerificationActivity.this.finish();
+            onBackPressed();
         });
 
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK", Context.MODE_PRIVATE);
@@ -103,6 +104,14 @@ public class FaceVerificationActivity extends AppCompatActivity {
         initFaceVerifyBaseBitmap();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent().putExtra("code",0 ).putExtra("msg", "用户取消");
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
     /**
      * 初始化人脸识别底图
      */
@@ -119,6 +128,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
             //3.初始化引擎，各种参数配置
             initFaceVerificationParam(baseBitmap);
         } else {
+
 
             //模拟从网络等地方获取对应的人脸图，Demo 简化从Asset 目录读取
             Bitmap remoteBitmap = VerifyUtils.getBitmapFromAssert(this, "0a_模拟证件照.jpeg");
@@ -141,6 +151,10 @@ public class FaceVerificationActivity extends AppCompatActivity {
                         @Override
                         public void onFailed(@NotNull String msg, int errorCode) {
                             Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
+
+                            Intent intent = new Intent().putExtra("code",0 ).putExtra("msg", "用户取消");
+                            setResult(RESULT_OK, intent);
+                            finish();
                         }
                     });
         }
@@ -237,14 +251,30 @@ public class FaceVerificationActivity extends AppCompatActivity {
                 new AlertDialog.Builder(FaceVerificationActivity.this)
                         .setMessage(R.string.silent_anti_spoofing_error)
                         .setCancelable(false)
-                        .setPositiveButton(R.string.confirm, (dialogInterface, i) -> finish())
+                        .setPositiveButton(R.string.confirm, (dialogInterface, i) ->{
+
+                            retryTime++;
+                            //建议控制重试次数，一般2次没成功基本不用重试了，设备配置太低或环境因素
+                            if (retryTime > 1) {
+                                Intent intent = new Intent().putExtra("code",2).putExtra("msg", "活体分数过低");
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            } else {
+                                faceVerifyUtils.retryVerify();
+                            }
+
+                        })
                         .show();
             } else if (isVerifyMatched) {
                 //2.和底片同一人
-                Toast.makeText(getBaseContext(), faceID + " Verify Success!", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getBaseContext(), faceID + " Verify Success!", Toast.LENGTH_LONG).show();
                 tipsTextView.setText("Successful,similarity= " + similarity);
                 VoicePlayer.getInstance().addPayList(R.raw.verify_success);
-                new Handler(Looper.getMainLooper()).postDelayed(FaceVerificationActivity.this::finish, 2000);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    Intent intent = new Intent().putExtra("code",1).putExtra("msg", "人脸识别成功");
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }, 2000);
             } else {
                 //3.和底片不是同一个人
                 tipsTextView.setText("Failed ！ similarity=" + similarity);
@@ -253,7 +283,12 @@ public class FaceVerificationActivity extends AppCompatActivity {
                         .setTitle("similarity="+similarity)
                         .setMessage( R.string.face_verify_failed)
                         .setCancelable(false)
-                        .setPositiveButton(R.string.confirm, (dialogInterface, i) -> finish())
+                        .setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
+                            //数据是使用Intent返回
+                            Intent intent = new Intent().putExtra("code",4 ).putExtra("msg", "人脸识别低于阈值");
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        })
                         .setNegativeButton(R.string.retry, (dialog, which) -> {
                             faceVerifyUtils.retryVerify();
                         })
@@ -326,8 +361,13 @@ public class FaceVerificationActivity extends AppCompatActivity {
                                             retryTime++;
                                             //建议控制重试次数，一般2次没成功基本不用重试了，设备配置太低或环境因素
                                             if (retryTime > 1) {
-                                                //记得按钮名字改一下
-                                                FaceVerificationActivity.this.finish();
+
+                                                Intent intent = new Intent().putExtra("code",3 ).putExtra("msg", "活体检测超时");
+                                                setResult(RESULT_OK, intent);
+                                                finish();
+
+//                                                //记得按钮名字改一下
+//                                                FaceVerificationActivity.this.finish();
                                             } else {
                                                 faceVerifyUtils.retryVerify();
                                             }
