@@ -43,6 +43,15 @@ import org.jetbrains.annotations.NotNull;
  * 3.光线环境好，检测的人脸无遮挡，无浓妆或佩戴墨镜口罩帽子等
  * 4.人脸照片要求300*300 以上 裁剪好的仅含人脸的正方形照片，背景纯色
  *
+ * 返回给uniApp 插件的Code 含义
+ * 0: 校验成功
+ * 1：活体校验失败
+ * 2: 动作活体超时
+ * 3: 用户退出识别
+ * 4；
+ *
+ *
+ *
  */
 public class FaceVerificationActivity extends AppCompatActivity {
     public static final String USER_FACE_ID_KEY = "USER_FACE_ID_KEY";   //1:1 face verify ID KEY

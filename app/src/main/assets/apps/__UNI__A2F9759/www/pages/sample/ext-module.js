@@ -273,8 +273,8 @@
 				methods: {
 					addFaceImage: function() {
 						n.addFaceImage({
-							faceID: "yourFaceID_uniApp",
-						}, (function(t) {
+                                         "faceID": "yourFaceID_uniApp"
+                                       }, (function(t) {
 							i.toast({
 								message: t,
 								duration: 1.5
@@ -283,16 +283,35 @@
 					},
 
 
-					testSyncFunc: function() {
-						var t = n.testSyncFunc({
-							name: "unimp",
-							age: 1
-						});
-						i.toast({
-							message: t,
-							duration: 1.5
-						})
+//					faceVerify: function() {
+//						var t = n.faceVerify({
+//							faceID: "yourFaceID_uniApp",
+//							faceImageURL: "www.image.url"
+//						});
+//						i.toast({
+//							message: t,
+//							duration: 1.5
+//						})
+//					},
+
+
+					faceVerify: function() {
+						n.faceVerify({
+                                         "faceID": "yourFaceID_uniApp",
+                                          "threshold": 0.85,
+                                          "silentThreshold": 0.85,
+                                          "faceLivenessType": 0,
+                                          "motionStepSize": 1,
+                                          "verifyTimeOut": 16
+                                       }, (function(t) {
+							i.toast({
+								message: t,
+								duration: 1.5
+							})
+						}))
 					},
+
+
 					gotoAboutFaceAIPage: function() {
 						n.gotoAboutFaceAIPage()
 					}
@@ -316,21 +335,27 @@
 					enableBackToTop: !0,
 					bubble: "true"
 				}
-			}, [e("div", [e("button", {
+			}, [e("div", [
+
+			e("button", {
 				attrs: {
 					type: "primary"
 				},
 				on: {
 					click: this.addFaceImage
 				}
-			}, [this._v("添加人脸图")]), e("button", {
+			}, [this._v("添加人脸图")]),
+
+			 e("button", {
 				attrs: {
 					type: "primary"
 				},
 				on: {
-					click: this.testSyncFunc
+					click: this.faceVerify
 				}
-			}, [this._v("testSyncFunc")]), e("button", {
+			}, [this._v("faceVerify")]),
+
+			 e("button", {
 				attrs: {
 					type: "primary"
 				},

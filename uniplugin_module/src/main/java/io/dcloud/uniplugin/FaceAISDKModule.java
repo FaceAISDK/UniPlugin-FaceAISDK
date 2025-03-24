@@ -6,10 +6,13 @@ import static com.ai.face.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ai.face.AboutFaceAppActivity;
 import com.ai.face.FaceAIConfig;
 import com.ai.face.addFaceImage.AddFaceImageActivity;
+import com.ai.face.verify.FaceVerificationActivity;
+import com.ai.face.verify.FaceVerifyParams;
 import com.ai.face.verify.FaceVerifyWelcomeActivity;
 import com.alibaba.fastjson.JSONObject;
 
@@ -75,7 +78,7 @@ public class FaceAISDKModule extends UniModule {
     public void addFaceImage(JSONObject options, UniJSCallback callback) {
 
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
-            faceVerifyCallBack=callback;
+            addFaceCallBack=callback;
 
             //人脸图保存路径初始化
             FaceAIConfig.init(mUniSDKInstance.getContext());
@@ -85,7 +88,7 @@ public class FaceAISDKModule extends UniModule {
 
             intent.putExtra(USER_FACE_ID_KEY,options.getString("faceID"));
 
-            ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
+            ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_ADD_VERIFY);
         }
 
         Log.e(TAG, "testAsyncFunc--"+options);
@@ -93,10 +96,25 @@ public class FaceAISDKModule extends UniModule {
     }
 
     //run JS thread
-    @UniJSMethod (uiThread = false)
-    public JSONObject testSyncFunc(){
-        JSONObject data = new JSONObject();
-        data.put("code", "success testSyncFunc");
-        return data;
+    @UniJSMethod (uiThread = true)
+    public void faceVerify(JSONObject options, UniJSCallback callback) {
+        if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
+            faceVerifyCallBack=callback;
+
+            //人脸图保存路径初始化
+            FaceAIConfig.init(mUniSDKInstance.getContext());
+
+            Toast.makeText(mUniSDKInstance.getContext(),"dfdsafd",Toast.LENGTH_SHORT).show();
+
+            FaceVerifyParams faceVerifyParams=JSONObject.parseObject(options.toJSONString(), FaceVerifyParams.class);
+
+
+            Intent intent=new Intent(mUniSDKInstance.getContext(), FaceVerificationActivity.class);
+            intent.putExtra(USER_FACE_ID_KEY, options.getString("faceImageURL"));
+            intent.putExtra(USER_FACE_ID_KEY,options.getString("faceID"));
+            ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
+//
+
+        }
     }
 }

@@ -1,13 +1,16 @@
 <template>
 	<div>
 		<button type="primary" @click="addFaceImage">添加人脸图</button>
-		<button type="primary" @click="testSyncFunc">testSyncFunc</button>
+		<button type="primary" @click="faceVerify">人脸识别</button>
 		<button type="primary" @click="gotoAboutFaceAIPage">跳转原生两轮充电Activity</button>
 	</div>
 </template>
 
+// 这没啥用吧。。。。。。
+
+
 <script>
-	// 获取 module 
+	// 获取 module
 	var faceAIModule = uni.requireNativePlugin("FaceAISDKModule")
 	const modal = uni.requireNativePlugin('modal');
 	export default {
@@ -34,22 +37,24 @@
 					})
 			},
 
-			testSyncFunc() {
-				// 调用同步方法
-				var ret = faceAIModule.testSyncFunc({
-					'name': 'unimp2222333',
-					'age': 1
-				})
-
-				modal.toast({
-					message: ret+"000",
-					duration: 1.5
-				});
+			faceVerify() {
+				// 调用异步方法
+				faceAIModule.faceVerify({
+						'USER_FACE_ID_KEY': '你的uniApp_Account_id',
+						'age': 666
+					},
+					(ret) => {
+						modal.toast({
+							message: ret,
+							duration: 2.5
+						});
+					})
 			},
 
 			gotoAboutFaceAIPage() {
 				faceAIModule.gotoAboutFaceAIPage();
 			}
+
 		}
 	}
 </script>
