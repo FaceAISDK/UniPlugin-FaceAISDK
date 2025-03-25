@@ -2,11 +2,11 @@
 	<div>
 		<button type="primary" @click="addFaceImage">添加人脸图</button>
 		<button type="primary" @click="faceVerify">人脸识别</button>
-		<button type="primary" @click="gotoAboutFaceAIPage">跳转原生两轮充电Activity</button>
+		<button type="primary" @click="isFaceExist">检查人脸是否存在</button>
+        <button type="primary" @click="insertFace">远程URL同步人脸图</button>
+		<button type="primary" @click="gotoAboutFaceAIPage">跳转关于FaceAISDK</button>
 	</div>
 </template>
-
-// 这没啥用吧。。。。。。
 
 
 <script>
@@ -23,33 +23,62 @@
 			});
 		},
 		methods: {
+			
 			addFaceImage() {
-				// 调用异步方法
+				// 添加人脸 
 				faceAIModule.addFaceImage({
-						'USER_FACE_ID_KEY': '你的uniApp_Account_id',
-						'age': 666
-					},
+						'faceID': '你的uniApp_Account_id'
+						},
 					(ret) => {
 						modal.toast({
 							message: ret,
-							duration: 2.5
+							duration: 2.0
 						});
 					})
 			},
 
 			faceVerify() {
-				// 调用异步方法
+				// 人脸识别
 				faceAIModule.faceVerify({
-						'USER_FACE_ID_KEY': '你的uniApp_Account_id',
-						'age': 666
-					},
+                       'faceID': '你的uniApp_Account_id',
+					   },
 					(ret) => {
 						modal.toast({
 							message: ret,
-							duration: 2.5
+							duration: 2.0
 						});
 					})
 			},
+
+			isFaceExist() {
+				// 人脸是否存在
+				faceAIModule.isFaceExist({
+						'faceID': '你的uniApp_Account_id'
+						},
+					(ret) => {
+						modal.toast({
+							message: ret,
+							duration: 2.0
+						});
+					})
+			},
+
+
+			insertFace() {
+				// 远程URL 人脸图同步到是DK
+				faceAIModule.insertFace({
+						'faceID': '你的uniApp_Account_id',
+						"faceURL":"yourFaceURL"
+						},
+					(ret) => {
+						modal.toast({
+							message: ret,
+							duration: 2.0
+						});
+					})
+			},
+
+
 
 			gotoAboutFaceAIPage() {
 				faceAIModule.gotoAboutFaceAIPage();

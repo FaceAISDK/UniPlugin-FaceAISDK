@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -44,6 +45,13 @@ public class FaceAISDKModule extends UniModule {
     private static int REQUEST_CODE_FOR_FACE_VERIFY = 10086; //去人脸识别
     private static int REQUEST_CODE_FOR_ADD_VERIFY = 10087; //去添加人脸
     private UniJSCallback faceVerifyCallBack,addFaceCallBack;
+
+
+    public FaceAISDKModule() {
+        if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
+            FaceAIConfig.init(mUniSDKInstance.getContext());
+        }
+    }
 
     /**
      * 监测onActivityResult 回调数据 ？
@@ -200,8 +208,21 @@ public class FaceAISDKModule extends UniModule {
     @UniJSMethod (uiThread = true)
     public void gotoAboutFaceAIPage(){
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
-            Intent intent = new Intent(mUniSDKInstance.getContext(), FaceVerifyWelcomeActivity.class);
-            mUniSDKInstance.getContext().startActivity(intent);
+
+            FaceAIConfig.init(mUniSDKInstance.getContext());
+
+            Intent enumIntent =new  Intent(mUniSDKInstance.getContext(), FaceVerifyWelcomeActivity.class);
+            Bundle bundle =new Bundle();
+            bundle.putSerializable(
+                    FaceVerifyWelcomeActivity.FACE_VERIFY_DATA_SOURCE_TYPE,
+                    FaceVerifyWelcomeActivity.DataSourceType.Android_HAL
+            );
+            enumIntent.putExtras(bundle);
+            mUniSDKInstance.getContext().startActivity(enumIntent);
+
+//            Intent intent = new Intent(mUniSDKInstance.getContext(), FaceVerifyWelcomeActivity.class);
+//            mUniSDKInstance.getContext().startActivity(intent);
+
         }
     }
 

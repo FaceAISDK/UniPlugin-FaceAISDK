@@ -283,18 +283,6 @@
 					},
 
 
-//					faceVerify: function() {
-//						var t = n.faceVerify({
-//							faceID: "yourFaceID_uniApp",
-//							faceImageURL: "www.image.url"
-//						});
-//						i.toast({
-//							message: t,
-//							duration: 1.5
-//						})
-//					},
-
-
 					faceVerify: function() {
 						n.faceVerify({
                                          "faceID": "yourFaceID_uniApp",
@@ -375,7 +363,7 @@
 				on: {
 					click: this.faceVerify
 				}
-			}, [this._v("faceVerify")]),
+			}, [this._v("人脸识别")]),
 
 			 e("button", {
 				attrs: {
@@ -384,7 +372,7 @@
 				on: {
 					click: this.isFaceExist
 				}
-			}, [this._v("isFaceExist")]),
+			}, [this._v("检测人脸图是否存在")]),
 
 
 			 e("button", {
@@ -394,7 +382,7 @@
 				on: {
 					click: this.insertFace
 				}
-			}, [this._v("insertFace")]),
+			}, [this._v("同步远程URL人脸图")]),
 
 
 
