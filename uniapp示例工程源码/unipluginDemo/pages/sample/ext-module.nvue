@@ -9,7 +9,7 @@
 </template>
 
 <script>
-	// 获取 module
+	// 获取 module 这样写对吗
 	var faceAIModule = uni.requireNativePlugin("FaceAISDKModule")
 	const modal = uni.requireNativePlugin('modal');
 	export default {

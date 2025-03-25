@@ -1,0 +1,37 @@
+{  
+    "name": "FaceAISDKModule",  
+    "id": "FaceAISDKModule",  
+    "version": "1.0.1",  
+    "description": "调试版FaceAISDK",  
+    "_dp_type":"nativeplugin",  
+    "_dp_nativeplugin":{  
+        "android": {  
+            "plugins": [  
+                {  
+                    "type": "module",  
+                    "name": "FaceAISDKModule",  
+                    "class": "io.face.uniplugin.FaceAISDKModule"  
+                }  
+            ],  
+            "hooksClass": "",  
+            "integrateType": "aar",  
+            "dependencies": [  
+                "io.github.anylifezlb:FaceAISDK:1.9.6.release"  
+            ],  
+            "compileOptions": {
+                "sourceCompatibility": "17",  
+                "targetCompatibility": "17"  
+            },  
+            "abis": [  
+                "arm64-v8a"  
+            ],  
+            "minSdkVersion": "21",  
+            "permissions": [  
+                "android.permission.CAMERA"  
+            ],  
+            "parameters": {  
+
+            }  
+        }
+	}  
+}

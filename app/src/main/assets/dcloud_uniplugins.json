@@ -7,7 +7,7 @@
         {
           "type": "module",
           "name": "FaceAISDKModule",
-          "class": "io.dcloud.uniplugin.FaceAISDKModule"
+          "class": "io.face.uniplugin.FaceAISDKModule"
         }
       ]
     },

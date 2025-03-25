@@ -86,7 +86,7 @@
         </activity>
 
         <activity
-            android:name="io.dcloud.uniplugin.NativePageActivity"
+            android:name="io.face.uniplugin.NativePageActivity"
             android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
         </activity>
 
