@@ -8,7 +8,6 @@
 	</div>
 </template>
 
-
 <script>
 	// 获取 module
 	var faceAIModule = uni.requireNativePlugin("FaceAISDKModule")
