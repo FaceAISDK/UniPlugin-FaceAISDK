@@ -4,17 +4,18 @@ import static com.ai.face.addFaceImage.AddFaceImageActivity.ADD_FACE_IMAGE_TYPE_
 import static com.ai.face.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
-import com.ai.face.AboutFaceAppActivity;
 import com.ai.face.FaceAIConfig;
 import com.ai.face.addFaceImage.AddFaceImageActivity;
 import com.ai.face.base.baseImage.FaceAIUtils;
@@ -173,6 +174,11 @@ public class FaceAISDKModule extends UniModule {
     public void addFaceImage(JSONObject options, UniJSCallback callback) {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             addFaceCallBack=callback;
+
+            if(!checkPermissionOK(mUniSDKInstance.getContext())){
+                Toast.makeText(mUniSDKInstance.getContext(), "请先授权相机权限",Toast.LENGTH_SHORT).show();
+            }
+
             //人脸图保存路径初始化
             FaceAIConfig.init(mUniSDKInstance.getContext());
             Intent intent=new Intent(mUniSDKInstance.getContext(), AddFaceImageActivity.class)
@@ -187,9 +193,13 @@ public class FaceAISDKModule extends UniModule {
     @UniJSMethod (uiThread = true)
     public void faceVerify(JSONObject options, UniJSCallback callback) {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
+
+            if(!checkPermissionOK(mUniSDKInstance.getContext())){
+                Toast.makeText(mUniSDKInstance.getContext(), "请先授权相机权限",Toast.LENGTH_SHORT).show();
+            }
+
             faceVerifyCallBack=callback;
             FaceAIConfig.init(mUniSDKInstance.getContext());
-
             //todo 如果没解析成功要处理
             FaceVerifyParams faceVerifyParams=JSONObject.parseObject(options.toJSONString(), FaceVerifyParams.class);
 
@@ -224,6 +234,15 @@ public class FaceAISDKModule extends UniModule {
 //            mUniSDKInstance.getContext().startActivity(intent);
 
         }
+    }
+
+    /**
+     * 判断是否缺少权限
+     */
+    public boolean checkPermissionOK(Context mContexts) {
+        String permission="Manifest.permission.CAMERA";
+
+        return ContextCompat.checkSelfPermission(mContexts, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
 }
