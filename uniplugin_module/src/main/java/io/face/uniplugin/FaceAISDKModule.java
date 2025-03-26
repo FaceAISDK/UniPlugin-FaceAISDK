@@ -1,5 +1,6 @@
 package io.face.uniplugin;
 
+import static com.ai.face.FaceAIConfig.CACHE_BASE_FACE_DIR;
 import static com.ai.face.addFaceImage.AddFaceImageActivity.ADD_FACE_IMAGE_TYPE_KEY;
 import static com.ai.face.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
 
@@ -8,12 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.ai.face.FaceAIConfig;
@@ -23,9 +23,6 @@ import com.ai.face.verify.FaceVerificationActivity;
 import com.ai.face.verify.FaceVerifyParams;
 import com.ai.face.verify.FaceVerifyWelcomeActivity;
 import com.alibaba.fastjson.JSONObject;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +41,7 @@ import io.dcloud.feature.uniapp.common.UniModule;
 public class FaceAISDKModule extends UniModule {
     private String TAG = "FaceAISDKModule";
     private static int REQUEST_CODE_FOR_FACE_VERIFY = 10086; //去人脸识别
-    private static int REQUEST_CODE_FOR_ADD_VERIFY = 10087; //去添加人脸
+    private static int REQUEST_CODE_FOR_ADD_FACE = 10087; //去添加人脸
     private UniJSCallback faceVerifyCallBack,addFaceCallBack;
 
 
@@ -80,16 +77,23 @@ public class FaceAISDKModule extends UniModule {
                 }
             }
 
-        } else if(requestCode == REQUEST_CODE_FOR_ADD_VERIFY ) {
+        } else if(requestCode == REQUEST_CODE_FOR_ADD_FACE) {
             if(resultCode == Activity.RESULT_OK){
                 /**
                  * 0 用户取消
                  * 1 添加人脸成功
                  */
                 if(addFaceCallBack != null) {
+                    String faceID = data.getStringExtra("faceID");
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("code", data.getIntExtra("code", 0));
                     jsonObject.put("msg", data.getStringExtra("msg"));
+                    jsonObject.put("faceID", faceID);
+
+                    String faceFilePath = CACHE_BASE_FACE_DIR + faceID;
+                    Bitmap baseBitmap = BitmapFactory.decodeFile(faceFilePath);
+                    //对应的Face ID 人脸Bitmap 返回
+                    jsonObject.put("faceBase64", Base64BitmapUtil.bitmapToBase64(baseBitmap));
                     addFaceCallBack.invoke(jsonObject);
                 }
             }
@@ -100,48 +104,38 @@ public class FaceAISDKModule extends UniModule {
     }
 
     /**
-     * 插入一张远程URL 的人脸图到SDK，待完善
+     * 账号换设备登录的时候需要同步你的账号在服务器上的人脸到SDK
+     * 请把人脸图转为Base64编码 Base64.NO_WRAP
      *
      * @param options
      * @param callback
      */
     @UniJSMethod(uiThread = true)
-    public void insertFace(JSONObject options, UniJSCallback callback) {
+    public void insertFace2SDK(JSONObject options, UniJSCallback callback) {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             //查询是否存在FaceID
             FaceAIConfig.init(mUniSDKInstance.getContext());
             String faceID=options.getString("faceID");
-            String faceURL=options.getString("faceURL");
-            //加载网络人脸图转为Bitmap 然后保存到SDK
-            Glide.with(mUniSDKInstance.getContext())
-                    .asBitmap()
-                    .load("https://img2023.cnblogs.com/blog/2894189/202303/2894189-20230320143847971-1125640597.png")
-                    .into(new CustomTarget<Bitmap>() {
+            String faceBase64=options.getString("faceBase64");  //这里接收也改为Base64编码的人脸图
+
+            Bitmap bitmap= Base64BitmapUtil.base64ToBitmap(faceBase64);
+
+            if(bitmap == null) {
+                Toast.makeText(mUniSDKInstance.getContext(), "人脸图解析失败",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            //其他地方同步过来的人脸可能是不规范的没有经过校准的人脸图（证件照，多人脸，过小等）。disposeBaseFaceImage处理
+            FaceAIUtils.Companion.getInstance(((Activity) mUniSDKInstance.getContext()).getApplication())
+                    .disposeBaseFaceImage(bitmap, FaceAIConfig.CACHE_BASE_FACE_DIR+faceID, new FaceAIUtils.Callback() {
+                        //处理优化人脸成功完成去初始化引擎
                         @Override
-                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                            //其他地方同步过来的人脸可能是不规范的没有经过校准的人脸图（证件照，多人脸，过小等）。disposeBaseFaceImage处理
-                            FaceAIUtils.Companion.getInstance(((Activity) mUniSDKInstance.getContext()).getApplication())
-                                    .disposeBaseFaceImage(resource, FaceAIConfig.CACHE_BASE_FACE_DIR+faceID, new FaceAIUtils.Callback() {
-                                        //处理优化人脸成功完成去初始化引擎
-                                        @Override
-                                        public void onSuccess(@NonNull Bitmap disposedBitmap) {
-                                        }
-
-                                        //底片处理异常的信息回调
-                                        @Override
-                                        public void onFailed(@NotNull String msg, int errorCode) {
-
-                                        }
-                                    });
+                        public void onSuccess(@NonNull Bitmap disposedBitmap) {
                         }
 
+                        //底片处理异常的信息回调
                         @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                        }
-
-                        @Override
-                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        public void onFailed(@NotNull String msg, int errorCode) {
 
                         }
                     });
@@ -168,8 +162,12 @@ public class FaceAISDKModule extends UniModule {
     }
 
 
-
-    //run ui thread
+    /**
+     * 调用SDK 录入人脸
+     *
+     * @param options
+     * @param callback
+     */
     @UniJSMethod(uiThread = true)
     public void addFaceImage(JSONObject options, UniJSCallback callback) {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
@@ -185,11 +183,16 @@ public class FaceAISDKModule extends UniModule {
                     .putExtra(ADD_FACE_IMAGE_TYPE_KEY, AddFaceImageActivity.AddFaceImageTypeEnum.FACE_VERIFY.name());
 
             intent.putExtra(USER_FACE_ID_KEY,options.getString("faceID"));
-            ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_ADD_VERIFY);
+            ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_ADD_FACE);
         }
     }
 
-    //run JS thread
+    /**
+     * 人脸识别
+     *
+     * @param options
+     * @param callback
+     */
     @UniJSMethod (uiThread = true)
     public void faceVerify(JSONObject options, UniJSCallback callback) {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
@@ -200,11 +203,12 @@ public class FaceAISDKModule extends UniModule {
 
             faceVerifyCallBack=callback;
             FaceAIConfig.init(mUniSDKInstance.getContext());
-            //todo 如果没解析成功要处理
+
+            //todo 如果没解析成功要处理.参数细节再处理吧
             FaceVerifyParams faceVerifyParams=JSONObject.parseObject(options.toJSONString(), FaceVerifyParams.class);
 
             Intent intent=new Intent(mUniSDKInstance.getContext(), FaceVerificationActivity.class);
-            intent.putExtra(USER_FACE_ID_KEY, options.getString("faceImageURL"));
+//            intent.putExtra(USER_FACE_ID_KEY, options.getString("faceImageURL"));
             intent.putExtra(USER_FACE_ID_KEY,options.getString("faceID"));
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
         }
@@ -241,7 +245,6 @@ public class FaceAISDKModule extends UniModule {
      */
     public boolean checkPermissionOK(Context mContexts) {
         String permission="Manifest.permission.CAMERA";
-
         return ContextCompat.checkSelfPermission(mContexts, permission) == PackageManager.PERMISSION_GRANTED;
     }
 

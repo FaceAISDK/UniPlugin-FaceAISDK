@@ -37,6 +37,7 @@
     <!--1:N 人脸搜索 face search-->
     <string name="no_matched_face">No matched face</string>
     <string name="face_dir_empty">Face dir empty</string>
+    <string name="no_base_face">face not exist！</string>
 
     <!--1:1 人脸识别 face verify-->
     <string name="face_verify_failed">Face verify failed！Please retry</string>

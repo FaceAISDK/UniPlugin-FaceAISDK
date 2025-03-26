@@ -129,34 +129,36 @@ public class FaceVerificationActivity extends AppCompatActivity {
             initFaceVerificationParam(baseBitmap);
         } else {
 
+            Toast.makeText(this, faceID+getString(R.string.no_base_face), Toast.LENGTH_SHORT).show();
 
-            //模拟从网络等地方获取对应的人脸图，Demo 简化从Asset 目录读取
-            Bitmap remoteBitmap = VerifyUtils.getBitmapFromAssert(this, "0a_模拟证件照.jpeg");
-            if (remoteBitmap == null) {
-                Toast.makeText(getBaseContext(), R.string.add_a_face_image, Toast.LENGTH_LONG).show();
-                tipsTextView.setText(R.string.add_a_face_image);
-                return;
-            }
 
-            //其他地方同步过来的人脸可能是不规范的没有经过校准的人脸图（证件照，多人脸，过小等）。disposeBaseFaceImage处理
-            FaceAIUtils.Companion.getInstance(getApplication())
-                    .disposeBaseFaceImage(remoteBitmap, faceFilePath, new FaceAIUtils.Callback() {
-                        //处理优化人脸成功完成去初始化引擎
-                        @Override
-                        public void onSuccess(@NonNull Bitmap disposedBitmap) {
-                            initFaceVerificationParam(disposedBitmap);
-                        }
-
-                        //底片处理异常的信息回调
-                        @Override
-                        public void onFailed(@NotNull String msg, int errorCode) {
-                            Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
-
-                            Intent intent = new Intent().putExtra("code",0 ).putExtra("msg", "用户取消");
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                    });
+//            //模拟从网络等地方获取对应的人脸图，Demo 简化从Asset 目录读取
+//            Bitmap remoteBitmap = VerifyUtils.getBitmapFromAssert(this, "0a_模拟证件照.jpeg");
+//            if (remoteBitmap == null) {
+//                Toast.makeText(getBaseContext(), R.string.add_a_face_image, Toast.LENGTH_LONG).show();
+//                tipsTextView.setText(R.string.add_a_face_image);
+//                return;
+//            }
+//
+//            //其他地方同步过来的人脸可能是不规范的没有经过校准的人脸图（证件照，多人脸，过小等）。disposeBaseFaceImage处理
+//            FaceAIUtils.Companion.getInstance(getApplication())
+//                    .disposeBaseFaceImage(remoteBitmap, faceFilePath, new FaceAIUtils.Callback() {
+//                        //处理优化人脸成功完成去初始化引擎
+//                        @Override
+//                        public void onSuccess(@NonNull Bitmap disposedBitmap) {
+//                            initFaceVerificationParam(disposedBitmap);
+//                        }
+//
+//                        //底片处理异常的信息回调
+//                        @Override
+//                        public void onFailed(@NotNull String msg, int errorCode) {
+//                            Toast.makeText(getBaseContext(), msg, Toast.LENGTH_LONG).show();
+//
+//                            Intent intent = new Intent().putExtra("code",0 ).putExtra("msg", "用户取消");
+//                            setResult(RESULT_OK, intent);
+//                            finish();
+//                        }
+//                    });
         }
     }
 

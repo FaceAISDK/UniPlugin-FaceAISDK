@@ -310,10 +310,10 @@
 						}))
 					},
 
-					insertFace: function() {
-						n.insertFace({
+					insertFace2SDK: function() {
+						n.insertFace2SDK({
                                          "faceID": "yourFaceID_uniApp",
-                                         "faceURL":"yourFaceURL"
+                                         "faceBase64":"yourFace faceBase64"
                                        }, (function(t) {
 							i.toast({
 								message: t,
@@ -380,9 +380,9 @@
 					type: "primary"
 				},
 				on: {
-					click: this.insertFace
+					click: this.insertFace2SDK
 				}
-			}, [this._v("同步远程URL人脸图")]),
+			}, [this._v("同步远程人脸图Base64")]),
 
 
 

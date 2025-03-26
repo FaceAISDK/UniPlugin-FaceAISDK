@@ -3,7 +3,7 @@
 		<button type="primary" @click="addFaceImage">添加人脸图</button>
 		<button type="primary" @click="faceVerify">人脸识别</button>
 		<button type="primary" @click="isFaceExist">检查人脸是否存在</button>
-        <button type="primary" @click="insertFace">远程URL同步人脸图</button>
+        <button type="primary" @click="insertFace2SDK">同步人脸Base64到SDK</button>
 		<button type="primary" @click="gotoAboutFaceAIPage">跳转关于FaceAISDK</button>
 	</div>
 </template>
@@ -63,11 +63,11 @@
 			},
 
 
-			insertFace() {
-				// 远程URL 人脸图同步到是DK
-				faceAIModule.insertFace({
+			insertFace2SDK() {
+				// 同步人脸图Base64同步到是SDK
+				faceAIModule.insertFace2SDK({
 						'faceID': '你的uniApp_Account_id',
-						"faceURL":"yourFaceURL"
+						"faceBase64":"faceBase64转码"
 						},
 					(ret) => {
 						modal.toast({

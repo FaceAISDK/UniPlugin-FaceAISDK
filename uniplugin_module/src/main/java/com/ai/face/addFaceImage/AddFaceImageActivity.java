@@ -62,7 +62,10 @@ public  class AddFaceImageActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent().putExtra("code",0 ).putExtra("msg", "用户取消");
+        Intent intent = new Intent()
+                .putExtra("code",0 )
+                .putExtra("faceID",faceID)
+                .putExtra("msg", "用户取消");
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -196,7 +199,10 @@ public  class AddFaceImageActivity extends AppCompatActivity {
                      //1:1 人脸识别保存人脸底图
                      baseImageDispose.saveBaseImage(bitmap, CACHE_BASE_FACE_DIR, faceID, 300);
                      dialog.dismiss();
-                     Intent intent = new Intent().putExtra("code",1).putExtra("msg", "人脸添加成功");
+                     Intent intent = new Intent()
+                             .putExtra("code",1)
+                             .putExtra("faceID",faceID)
+                             .putExtra("msg", "人脸添加成功");
                      setResult(RESULT_OK, intent);
                      finish();
 
