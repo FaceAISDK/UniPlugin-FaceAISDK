@@ -8,7 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * Created by xpf on 2017/4/7 :)
+ *
+ *
  * Function:Base64和Bitmap相互转换类
  */
 

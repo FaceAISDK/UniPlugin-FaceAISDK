@@ -23,7 +23,7 @@
 			return {
 				list: [{
 					id: 'ext-module',
-					name: '扩展 module',
+					name: '扩展 module - FaceAI人脸识别SDK',
 					open: false,
 					url: '/pages/sample/ext-module'
 				},

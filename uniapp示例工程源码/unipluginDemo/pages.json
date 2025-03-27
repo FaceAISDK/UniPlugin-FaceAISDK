@@ -9,7 +9,7 @@
 		{
 			"path": "pages/sample/ext-module",
 			"style": {
-				"navigationBarTitleText": "扩展 module"
+				"navigationBarTitleText": "扩展 module - FaceAI人脸识别SDK"
 			}
 		},
 		{

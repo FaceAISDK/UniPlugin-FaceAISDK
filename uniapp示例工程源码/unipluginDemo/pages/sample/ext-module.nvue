@@ -26,7 +26,7 @@
 			addFaceImage() {
 				// 添加人脸 
 				faceAIModule.addFaceImage({
-						'faceID': '你的uniApp_Account_id'
+						"faceID": "yourFaceID_uniApp"
 						},
 					(ret) => {
 						modal.toast({
@@ -38,9 +38,15 @@
 
 			faceVerify() {
 				// 人脸识别
-				faceAIModule.faceVerify({
-                       'faceID': '你的uniApp_Account_id',
-					   },
+				faceAIModule.faceVerify(
+                                        {
+                                         "faceID": "yourFaceID_uniApp",
+                                          "threshold": 0.85,
+                                          "silentThreshold": 0.85,
+                                          "faceLivenessType": 0,
+                                          "motionStepSize": 1,
+                                          "verifyTimeOut": 16
+                                       } ,
 					(ret) => {
 						modal.toast({
 							message: ret,
@@ -52,7 +58,7 @@
 			isFaceExist() {
 				// 人脸是否存在
 				faceAIModule.isFaceExist({
-						'faceID': '你的uniApp_Account_id'
+						"faceID": "yourFaceID_uniApp"
 						},
 					(ret) => {
 						modal.toast({
@@ -66,7 +72,7 @@
 			insertFace2SDK() {
 				// 同步人脸图Base64同步到是SDK
 				faceAIModule.insertFace2SDK({
-						'faceID': '你的uniApp_Account_id',
+						"faceID": "yourFaceID_uniApp",
 						"faceBase64":"faceBase64转码"
 						},
 					(ret) => {

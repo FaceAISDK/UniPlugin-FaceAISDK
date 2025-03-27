@@ -11,13 +11,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/uniplugin_component" />
             <option value="$PROJECT_DIR$/uniplugin_module" />
-            <option value="$PROJECT_DIR$/uniplugin_richalert" />
             <option value="$PROJECT_DIR$/uts-toast" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

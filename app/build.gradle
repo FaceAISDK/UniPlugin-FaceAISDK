@@ -93,11 +93,11 @@ dependencies {
     implementation "androidx.fragment:fragment:1.1.0"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     // 添加uni-app插件
-    implementation project(':uniplugin_component')
     implementation project(':uniplugin_module')
-    implementation project(':uniplugin_richalert')
+
     // uts原生插件
     implementation project(':uts-toast')
+
     // uts依赖
     implementation "com.squareup.okhttp3:okhttp:3.12.12"
     implementation "androidx.core:core-ktx:1.6.0"
@@ -106,4 +106,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.8"
     implementation "com.github.getActivity:XXPermissions:18.0"
+
+//    implementation project(':uniplugin_richalert')
+//    implementation project(':uniplugin_component')
 }
