@@ -13,10 +13,8 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
 import com.ai.face.FaceAIConfig;
 import com.ai.face.addFaceImage.AddFaceImageActivity;
 import com.ai.face.base.baseImage.FaceAIUtils;
@@ -24,9 +22,9 @@ import com.ai.face.verify.FaceVerificationActivity;
 import com.ai.face.verify.FaceVerifyParams;
 import com.ai.face.verify.FaceVerifyWelcomeActivity;
 import com.alibaba.fastjson.JSONObject;
-
 import org.jetbrains.annotations.NotNull;
-
+import java.io.File;
+import java.io.IOException;
 import io.dcloud.feature.uniapp.annotation.UniJSMethod;
 import io.dcloud.feature.uniapp.bridge.UniJSCallback;
 import io.dcloud.feature.uniapp.common.UniModule;
@@ -112,10 +110,11 @@ public class FaceAISDKModule extends UniModule {
      * @param callback
      */
     @UniJSMethod(uiThread = true)
-    public void insertFace2SDK(JSONObject jsonObject, UniJSCallback callback) {
+    public void insertFace2SDK(JSONObject jsonObject, UniJSCallback callback)  {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             //查询是否存在FaceID
             FaceAIConfig.init(mUniSDKInstance.getContext());
+
             String faceID=jsonObject.getString("faceID");
             String faceBase64=jsonObject.getString("faceBase64");  //这里接收也改为Base64编码的人脸图
 
@@ -153,7 +152,7 @@ public class FaceAISDKModule extends UniModule {
                         public void onFailed(@NotNull String msg, int errorCode) {
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("code", 0);
-                            jsonObject.put("msg", "insertFace2SDK 失败");
+                            jsonObject.put("msg", msg+"-"+errorCode);
                             jsonObject.put("faceID", faceID);
                             callback.invoke(jsonObject);
                         }
@@ -240,9 +239,7 @@ public class FaceAISDKModule extends UniModule {
     @UniJSMethod (uiThread = true)
     public void gotoAboutFaceAIPage(){
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
-
             FaceAIConfig.init(mUniSDKInstance.getContext());
-
             Intent enumIntent =new  Intent(mUniSDKInstance.getContext(), FaceVerifyWelcomeActivity.class);
             Bundle bundle =new Bundle();
             bundle.putSerializable(
@@ -251,9 +248,6 @@ public class FaceAISDKModule extends UniModule {
             );
             enumIntent.putExtras(bundle);
             mUniSDKInstance.getContext().startActivity(enumIntent);
-
-//            Intent intent = new Intent(mUniSDKInstance.getContext(), FaceVerifyWelcomeActivity.class);
-//            mUniSDKInstance.getContext().startActivity(intent);
         }
     }
 

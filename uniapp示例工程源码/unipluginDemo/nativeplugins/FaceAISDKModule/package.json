@@ -17,7 +17,7 @@
             "integrateType": "aar",  
 						
             "dependencies": [  
-                "io.github.anylifezlb:FaceAISDK:1.9.6.release",
+                "io.github.anylifezlb:FaceAISDK:1.9.7.alpha2",
 				"com.airbnb.android:lottie:6.0.0",
 				"androidx.constraintlayout:constraintlayout:2.1.4",
 				"pub.devrel:easypermissions:3.0.0",

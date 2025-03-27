@@ -22,6 +22,13 @@ public class FaceAIConfig {
         // 否则会提示无法找到人脸，VIP 可解除限制
         CACHE_BASE_FACE_DIR = context.getCacheDir().getPath() + "/faceAIVerify/";    //1:1 人脸识别目录
         CACHE_SEARCH_FACE_DIR = context.getFilesDir().getPath() + "/faceAISearch/";  //人脸搜索人脸库目录
+
+//        File file = new File(CACHE_BASE_FACE_DIR);
+//        if (!file.exists()) file.mkdirs();
+//
+//        File searchFile = new File(CACHE_SEARCH_FACE_DIR);
+//        if (!searchFile.exists()) file.mkdirs();
+
     }
 
 
