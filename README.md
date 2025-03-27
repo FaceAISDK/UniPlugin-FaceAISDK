@@ -2,16 +2,17 @@
 
 保护伞FaceAI SDK是设备端可离线不联网Android 人脸识别、动作及近红外IR活体检测、人脸图质量检测
 以及人脸搜索（1:N和M:N）SDK，可快速集成实现人脸识别，人脸搜索功能。  
-**所有识别都在设备终端本地离线执行，SDK不用联网，不保存不上传任何人脸信息敏感资料更具隐私安全**
-FaceAI SDK主页：https://github.com/AnyLifeZLB/FaceVerificationSDK
-FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可开飞行模式✈️）
+**所有识别都在设备终端本地离线执行，SDK不用联网，不保存不上传任何人脸信息敏感资料更具隐私安全**  
+
+FaceAI SDK主页：https://github.com/AnyLifeZLB/FaceVerificationSDK  
+FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可开飞行模式✈️）  
  
 2023年我们开始封装移动端FaceAI人脸识别SDK，逐步完善后为了Uni-App 开发者更加方便的接入本SDK  
 我们封装了UniPlugin-FaceAISDK 插件，插件一期共提供4个方法接口
-  - 1.isFaceExist(jsonObject, callback) 检测是否存在faceID 对应的人脸
-  - 2.addFaceImage(jsonObject, callback) 调用SDK 录入人脸
-  - 3.faceVerify(jsonObject, callback) 人脸识别
-  - 4.insertFace2SDK(jsonObject, callback) 同步账号在服务器上的人脸到SDK
+  - 1. isFaceExist(jsonObject, callback) 检测是否存在faceID 对应的人脸
+  - 2. addFaceImage(jsonObject, callback) 调用SDK 录入人脸
+  - 3. faceVerify(jsonObject, callback) 人脸识别
+  - 4. insertFace2SDK(jsonObject, callback) 同步账号在服务器上的人脸到SDK
 
 插件的使用需要你熟悉Uni-App的开发的基础知识以及少量的原生插件集成经验，相关知识可以Uni-App官网
 
@@ -31,7 +32,7 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 参数 jsonObject 就一个字段 faceID
 参数 callback 会返回检测的结果 true 存在 false 不存在
 
-## 2.addFaceImage(jsonObject, callback)
+## 2. addFaceImage(jsonObject, callback)
 调用SDK 录入人脸，SDK 会对人脸录入进行合规检查
 参数 jsonObject 就一个字段 faceID
 参数 callback 会返回添加结果json
@@ -43,7 +44,7 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 }
 
 
-## 3.faceVerify(jsonObject, callback)
+## 3. faceVerify(jsonObject, callback)
 调用SDK 录入人脸，SDK 会对人脸录入进行合规检查
 **参数 jsonObject**
 {
@@ -65,7 +66,7 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 }
 
 
-## 4.insertFace2SDK(jsonObject, callback) 
+## 4. insertFace2SDK(jsonObject, callback) 
 同步账号在服务器上的人脸到SDK，比如你在A设备登录的时候已经录入人脸并且同步到你的服务器了  
 那么登录B设备后不用调用SDK 再次录入人脸，你仅仅需要把人脸数据同步到SDK 就可以
 
