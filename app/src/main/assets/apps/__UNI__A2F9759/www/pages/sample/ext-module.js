@@ -393,7 +393,7 @@
 				on: {
 					click: this.gotoAboutFaceAIPage
 				}
-			}, [this._v("跳转关于FaceAI SDK")])], 1)])
+			}, [this._v("体验原生FaceAI SDK所有功能")])], 1)])
 		},
 		o = [];
 	n.d(e, "b", (function() {

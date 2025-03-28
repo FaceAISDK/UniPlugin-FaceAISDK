@@ -92,8 +92,8 @@ dependencies {
     implementation 'androidx.core:core:1.1.0'
     implementation "androidx.fragment:fragment:1.1.0"
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation project(':uniplugin_FaceAI_module')
     // 添加uni-app插件
-    implementation project(':uniplugin_module')
 
     // uts原生插件
     implementation project(':uts-toast')

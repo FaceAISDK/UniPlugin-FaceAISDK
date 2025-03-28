@@ -1,6 +1,3 @@
 include ':app'
-include ':uniplugin_module'
+include ':uniplugin_FaceAI_module'
 include ':uts-toast'
-
-//include ':uniplugin_component'
-//include ':uniplugin_richalert'

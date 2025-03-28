@@ -1,7 +1,7 @@
 <template>
 	<view class="uni-container">
 		<view class="uni-hello-text">
-			<text class="hello-text">uni原生插件示例</text>
+			<text class="hello-text">uni原生插件_FaceAISDK</text>
 		</view>
 		<view class="uni-panel" v-for="(item, index) in list" :key="item.id">
 			<view class="uni-panel-h" :class="item.open ? 'uni-panel-h-on' : ''" @click="triggerCollapse(index)">
@@ -29,7 +29,7 @@
 				},
 				{
 					id: 'ext-component',
-					name: '扩展 component',
+					name: 'Email: FaceAISDK.Service@gmail.com',
 					open: false,
 					url: '/pages/sample/ext-component'
 				},

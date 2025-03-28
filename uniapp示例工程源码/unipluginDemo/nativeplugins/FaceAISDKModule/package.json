@@ -1,7 +1,7 @@
 {  
     "name": "FaceAISDKModule",  
     "id": "FaceAISDKModule",  
-    "version": "1.0.1",  
+    "version": "1.1.1",
     "description": "调试版FaceAISDK，插件开发教程https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html",  
     "_dp_type":"nativeplugin",  
     "_dp_nativeplugin":{  

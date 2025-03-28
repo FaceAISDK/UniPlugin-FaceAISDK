@@ -37,10 +37,10 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 参数 jsonObject 就一个字段 faceID  
 参数 callback 会返回添加结果json  
 {  
-  "code": "0 用户取消/失败,  1:录入完成",  
-  "msg":"code 对应的提示",  
-  "faceID": "录入人脸对应的face ID",  
-  "faceBase64":"人脸图像faceBase64转码"  
+    "code": "0 用户取消/失败,  1:录入完成",  
+    "msg":"code 对应的提示",  
+    "faceID": "录入人脸对应的face ID",  
+    "faceBase64":"人脸图像faceBase64转码"  
 }  
 
 
@@ -48,21 +48,21 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 调用SDK 录入人脸，SDK 会对人脸录入进行合规检查  
 **参数 jsonObject**  
 {  
-  "faceID": "yourFaceID_uniApp", //对应需要识别的人脸ID  
-  "threshold": 0.85, //人脸识别相似度阈值  
-  "silentThreshold": 0.85,//活体分数通过阈值  
-  "faceLivenessType": 0, //活体检测类型 //0 SILENT_MOTION; 1 MOTION; 2 SILENT; 3 NONE;  
-  "motionStepSize": 1, //动作活体检测动作数量。比如2 表示需要用户做2个动作才能通过活体检测  
-  "verifyTimeOut": 16 //活体检测超时时间 秒  
+   "faceID": "yourFaceID_uniApp", //对应需要识别的人脸ID  
+   "threshold": 0.85, //人脸识别相似度阈值  
+   "silentThreshold": 0.85,//活体分数通过阈值  
+   "faceLivenessType": 0, //活体检测类型 //0 SILENT_MOTION; 1 MOTION; 2 SILENT; 3 NONE;  
+   "motionStepSize": 1, //动作活体检测动作数量。比如2 表示需要用户做2个动作才能通过活体检测  
+   "verifyTimeOut": 16 //活体检测超时时间 秒  
 }  
 
 
 **参数 callback 会返回添加识别json**   
 {  
-  "code": "0 用户取消/失败,  1:录入完成",  
-  "msg":"code 对应的提示",  
-  "faceID": "录入人脸对应的face ID",  
-  "faceBase64":"人脸图像faceBase64转码"  
+   "code": "0 用户取消/失败,  1:录入完成",  
+   "msg":"code 对应的提示",  
+   "faceID": "录入人脸对应的face ID",  
+   "faceBase64":"人脸图像faceBase64转码"  
 }  
 
 
@@ -73,5 +73,6 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 
 
 ## 觉得本插件对你有帮助的话，欢迎给个Star 支持一下哦！祝你生活愉快😀  
+更新合作联系 FaceAISDK.Service@gmail.com
 
 Uni- app官方参考文档：https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html
