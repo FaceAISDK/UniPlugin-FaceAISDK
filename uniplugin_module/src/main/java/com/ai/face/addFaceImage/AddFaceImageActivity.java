@@ -83,6 +83,10 @@ public  class AddFaceImageActivity extends AppCompatActivity {
         addFaceImageType= getIntent().getStringExtra(ADD_FACE_IMAGE_TYPE_KEY);
         faceID = getIntent().getStringExtra(USER_FACE_ID_KEY);
 
+
+        Toast.makeText(this, "FaceAISDK.Service@gmail.com",Toast.LENGTH_SHORT).show();
+
+
         /*
          * BaseImageDispose
          * 第一个参数是否启用活体检测，部分定制SDK 会需要
