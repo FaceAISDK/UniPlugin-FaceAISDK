@@ -15,13 +15,13 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
   - 4  insertFace2SDK(jsonObject, callback) 同步账号在服务器上的人脸到SDK
 
 插件的使用需要你熟悉Uni-App的开发的基础知识以及少量的原生插件集成经验，相关知识可以参考Uni-App官网
-
+注意 **调试包有相似度分数等提示，正式版没有**
 
 ## 插件集成说明
-- 如果你是Uni-App 你可以用HBuilderX4.5.7打开uniapp示例工程源码/unipluginDemo 自定义基座运行
-- 如果你想根据FaceAI SDK 拓展更多功能你可以使用Android Studio 2024.3.1导入本工程完善
+- 如果你是Uni-App 你可以用**HBuilderX4.5.7**打开uniapp示例工程源码/unipluginDemo 自定义基座运行
+- 如果你想根据FaceAI SDK 拓展更多功能你可以使用Android Studio **2024.3.1**以上导入本工程完善
 
-欢迎大家遇到问题提issue，我会及时回复的。
+IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家遇到问题提issue，我会及时回复的。
  
 ## 1. isFaceExist(jsonObject, callback)
 检测是否存在faceID 对应的人脸，如果没有你可以先检查你的服务器是否存在，服务器也不存在可以调用SDK

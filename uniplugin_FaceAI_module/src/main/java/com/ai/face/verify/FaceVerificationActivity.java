@@ -131,7 +131,6 @@ public class FaceVerificationActivity extends AppCompatActivity {
 
             Toast.makeText(this, faceID+getString(R.string.no_base_face), Toast.LENGTH_SHORT).show();
 
-
 //            //模拟从网络等地方获取对应的人脸图，Demo 简化从Asset 目录读取
 //            Bitmap remoteBitmap = VerifyUtils.getBitmapFromAssert(this, "0a_模拟证件照.jpeg");
 //            if (remoteBitmap == null) {
@@ -245,7 +244,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
      */
     private void showVerifyResult(boolean isVerifyMatched, float similarity, float silentLivenessScore) {
         runOnUiThread(() -> {
-            scoreText.setText("SilentLivenessScore:" + silentLivenessScore);
+//            scoreText.setText("SilentLivenessScore:" + silentLivenessScore);
 
             //1.静默活体分数判断
             if (silentLivenessScore < silentLivenessPassScore) {
@@ -270,7 +269,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
             } else if (isVerifyMatched) {
                 //2.和底片同一人
 //                Toast.makeText(getBaseContext(), faceID + " Verify Success!", Toast.LENGTH_LONG).show();
-                tipsTextView.setText("Successful,similarity= " + similarity);
+//                tipsTextView.setText("Successful,similarity= " + similarity);
                 VoicePlayer.getInstance().addPayList(R.raw.verify_success);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     Intent intent = new Intent().putExtra("code",1).putExtra("msg", "人脸识别成功");
@@ -279,7 +278,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
                 }, 2000);
             } else {
                 //3.和底片不是同一个人
-                tipsTextView.setText("Failed ！ similarity=" + similarity);
+//                tipsTextView.setText("Failed ！ similarity=" + similarity);
                 VoicePlayer.getInstance().addPayList(R.raw.verify_failed);
                 new AlertDialog.Builder(FaceVerificationActivity.this)
                         .setTitle("similarity="+similarity)

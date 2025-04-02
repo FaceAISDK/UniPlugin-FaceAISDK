@@ -55,7 +55,7 @@ dependencies {
     implementation 'com.facebook.fresco:fresco:1.13.0'
 
     //SDK 主页介绍 https://github.com/AnyLifeZLB/FaceVerificationSDK
-    implementation 'io.github.anylifezlb:FaceAISDK:1.9.7.alpha2'
+    implementation 'io.github.anylifezlb:FaceAISDK:1.9.7.UNI3F511F0'
 
     // 以下为业务需要其他依赖，不是SDK 运行的必须依赖
     implementation 'pub.devrel:easypermissions:3.0.0'

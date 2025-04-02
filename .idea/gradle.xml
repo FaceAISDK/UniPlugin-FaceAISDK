@@ -15,8 +15,8 @@
             <option value="$PROJECT_DIR$/uts-toast" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
+    <option name="offlineMode" value="true" />
   </component>
 </project>
