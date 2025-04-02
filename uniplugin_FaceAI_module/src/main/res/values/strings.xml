@@ -40,7 +40,10 @@
     <string name="no_base_face">Face not exist！</string>
 
     <!--1:1 人脸识别 face verify-->
-    <string name="face_verify_failed">Face verify failed！Please retry</string>
+    <string name="face_verify_failed">Face verify failed！</string>
+    <string name="face_verify_failed_detail">Face verify failed！The similarity is less than the set threshold value</string>
+
+    <string name="face_verify_success">Face verify success</string>
     <string name="silent_anti_spoofing_error">Silent anti spoofing error</string>
 
     <!--Motion liveness detection-->

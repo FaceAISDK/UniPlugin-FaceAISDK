@@ -43,16 +43,13 @@ import org.jetbrains.annotations.NotNull;
  * 2.录入高质量的人脸图，人脸清晰，背景纯色（证件照输入目前优化中）
  * 3.光线环境好，检测的人脸无遮挡，无浓妆或佩戴墨镜口罩帽子等
  * 4.人脸照片要求300*300 以上 裁剪好的仅含人脸的正方形照片，背景纯色
- *
+ * <p>
  * 返回给uniApp 插件的Code 含义
  * 0: 校验成功
  * 1：活体校验失败
  * 2: 动作活体超时
  * 3: 用户退出识别
  * 4；
- *
- *
- *
  */
 public class FaceVerificationActivity extends AppCompatActivity {
     public static final String USER_FACE_ID_KEY = "USER_FACE_ID_KEY";   //1:1 face verify ID KEY
@@ -77,7 +74,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
         tipsTextView = findViewById(R.id.tips_view);
         secondTipsTextView = findViewById(R.id.second_tips_view);
         faceCoverView = findViewById(R.id.face_cover);
-        baseFaceImageView=findViewById(R.id.base_face);
+        baseFaceImageView = findViewById(R.id.base_face);
 
         findViewById(R.id.back).setOnClickListener(v -> {
             onBackPressed();
@@ -86,7 +83,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK", Context.MODE_PRIVATE);
 
         int cameraLensFacing = sharedPref.getInt("cameraFlag", 0);
-        int degree=sharedPref.getInt("cameraDegree", 0);
+        int degree = sharedPref.getInt("cameraDegree", 0);
 
         /*
          * 1. Camera 的初始化。
@@ -96,7 +93,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
          *
          * 第三个参数是摄像头旋转角度 {@Link Surface.ROTATION_0}
          */
-        cameraXFragment = CameraXFragment.newInstance(cameraLensFacing, 0.001f,degree);
+        cameraXFragment = CameraXFragment.newInstance(cameraLensFacing, 0.001f, degree);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_camerax, cameraXFragment).commit();
@@ -107,7 +104,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent().putExtra("code",0 ).putExtra("msg", "用户取消");
+        Intent intent = new Intent().putExtra("code", 0).putExtra("msg", "用户取消");
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -129,7 +126,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
             initFaceVerificationParam(baseBitmap);
         } else {
 
-            Toast.makeText(this, faceID+getString(R.string.no_base_face), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, faceID + getString(R.string.no_base_face), Toast.LENGTH_SHORT).show();
 
 
 //            //模拟从网络等地方获取对应的人脸图，Demo 简化从Asset 目录读取
@@ -234,7 +231,6 @@ public class FaceVerificationActivity extends AppCompatActivity {
                 .load(baseBitmap)
                 .transform(new RoundedCorners(12))
                 .into(baseFaceImageView);
-
     }
 
     /**
@@ -245,7 +241,10 @@ public class FaceVerificationActivity extends AppCompatActivity {
      */
     private void showVerifyResult(boolean isVerifyMatched, float similarity, float silentLivenessScore) {
         runOnUiThread(() -> {
-            scoreText.setText("SilentLivenessScore:" + silentLivenessScore);
+
+            if (VerifyUtils.Ii丨1(getBaseContext())) {
+                scoreText.setText("SilentLivenessScore:" + silentLivenessScore);
+            }
 
             //1.静默活体分数判断
             if (silentLivenessScore < silentLivenessPassScore) {
@@ -253,12 +252,11 @@ public class FaceVerificationActivity extends AppCompatActivity {
                 new AlertDialog.Builder(FaceVerificationActivity.this)
                         .setMessage(R.string.silent_anti_spoofing_error)
                         .setCancelable(false)
-                        .setPositiveButton(R.string.confirm, (dialogInterface, i) ->{
-
+                        .setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
                             retryTime++;
                             //建议控制重试次数，一般2次没成功基本不用重试了，设备配置太低或环境因素
                             if (retryTime > 1) {
-                                Intent intent = new Intent().putExtra("code",2).putExtra("msg", "活体分数过低");
+                                Intent intent = new Intent().putExtra("code", 2).putExtra("msg", "活体分数过低");
                                 setResult(RESULT_OK, intent);
                                 finish();
                             } else {
@@ -268,26 +266,38 @@ public class FaceVerificationActivity extends AppCompatActivity {
                         })
                         .show();
             } else if (isVerifyMatched) {
-                //2.和底片同一人
-//                Toast.makeText(getBaseContext(), faceID + " Verify Success!", Toast.LENGTH_LONG).show();
-                tipsTextView.setText("Successful,similarity= " + similarity);
+                if (VerifyUtils.Ii丨1(getBaseContext())) {
+                    tipsTextView.setText("Successful,similarity= " + similarity);
+                } else {
+                    //2.和底片同一人
+                    tipsTextView.setText(R.string.face_verify_success);
+                    Toast.makeText(getBaseContext(), R.string.face_verify_success, Toast.LENGTH_LONG).show();
+                }
+
                 VoicePlayer.getInstance().addPayList(R.raw.verify_success);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    Intent intent = new Intent().putExtra("code",1).putExtra("msg", "人脸识别成功");
+                    Intent intent = new Intent().putExtra("code", 1).putExtra("msg", "人脸识别成功");
                     setResult(RESULT_OK, intent);
                     finish();
                 }, 2000);
             } else {
                 //3.和底片不是同一个人
-                tipsTextView.setText("Failed ！ similarity=" + similarity);
+                if (VerifyUtils.Ii丨1(getBaseContext())) {
+                    tipsTextView.setText("Failed ！ similarity=" + similarity);
+                } else {
+                    //2.和底片同一人
+                    tipsTextView.setText(R.string.face_verify_failed);
+                    Toast.makeText(getBaseContext(), R.string.face_verify_failed, Toast.LENGTH_LONG).show();
+                }
+
                 VoicePlayer.getInstance().addPayList(R.raw.verify_failed);
                 new AlertDialog.Builder(FaceVerificationActivity.this)
-                        .setTitle("similarity="+similarity)
-                        .setMessage( R.string.face_verify_failed)
+                        .setTitle(R.string.face_verify_failed)
+                        .setMessage(R.string.face_verify_failed)
                         .setCancelable(false)
                         .setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
                             //数据是使用Intent返回
-                            Intent intent = new Intent().putExtra("code",4 ).putExtra("msg", "人脸识别低于阈值");
+                            Intent intent = new Intent().putExtra("code", 4).putExtra("msg", "人脸识别低于阈值");
                             setResult(RESULT_OK, intent);
                             finish();
                         })
@@ -364,7 +374,7 @@ public class FaceVerificationActivity extends AppCompatActivity {
                                             //建议控制重试次数，一般2次没成功基本不用重试了，设备配置太低或环境因素
                                             if (retryTime > 1) {
 
-                                                Intent intent = new Intent().putExtra("code",3 ).putExtra("msg", "活体检测超时");
+                                                Intent intent = new Intent().putExtra("code", 3).putExtra("msg", "活体检测超时");
                                                 setResult(RESULT_OK, intent);
                                                 finish();
 
