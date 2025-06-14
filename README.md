@@ -1,6 +1,6 @@
 # FaceAI人脸识别SDK Uni-App 插件
 
-保护伞FaceAI SDK是设备端可离线不联网Android 人脸识别、动作及近红外IR活体检测、人脸图质量检测
+保护伞FaceAI SDK是设备端可离线不联网 人脸识别、动作及近红外IR活体检测、人脸图质量检测
 以及人脸搜索（1:N和M:N）SDK，可快速集成实现人脸识别，人脸搜索功能。  
 **所有识别都在设备终端本地离线执行，SDK不用联网，不保存不上传任何人脸信息敏感资料更具隐私安全**  
 
@@ -72,7 +72,4 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 
 
 
-## 觉得本插件对你有帮助的话，欢迎给个Star 支持一下哦！祝你生活愉快😀  
-更新合作联系 FaceAISDK.Service@gmail.com
 
-Uni- app官方参考文档：https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html
