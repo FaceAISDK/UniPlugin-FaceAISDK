@@ -1,7 +1,16 @@
 ## 由于uniApp 插件目前只支持UTS 插件，重构UTS 版本
-UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
+
+### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
+### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
 
 
+
+🪸  
+
+
+
+   
+   
 # FaceAI人脸识别SDK Uni-App 插件
 
 保护伞FaceAI SDK是设备端可离线不联网 人脸识别、动作及近红外IR活体检测、人脸图质量检测
