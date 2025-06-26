@@ -1,6 +1,19 @@
+## 由于uniApp 插件目前只支持UTS 插件，请使用UTS插件版本
+
+### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
+### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
+
+
+
+🪸  
+
+
+
+   
+   
 # FaceAI人脸识别SDK Uni-App 插件
 
-保护伞FaceAI SDK是设备端可离线不联网Android 人脸识别、动作及近红外IR活体检测、人脸图质量检测
+保护伞FaceAI SDK是设备端可离线不联网 人脸识别、动作及近红外IR活体检测、人脸图质量检测
 以及人脸搜索（1:N和M:N）SDK，可快速集成实现人脸识别，人脸搜索功能。  
 **所有识别都在设备终端本地离线执行，SDK不用联网，不保存不上传任何人脸信息敏感资料更具隐私安全**  
 
@@ -15,13 +28,13 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
   - 4  insertFace2SDK(jsonObject, callback) 同步账号在服务器上的人脸到SDK
 
 插件的使用需要你熟悉Uni-App的开发的基础知识以及少量的原生插件集成经验，相关知识可以参考Uni-App官网
-
+注意 **调试包有相似度分数等提示，正式版没有**
 
 ## 插件集成说明
-- 如果你是Uni-App 你可以用HBuilderX4.5.7打开uniapp示例工程源码/unipluginDemo 自定义基座运行
-- 如果你想根据FaceAI SDK 拓展更多功能你可以使用Android Studio 2024.3.1导入本工程完善
+- 如果你是Uni-App 你可以用**HBuilderX4.5.7**打开uniapp示例工程源码/unipluginDemo 自定义基座运行
+- 如果你想根据FaceAI SDK 拓展更多功能你可以使用Android Studio **2024.3.1**以上导入本工程完善
 
-欢迎大家遇到问题提issue，我会及时回复的。
+IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家遇到问题提issue，我会及时回复的。
  
 ## 1. isFaceExist(jsonObject, callback)
 检测是否存在faceID 对应的人脸，如果没有你可以先检查你的服务器是否存在，服务器也不存在可以调用SDK
@@ -71,8 +84,5 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 那么登录B设备后不用调用SDK 再次录入人脸，你仅仅需要把人脸数据同步到SDK 就可以  
 
 
+更多授权请联系：FaceAISDK.service@gmail.com
 
-## 觉得本插件对你有帮助的话，欢迎给个Star 支持一下哦！祝你生活愉快😀  
-更新合作联系 FaceAISDK.Service@gmail.com
-
-Uni- app官方参考文档：https://nativesupport.dcloud.net.cn/NativePlugin/course/android.html
