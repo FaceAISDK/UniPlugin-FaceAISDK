@@ -1,4 +1,4 @@
-## 由于uniApp 插件目前只支持UTS 插件，重构UTS 版本
+## 由于uniApp 插件目前只支持UTS 插件，请使用UTS插件版本
 
 ### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
 ### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
@@ -84,5 +84,5 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 那么登录B设备后不用调用SDK 再次录入人脸，你仅仅需要把人脸数据同步到SDK 就可以  
 
 
-
+更多授权请联系：FaceAISDK.service@gmail.com
 
