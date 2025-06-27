@@ -5,6 +5,9 @@
 		<button type="primary" @click="isFaceExist">检查人脸是否存在</button>
         <button type="primary" @click="insertFace2SDK">同步人脸Base64到SDK</button>
 		<button type="primary" @click="gotoAboutFaceAIPage">体验完整FaceAISDK原生功能</button>
+		
+		<button type="primary" @click="tips">提示：需要你自行管理相机权限</button>
+		
 	</div>
 </template>
 

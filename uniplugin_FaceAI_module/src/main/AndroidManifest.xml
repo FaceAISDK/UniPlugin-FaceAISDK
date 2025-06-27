@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.ai.face">
     <!-- 语音提示 -->
     <queries>
         <intent>
@@ -90,6 +90,11 @@
         <activity
             android:name="io.face.uniplugin.NativePageActivity"
             android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        </activity>
+
+        <activity
+            android:name=".FaceRecognitionActivity"
+            android:exported="false">
         </activity>
 
     </application>

@@ -192,9 +192,9 @@ public class FaceAISDKModule extends UniModule {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             addFaceCallBack=callback;
 
-            if(!checkPermissionOK(mUniSDKInstance.getContext())){
-                Toast.makeText(mUniSDKInstance.getContext(), "请先授权相机权限",Toast.LENGTH_SHORT).show();
-            }
+//            if(!checkPermissionOK(mUniSDKInstance.getContext())){
+//                Toast.makeText(mUniSDKInstance.getContext(), "请先授权相机权限",Toast.LENGTH_SHORT).show();
+//            }
 
             //人脸图保存路径初始化
             FaceAIConfig.init(mUniSDKInstance.getContext());
@@ -216,9 +216,9 @@ public class FaceAISDKModule extends UniModule {
     public void faceVerify(JSONObject jsonObject, UniJSCallback callback) {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
 
-            if(!checkPermissionOK(mUniSDKInstance.getContext())){
-                Toast.makeText(mUniSDKInstance.getContext(), "请先授权相机权限",Toast.LENGTH_SHORT).show();
-            }
+//            if(!checkPermissionOK(mUniSDKInstance.getContext())){
+//                Toast.makeText(mUniSDKInstance.getContext(), "请先授权相机权限",Toast.LENGTH_SHORT).show();
+//            }
 
             faceVerifyCallBack=callback;
             FaceAIConfig.init(mUniSDKInstance.getContext());

@@ -42,13 +42,13 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 
 **faceID** 你要检测的人脸ID标识符，在你的业务体系中唯一不可重复，你可以用账户名，身份证号等  
 
-参数 jsonObject 就一个字段 faceID  
-参数 callback 会返回检测的结果 true 存在 false 不存在  
+传入参数 jsonObject 就一个字段 faceID  
+返回参数 callback 会返回检测的结果 true 存在 false 不存在  
 
 ## 2. addFaceImage(jsonObject, callback)
 调用SDK 录入人脸，SDK 会对人脸录入进行合规检查  
-参数 jsonObject 就一个字段 faceID  
-参数 callback 会返回添加结果json  
+传入参数 jsonObject 就一个字段 faceID  
+返回参数 callback 会返回添加结果json  
 {  
     "code": "0 用户取消/失败,  1:录入完成",  
     "msg":"code 对应的提示",  
@@ -59,7 +59,7 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 
 ## 3. faceVerify(jsonObject, callback)
 调用SDK 录入人脸，SDK 会对人脸录入进行合规检查  
-**参数 jsonObject**  
+**传入参数 jsonObject**  
 {  
    "faceID": "yourFaceID_uniApp", //对应需要识别的人脸ID  
    "threshold": 0.85, //人脸识别相似度阈值  
@@ -70,7 +70,7 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 }  
 
 
-**参数 callback 会返回添加识别json**   
+**返回参数 callback 会返回识别结果**   
 {  
    "code": "0 用户取消/失败,  1:录入完成",  
    "msg":"code 对应的提示",  
@@ -81,8 +81,11 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 
 ## 4. insertFace2SDK(jsonObject, callback) 
 同步账号在服务器上的人脸到SDK，比如你在A设备登录的时候已经录入人脸并且同步到你的服务器了    
-那么登录B设备后不用调用SDK 再次录入人脸，你仅仅需要把人脸数据同步到SDK 就可以  
-
+那么登录B设备后不用调用SDK 再次录入人脸，你仅仅需要把你的业务服务器人脸图数据同步到SDK本地就可以  
+{  
+ "faceID": "yourFaceID_uniApp", //对应需要识别的人脸ID  
+ "faceBase64": "图片Base64 编码String 后返回", //人脸识别相似度阈值
+}
 
 更多授权请联系：FaceAISDK.service@gmail.com
 

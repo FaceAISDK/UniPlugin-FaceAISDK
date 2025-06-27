@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.ai.face.databinding.ActivityAboutFaceAppBinding
+import org.json.JSONObject
 
 /**
  * 关于我们
@@ -21,6 +22,8 @@ class AboutFaceAppActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityAboutFaceAppBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+        val jsonObject:JSONObject = JSONObject()
 
         viewBinding.moreAboutMe.setOnClickListener {
             val uri = Uri.parse("https://mp.weixin.qq.com/s/_ro9zBfzAmkpazL-QAPi9w")

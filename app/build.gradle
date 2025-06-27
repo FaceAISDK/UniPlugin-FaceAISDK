@@ -20,16 +20,6 @@ android {
         }
     }
 
-//    signingConfigs {
-//        config {
-//            keyAlias 'key0'
-//            keyPassword '123456'
-//            storeFile file('test.jks')
-//            storePassword '123456'
-//            v1SigningEnabled true
-//            v2SigningEnabled true
-//        }
-//    }
 
     signingConfigs {
         release {

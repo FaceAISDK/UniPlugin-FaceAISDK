@@ -1,11 +1,13 @@
 package com.ai.face
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Surface
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.ai.face.databinding.ActivityFaceAiSettingsBinding
+
 
 /**
  * 前后摄像头，角度切换等参数设置
@@ -22,6 +24,9 @@ class FaceAISettingsActivity : AppCompatActivity() {
         binding.back.setOnClickListener{
             this@FaceAISettingsActivity.finish()
         }
+
+        var intent = Intent("uts.sdk.modules.uniFaceAISDK.FaceRecognitionActivity")
+
 
         //切换系统相机前后
         binding.switchCamera.setOnClickListener {
