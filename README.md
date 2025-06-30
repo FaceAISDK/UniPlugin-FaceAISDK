@@ -1,6 +1,6 @@
 ## 由于uniApp 插件目前只支持UTS 插件，请使用UTS插件版本
 
-重构版本支持同时指出 Uni-App和 Uni-AppX
+重构版本同时支持 Uni-App和 Uni-AppX
 
 ### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
 ### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
