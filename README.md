@@ -1,15 +1,13 @@
-## 由于uniApp 插件目前只支持UTS 插件，请使用UTS插件版本
+## 关于工程说明
+  本工程是针对uniApp 制作的插件（本工程非UTS插件不可用于uniApp X）
 
-### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
-### UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS
-
-
-
-🪸  
+  1. 「uniapp_plugin_FaceAISDK」 是Android原生语言部分插件，如果你想修改优化插件实现可以用Android Studio参考源码修改
+  2. 「uniapp使用插件示例工程』 是uniApp 使用演示Demo，使用HBuildX 打开，如果你觉得插件够用不想改插件只想使用，聚焦关注此就行
 
 
+  由于本插件仅仅能在uniApp中使用，也无法再上架插件市场，我们后期将精力聚焦于开发能同时在uni-app x与uni-app使用的UTS版本插件上，**UTS将支持iOS Android**。
+  **UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS**
 
-   
    
 # FaceAI人脸识别SDK Uni-App 插件
 
@@ -89,3 +87,9 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 
 更多授权请联系：FaceAISDK.service@gmail.com
 
+
+
+## 故事的结尾
+
+由于本插件仅仅能在uniApp中使用，也无法再上架插件市场，我们后期将精力聚焦于开发能同时在uni-app x与uni-app使用的UTS版本插件上
+**UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS**
