@@ -6,7 +6,7 @@
 
 
   由于本插件仅仅能在uniApp中使用，也无法再上架插件市场，我们后期将精力聚焦于开发能同时在uni-app x与uni-app使用的UTS版本插件上，**UTS将支持iOS Android**。
-  **UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS**
+  **UTS重构版本 https://github.com/FaceAISDK/FaceAISDK_uniapp_UTS**
 
    
 # FaceAI人脸识别SDK Uni-App 插件
@@ -15,7 +15,7 @@
 以及人脸搜索（1:N和M:N）SDK，可快速集成实现人脸识别，人脸搜索功能。  
 **所有识别都在设备终端本地离线执行，SDK不用联网，不保存不上传任何人脸信息敏感资料更具隐私安全**  
 
-FaceAI SDK主页：https://github.com/AnyLifeZLB/FaceVerificationSDK  
+FaceAI SDK主页：https://github.com/FaceAISDK/FaceAISDK_Android
 FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可开飞行模式✈️）  
  
 2023年我们开始封装移动端FaceAI人脸识别SDK，逐步完善后为了Uni-App 开发者更加方便的接入本SDK  
@@ -92,4 +92,4 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
 ## 故事的结尾
 
 由于本插件仅仅能在uniApp中使用，也无法再上架插件市场，我们后期将精力聚焦于开发能同时在uni-app x与uni-app使用的UTS版本插件上
-**UTS重构版本 https://github.com/AnyLifeZLB/uniPlugin_FaceAI_UTS**
+**UTS重构版本 https://github.com/FaceAISDK/FaceAISDK_uniapp_UTS**
