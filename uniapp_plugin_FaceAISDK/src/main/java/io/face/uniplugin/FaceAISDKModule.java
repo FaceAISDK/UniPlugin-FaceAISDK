@@ -1,6 +1,6 @@
 package io.face.uniplugin;
 
-import static com.faceAI.demo.FaceAIConfig.CACHE_BASE_FACE_DIR;
+import static com.faceAI.demo.FaceImageConfig.CACHE_BASE_FACE_DIR;
 import static com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity.ADD_FACE_IMAGE_TYPE_KEY;
 import static com.faceAI.demo.SysCamera.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
 
@@ -11,18 +11,18 @@ import android.graphics.BitmapFactory;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.ai.face.base.baseImage.FaceAIUtils;
-import com.faceAI.demo.FaceAIConfig;
+import com.ai.face.base.baseImage.FaceEmbedding;
+import com.faceAI.demo.FaceImageConfig;
 import com.faceAI.demo.FaceAINaviActivity;
 import com.alibaba.fastjson.JSONObject;
-import com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity;
 import com.faceAI.demo.SysCamera.verify.FaceVerificationActivity;
+import com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity;
 import com.faceAI.demo.base.utils.BitmapUtils;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import org.jetbrains.annotations.NotNull;
 import io.dcloud.feature.uniapp.annotation.UniJSMethod;
 import io.dcloud.feature.uniapp.bridge.UniJSCallback;
 import io.dcloud.feature.uniapp.common.UniModule;
-
 
 /**
  * 扩展方法必须加上@UniJSMethod (uiThread = false or true) 注解。
@@ -42,7 +42,7 @@ public class FaceAISDKModule extends UniModule {
 
     public FaceAISDKModule() {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
-            FaceAIConfig.init(mUniSDKInstance.getContext());
+            FaceImageConfig.init(mUniSDKInstance.getContext());
             //语音提示
             VoicePlayer.getInstance().init(mUniSDKInstance.getContext());
         }
@@ -113,7 +113,7 @@ public class FaceAISDKModule extends UniModule {
     public void insertFace2SDK(JSONObject jsonObject, UniJSCallback callback)  {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             //查询是否存在FaceID
-            FaceAIConfig.init(mUniSDKInstance.getContext());
+            FaceImageConfig.init(mUniSDKInstance.getContext());
 
             String faceID=jsonObject.getString("faceID");
             String faceBase64=jsonObject.getString("faceBase64");  //这里接收也改为Base64编码的人脸图
@@ -131,10 +131,13 @@ public class FaceAISDKModule extends UniModule {
 
             //其他地方同步过来的人脸可能是不规范的没有经过校准的人脸图（证件照，多人脸，过小等）。disposeBaseFaceImage处理
             FaceAIUtils.Companion.getInstance(((Activity) mUniSDKInstance.getContext()).getApplication())
-                    .disposeBaseFaceImage(bitmap, FaceAIConfig.CACHE_BASE_FACE_DIR+faceID, new FaceAIUtils.Callback() {
+                    .disposeBaseFaceImage(mUniSDKInstance.getContext(),bitmap, new FaceAIUtils.Callback() {
                         //处理优化人脸成功完成去初始化引擎
                         @Override
-                        public void onSuccess(@NonNull Bitmap disposedBitmap) {
+                        public void onSuccess(@NonNull Bitmap bitmap, @NonNull float[] faceEmbedding) {
+                            FaceEmbedding.saveEmbedding(mUniSDKInstance.getContext(), faceID, faceEmbedding); //本地保存人脸特征向量
+                            BitmapUtils.saveDisposedBitmap(bitmap, FaceImageConfig.CACHE_BASE_FACE_DIR,faceID); //裁剪好的人脸保存本地
+
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("code", 1);
                             jsonObject.put("msg", "insertFace2SDK 成功");
@@ -167,9 +170,23 @@ public class FaceAISDKModule extends UniModule {
     public void isFaceExist(JSONObject jsonObject, UniJSCallback callback) {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             //查询是否存在FaceID
-            FaceAIConfig.init(mUniSDKInstance.getContext());
+            FaceImageConfig.init(mUniSDKInstance.getContext());
             String faceID=jsonObject.getString("faceID");
-            boolean isExist=FaceAIConfig.isFaceIDExist(faceID);
+//            boolean isExist=FaceImageConfig.isFaceIDExist(faceID);
+
+            var isExist=true;
+
+            float[] faceEmbedding = FaceEmbedding.loadEmbedding(mUniSDKInstance.getContext(), faceID);
+
+            // 去Path 路径读取有没有faceID 对应的处理好的人脸Bitmap
+            String faceFilePath = FaceImageConfig.CACHE_BASE_FACE_DIR + faceID;
+            Bitmap baseBitmap = BitmapFactory.decodeFile(faceFilePath);
+
+
+            if (faceEmbedding.length == 0||baseBitmap==null) {
+                isExist=false;
+            }
+
             callback.invoke(isExist);
         }
     }
@@ -186,7 +203,7 @@ public class FaceAISDKModule extends UniModule {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
             addFaceCallBack=callback;
             //人脸图保存路径初始化
-            FaceAIConfig.init(mUniSDKInstance.getContext());
+            FaceImageConfig.init(mUniSDKInstance.getContext());
             Intent intent=new Intent(mUniSDKInstance.getContext(), AddFaceImageActivity.class)
                     .putExtra(ADD_FACE_IMAGE_TYPE_KEY, AddFaceImageActivity.AddFaceImageTypeEnum.FACE_VERIFY.name());
 
@@ -206,7 +223,7 @@ public class FaceAISDKModule extends UniModule {
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
 
             faceVerifyCallBack=callback;
-            FaceAIConfig.init(mUniSDKInstance.getContext());
+            FaceImageConfig.init(mUniSDKInstance.getContext());
 
             Intent intent=new Intent(mUniSDKInstance.getContext(), FaceVerificationActivity.class);
             intent.putExtra(USER_FACE_ID_KEY,jsonObject.getString("faceID"));
@@ -222,7 +239,7 @@ public class FaceAISDKModule extends UniModule {
     @UniJSMethod (uiThread = true)
     public void gotoAboutFaceAIPage(){
         if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
-            FaceAIConfig.init(mUniSDKInstance.getContext());
+            FaceImageConfig.init(mUniSDKInstance.getContext());
             Intent enumIntent =new  Intent(mUniSDKInstance.getContext(), FaceAINaviActivity.class);
 
             mUniSDKInstance.getContext().startActivity(enumIntent);

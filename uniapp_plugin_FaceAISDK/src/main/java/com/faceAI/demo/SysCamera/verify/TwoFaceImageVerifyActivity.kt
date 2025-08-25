@@ -11,16 +11,16 @@ import ando.file.selector.FileType
 import ando.file.selector.IFileType
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import com.ai.face.base.baseImage.FaceAIUtils
 import com.ai.face.faceVerify.verify.FaceVerifyUtils
 import com.faceAI.demo.BuildConfig
-import com.faceAI.demo.base.BaseActivity
 import com.faceAI.demo.base.utils.fileUtils.MyFileUtils
 import com.faceAI.demo.databinding.ActivityTwoFaceImageVerifyBinding
 
@@ -34,7 +34,7 @@ import com.faceAI.demo.databinding.ActivityTwoFaceImageVerifyBinding
  *
  * TwoFaceImageVerifyActivity 采用Kotlin 演示，使用java 的同学请自行翻译，有兴趣的同学可以重命名后提交新的PR
  */
-class TwoFaceImageVerifyActivity : BaseActivity() {
+class TwoFaceImageVerifyActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityTwoFaceImageVerifyBinding
     private var mFileSelector: FileSelector? = null
@@ -99,7 +99,7 @@ class TwoFaceImageVerifyActivity : BaseActivity() {
         val optionsImage = FileSelectOptions().apply {
             fileType = FileType.IMAGE
             fileTypeMismatchTip = "File type mismatch !"
-            singleFileMaxSize = 5242880
+            singleFileMaxSize = 9242880
             singleFileMaxSizeTip = "A single picture does not exceed 5M !"
             allFilesMaxSize = 9242880
             allFilesMaxSizeTip = "The total size of the picture does not exceed 10M !"
@@ -119,7 +119,7 @@ class TwoFaceImageVerifyActivity : BaseActivity() {
             .with(this)
             .setRequestCode(REQUEST_ADD_FACE_IMAGE)
             .setMinCount(1, "Choose at least one picture!")
-            .setSingleFileMaxSize(3145728, "The size of a single picture cannot exceed 3M !")
+            .setSingleFileMaxSize(9145728, "The size of a single picture cannot exceed 3M !")
             .setExtraMimeTypes("image/*")
             .applyOptions(optionsImage)
             .filter(object : FileSelectCondition {
@@ -162,11 +162,12 @@ class TwoFaceImageVerifyActivity : BaseActivity() {
             results[0].uri
         )
 
-        view.background = BitmapDrawable(resources, bitmap)
+        view.background = bitmap.toDrawable(resources)
 
+        //检测人脸是否合规，裁剪后返回bitmap 和对应的人脸特征向量
         FaceAIUtils.Companion.getInstance(application)
-            .checkFaceQuality(bitmap, object : FaceAIUtils.Callback {
-                override fun onSuccess(bitmap: Bitmap) {
+            .disposeBaseFaceImage(baseContext,bitmap, object : FaceAIUtils.Callback {
+                override fun onSuccess(bitmap: Bitmap, faceEmbedding: FloatArray) {
                     bitmapMap[view.tag.toString()] = bitmap
                 }
 
@@ -175,6 +176,7 @@ class TwoFaceImageVerifyActivity : BaseActivity() {
                     bitmapMap.remove(view.tag.toString()) //没有检测出人脸则移除上一次可能有的数据
                 }
             })
+
     }
 
 

@@ -13,7 +13,7 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCHING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERROR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.TOO_MUCH_FACE;
-import static com.faceAI.demo.FaceAIConfig.CACHE_SEARCH_FACE_DIR;
+import static com.faceAI.demo.FaceImageConfig.CACHE_SEARCH_FACE_DIR;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -154,7 +154,7 @@ public class FaceSearch_UVCCameraFragment extends AbsFaceSearch_UVCCameraFragmen
                 break;
 
             case IR_LIVE_ERROR:
-                binding.searchTips.setText(R.string.ir_live_error);
+//                binding.searchTips.setText(R.string.ir_live_error); //偶尔失败可以忽略
                 break;
 
             case NO_LIVE_FACE:
@@ -213,7 +213,7 @@ public class FaceSearch_UVCCameraFragment extends AbsFaceSearch_UVCCameraFragmen
         }
 
         if (irReady && rgbReady) {
-//            getScaleValue();
+            getScaleValue();
             //送数据进入SDK
             FaceSearchEngine.Companion.getInstance().runSearchWithIR(irBitmap, rgbBitmap);
             irReady = false;
@@ -229,20 +229,8 @@ public class FaceSearch_UVCCameraFragment extends AbsFaceSearch_UVCCameraFragmen
     float scaleX = 0f, scaleY = 0f;
     private void getScaleValue() {
         if (scaleX == 0f || scaleY == 0f) {
-            float max = rgbBitmap.getWidth();
-            float min = rgbBitmap.getHeight();
-            if (max < min) { //交换
-                float temp = max;
-                max = min;
-                min = temp;
-            }
-            if (binding.rgbCameraView.getWidth() > binding.rgbCameraView.getHeight()) {
-                scaleX = (float) binding.rgbCameraView.getWidth() / max;
-                scaleY = (float) binding.rgbCameraView.getHeight() / min;
-            } else {
-                scaleX = (float) binding.rgbCameraView.getWidth() / min;
-                scaleY = (float) binding.rgbCameraView.getHeight() / max;
-            }
+            scaleX = (float) binding.rgbCameraView.getWidth() / rgbBitmap.getWidth();
+            scaleY = (float) binding.rgbCameraView.getHeight() / rgbBitmap.getHeight();
         }
     }
 }

@@ -12,7 +12,7 @@ import io.dcloud.uts.console
 import org.json.JSONObject
 import io.dcloud.uts.UTSJSONObject
 
-import com.faceAI.demo.FaceAIConfig
+import com.faceAI.demo.FaceImageConfig
 import com.ai.face.base.baseImage.FaceAIUtils
 import com.ai.face.base.baseImage.FaceAIUtils.Companion.getInstance
 import com.faceAI.demo.base.utils.VoicePlayer 
@@ -21,6 +21,8 @@ import com.faceAI.demo.base.utils.BitmapUtils
  
 /**
  *  启动一个新的Activity 并监测结果
+ *
+ *
  */
 object FaceAISDKNative {
  
@@ -28,7 +30,7 @@ object FaceAISDKNative {
 	 * 判断人脸是否存在
 	 */
 	fun isFaceExistKotlin(faceID: String,callback: (UTSJSONObject) -> Unit){
-	   val isExist=FaceAIConfig.isFaceIDExist(faceID);
+	   val isExist=FaceImageConfig.isFaceIDExist(faceID);
 
        var result: UTSJSONObject = object : UTSJSONObject() {
 			var code = if(isExist) 1 else 0
@@ -59,7 +61,7 @@ object FaceAISDKNative {
 			  getInstance(context)
 			      .disposeBaseFaceImage(
 			          bitmap,
-			          FaceAIConfig.CACHE_BASE_FACE_DIR + faceID,
+			          FaceImageConfig.CACHE_BASE_FACE_DIR + faceID,
 			          object : FaceAIUtils.Callback {
 			              //处理优化人脸成功完成去初始化引擎
 			              override fun onSuccess(bitmap: Bitmap) {

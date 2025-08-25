@@ -27,7 +27,7 @@ public class ImageToast {
 
         Glide.with(context)
                 .load(bitmap)
-                .transform(new RoundedCorners(33))
+                .transform(new RoundedCorners(44))
                 .into(image);
 
         text.setText(tips);

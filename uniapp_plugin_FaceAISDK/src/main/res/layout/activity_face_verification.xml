@@ -28,29 +28,38 @@
         customAttr:tip_text_size="20sp" />
 
     <ImageView
-        android:id="@+id/base_face"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/back"
+        android:layout_width="47dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="10dp"
+        android:padding="9dp"
+        android:src="@drawable/ic_arrow_back_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/base_face"
+        android:layout_width="25dp"
+        android:layout_height="22dp"
+        app:layout_constraintStart_toEndOf="@+id/back"
+        app:layout_constraintBottom_toBottomOf="@+id/back"
+        app:layout_constraintTop_toTopOf="@+id/back" />
 
     <TextView
         android:id="@+id/tips_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/blue"
         android:gravity="center"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="15dp"
         android:text="@string/keep_face_visible"
-        android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textColor="@color/face_lib_main_color"
+        android:textSize="17sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/base_face" />
@@ -64,8 +73,8 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:textColor="@color/red"
-        android:textSize="15sp"
+        android:textColor="@color/orange"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,15 +93,7 @@
         app:layout_constraintRight_toRightOf="parent" />
 
 
-    <ImageView
-        android:id="@+id/back"
-        android:layout_width="47dp"
-        android:layout_height="47dp"
-        android:layout_marginStart="10dp"
-        android:padding="9dp"
-        android:src="@drawable/ic_arrow_back_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
 
 

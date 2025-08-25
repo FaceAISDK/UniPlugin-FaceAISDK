@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.ai.face.base.runtimeEnv.RuntimeEnv;
 import com.ai.face.base.view.CameraXFragment;
 import com.ai.face.base.view.camera.CameraXBuilder;
 import com.ai.face.faceVerify.verify.FaceProcessBuilder;
@@ -23,7 +24,8 @@ import com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM;
 import com.ai.face.faceVerify.verify.liveness.MotionLivenessMode;
 import com.ai.face.faceVerify.verify.liveness.MotionLivenessType;
 import com.faceAI.demo.R;
-import com.faceAI.demo.base.BaseActivity;
+import com.faceAI.demo.SysCamera.search.ImageToast;
+import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import com.faceAI.demo.base.view.DemoFaceCoverView;
 
@@ -31,13 +33,16 @@ import com.faceAI.demo.base.view.DemoFaceCoverView;
  * 活体检测 SDK 接入演示Demo 代码.
  * 使用系统相机怎么活体检测，包含动作活体，静默活体（静默需要摄像头成像清晰，宽动态大于105Db）
  *
+ * 摄像头管理源码开放了 {@link com.faceAI.demo.SysCamera.camera.MyCameraFragment}
+ * @author FaceAISDK.Service@gmail.com
  */
-public class LivenessDetectActivity extends BaseActivity {
+public class LivenessDetectActivity extends AbsBaseActivity {
     private TextView tipsTextView, secondTipsTextView, scoreText;
     private DemoFaceCoverView faceCoverView;
     private final FaceVerifyUtils faceVerifyUtils = new FaceVerifyUtils();
+
     private CameraXFragment cameraXFragment;
-    private final float silentLivenessPassScore = 0.85f; //静默活体分数通过的阈值
+    private final float silentLivenessPassScore = 0.8f; //静默活体分数通过的阈值
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,7 @@ public class LivenessDetectActivity extends BaseActivity {
         cameraXFragment = CameraXFragment.newInstance(cameraXBuilder);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_camerax, cameraXFragment).commit();
+
 
         initFaceVerificationParam();
     }
@@ -98,6 +104,7 @@ public class LivenessDetectActivity extends BaseActivity {
                         //切换到主线程操作UI
                         runOnUiThread(() -> {
                             scoreText.setText("RGB Live:"+silentLivenessValue);
+                            new ImageToast().show(getApplicationContext(), bitmap, "活体检测完成");
                             new AlertDialog.Builder(LivenessDetectActivity.this)
                                     .setTitle(R.string.liveness_detection)
                                     .setMessage("活体检测完成，其中RGB Live分数="+silentLivenessValue)
@@ -145,7 +152,14 @@ public class LivenessDetectActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        if(RuntimeEnv.isEmulator(getBaseContext())||RuntimeEnv.isXposedExist(getBaseContext())||RuntimeEnv.isRoot(getBaseContext())){
+            Toast.makeText(getBaseContext(),"不安全的运行环境",Toast.LENGTH_LONG).show();
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -203,6 +217,16 @@ public class LivenessDetectActivity extends BaseActivity {
                     case ALIVE_DETECT_TYPE_ENUM.NOD_HEAD:
                         VoicePlayer.getInstance().play(R.raw.nod_head);
                         tipsTextView.setText(R.string.motion_node_head);
+                        break;
+
+                    case VERIFY_DETECT_TIPS_ENUM.PAUSE_VERIFY:
+                        new AlertDialog.Builder(this)
+                                .setMessage(R.string.face_verify_pause)
+                                .setCancelable(false)
+                                .setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
+                                    finishFaceVerify(6,"活体检测中断");
+                                })
+                                .show();
                         break;
 
                     case VERIFY_DETECT_TIPS_ENUM.ACTION_TIME_OUT:
@@ -277,8 +301,8 @@ public class LivenessDetectActivity extends BaseActivity {
     /**
      * 暂停识别，防止切屏识别，如果你需要退后台不能识别的话
      */
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         faceVerifyUtils.pauseProcess();
     }
 }

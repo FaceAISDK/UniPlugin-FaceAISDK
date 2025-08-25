@@ -12,9 +12,9 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCHING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERROR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.TOO_MUCH_FACE;
-import static com.faceAI.demo.FaceAIConfig.CACHE_SEARCH_FACE_DIR;
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
+import static com.faceAI.demo.FaceImageConfig.CACHE_SEARCH_FACE_DIR;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +34,7 @@ import com.ai.face.faceSearch.search.SearchProcessBuilder;
 import com.ai.face.faceSearch.search.SearchProcessCallBack;
 import com.ai.face.faceSearch.utils.FaceSearchResult;
 import com.faceAI.demo.R;
-import com.faceAI.demo.base.BaseActivity;
+import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import com.faceAI.demo.databinding.ActivityFaceSearchBinding;
 
@@ -49,15 +49,20 @@ import java.util.List;
  * 4.  人脸图大于 300*300（人脸部分区域大于200*200）五官清晰无遮挡，图片不能有多人脸
  *
  * 怎么提高人脸搜索识别系统的准确度？https://mp.weixin.qq.com/s/G2dvFQraw-TAzDRFIgdobA
- *
+ * \n
  * 网盘分享的3000 张人脸图链接: https://pan.baidu.com/s/1RfzJlc-TMDb0lQMFKpA-tQ?pwd=Face 提取码: Face
  * 可复制工程目录 ./faceAILib/src/main/assert 下后在Demo 的人脸库管理页面一键导入模拟插入多张人脸图
+ *
+ * 摄像头管理源码开放了 {@link com.faceAI.demo.SysCamera.camera.MyCameraFragment}
+ * @author FaceAISDK.Service@gmail.com
  */
-public class FaceSearch1NActivity extends BaseActivity {
+
+public class FaceSearch1NActivity extends AbsBaseActivity {
     //如果设备在弱光环境没有补光灯，UI界面背景多一点白色的区域，利用屏幕的光作为补光
     private ActivityFaceSearchBinding binding;
-    private CameraXFragment cameraXFragment;
+    private CameraXFragment cameraXFragment; //可以使用开放的摄像头管理源码MyCameraFragment，自行管理摄像头
     private boolean enginePrepared=false;
+    private int cameraLensFacing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,14 +77,14 @@ public class FaceSearch1NActivity extends BaseActivity {
         });
 
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE);
-        int cameraLensFacing = sharedPref.getInt( FRONT_BACK_CAMERA_FLAG, 0);
+        cameraLensFacing = sharedPref.getInt( FRONT_BACK_CAMERA_FLAG, 0);
         int degree = sharedPref.getInt( SYSTEM_CAMERA_DEGREE, getWindowManager().getDefaultDisplay().getRotation());
 
         //1. 摄像头相关参数配置
         //画面旋转方向 默认屏幕方向Display.getRotation()和Surface.ROTATION_0,ROTATION_90,ROTATION_180,ROTATION_270
         CameraXBuilder cameraXBuilder = new CameraXBuilder.Builder()
                 .setCameraLensFacing(cameraLensFacing) //前后摄像头
-                .setLinearZoom(0f) //焦距范围[0f,1.0f]，参考 {@link CameraControl#setLinearZoom(float)}
+                .setLinearZoom(0f)     //焦距范围[0f,1.0f]，参考 {@link CameraControl#setLinearZoom(float)}
                 .setRotation(degree)   //画面旋转方向
                 .setSize(CameraXFragment.SIZE.DEFAULT) //相机的分辨率大小。分辨率越大画面中人像很小也能检测但是会更消耗CPU
                 .create();
@@ -90,7 +95,6 @@ public class FaceSearch1NActivity extends BaseActivity {
                 .commit();
 
         initFaceSearchParam();
-
     }
 
 
@@ -106,10 +110,15 @@ public class FaceSearch1NActivity extends BaseActivity {
                 .setThreshold(0.88f) //阈值范围限 [0.85 , 0.95] 识别可信度，阈值高摄像头成像品质宽动态值也要高
                 .setCallBackAllMatch(true) //默认是false,是否返回所有的大于设置阈值的搜索结果
                 .setFaceLibFolder(CACHE_SEARCH_FACE_DIR)  //内部存储目录中保存N 个图片库的目录
-                .setImageFlipped(cameraXFragment.getCameraLensFacing() == CameraSelector.LENS_FACING_FRONT) //手机的前置摄像头imageProxy 拿到的图可能左右翻转
+                .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT) //手机的前置摄像头imageProxy左右翻转影响人脸框
                 .setProcessCallBack(new SearchProcessCallBack() {
 
-                    // 得分最高最相似的人脸搜索识别结果
+                    /**
+                     * 最相似的人脸搜索识别结果，得分最高
+                     * @param faceID  人脸ID
+                     * @param score   相似度值
+                     * @param bitmap  场景图，可以用来做使用记录log
+                     */
                     @Override
                     public void onMostSimilar(String faceID, float score, Bitmap bitmap) {
                         Bitmap mostSimilarBmp = BitmapFactory.decodeFile(CACHE_SEARCH_FACE_DIR + faceID);
@@ -119,7 +128,7 @@ public class FaceSearch1NActivity extends BaseActivity {
                     }
 
                     /**
-                     * 匹配到的大于 Threshold的所有结果，如有多个很相似的人场景允许的话可以弹框让用户选择
+                     * 匹配到的大于设置Threshold的所有结果，搜索识别到多个很相似的人场景允许的话可以弹框让用户选择
                      * 但还是强烈建议使用高品质摄像头，录入高品质人脸
                      * SearchProcessBuilder setCallBackAllMatch(true) onFaceMatched才会回调
                      */
@@ -127,22 +136,22 @@ public class FaceSearch1NActivity extends BaseActivity {
                     public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap) {
                         //已经按照降序排列，可以弹出一个列表框
                         Log.d("onFaceMatched","符合设定阈值的结果: "+matchedResults.toString());
-
                     }
 
                     /**
                      * 检测到人脸的位置信息，画框用
-                     * @param result
                      */
                     @Override
                     public void onFaceDetected(List<FaceSearchResult> result) {
                         //画框UI代码完全开放，用户可以根据情况自行改造
                         binding.graphicOverlay.drawRect(result, cameraXFragment);
                     }
+
                     @Override
                     public void onProcessTips(int i) {
                         showFaceSearchPrecessTips(i);
                     }
+
                     @Override
                     public void onLog(String log) {
                         binding.tips.setText(log);
@@ -160,7 +169,7 @@ public class FaceSearch1NActivity extends BaseActivity {
             //设备硬件可以加个红外检测有人靠近再启动人脸搜索检索服务，不然机器一直工作发热性能下降老化快
             if (!isDestroyed() && !isFinishing()&&enginePrepared) {
                 //runSearch() 方法第二个参数是指圆形人脸框到屏幕边距，有助于加快裁剪图像
-                FaceSearchEngine.Companion.getInstance().runSearch(imageProxy, 0);
+                FaceSearchEngine.Companion.getInstance().runSearchWithImageProxy(imageProxy, 0);
             }
         });
 
@@ -244,12 +253,11 @@ public class FaceSearch1NActivity extends BaseActivity {
             default:
                 binding.searchTips.setText("回调提示：" + code);
                 break;
-
         }
     }
 
     /**
-     * 销毁，停止人脸搜索
+     * 停止人脸搜索，释放资源
      */
     @Override
     protected void onDestroy() {

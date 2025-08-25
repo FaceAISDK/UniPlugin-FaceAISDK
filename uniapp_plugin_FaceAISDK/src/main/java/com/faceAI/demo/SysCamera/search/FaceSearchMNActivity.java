@@ -10,9 +10,9 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCHING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERROR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.TOO_MUCH_FACE;
-import static com.faceAI.demo.FaceAIConfig.CACHE_SEARCH_FACE_DIR;
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
+import static com.faceAI.demo.FaceImageConfig.CACHE_SEARCH_FACE_DIR;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +29,7 @@ import com.ai.face.faceSearch.search.SearchProcessBuilder;
 import com.ai.face.faceSearch.search.SearchProcessCallBack;
 import com.ai.face.faceSearch.utils.FaceSearchResult;
 import com.faceAI.demo.R;
-import com.faceAI.demo.base.BaseActivity;
+import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.databinding.ActivityFaceSearchMnBinding;
 
 import java.util.List;
@@ -40,8 +40,9 @@ import java.util.List;
  * 电脑上打开MN_face_search_test.jpg 手机摄像头对着图片就可以体验多人搜索
  *
  * 本功能要求设备硬件配置高，摄像头品质好。可以拿当前的各品牌手机旗舰机测试验证
+ * @author FaceAISDK.Service@gmail.com
  */
-public class FaceSearchMNActivity extends BaseActivity {
+public class FaceSearchMNActivity extends AbsBaseActivity {
     //如果设备没有补光灯，UI界面背景多一点白色的区域，利用屏幕的光作为补光
     private ActivityFaceSearchMnBinding binding;
 
@@ -80,7 +81,7 @@ public class FaceSearchMNActivity extends BaseActivity {
             //可以加个红外检测之类的，有人靠近再启动人脸搜索检索服务，不然机器性能下降机器老化快
             if (!isDestroyed() && !isFinishing()) {
                 //MN 人脸检索，第二个参数0 画面识别区域就不裁剪了
-                FaceSearchEngine.Companion.getInstance().runSearch(imageProxy, 0);
+                FaceSearchEngine.Companion.getInstance().runSearchWithImageProxy(imageProxy, 0);
             }
         });
 
@@ -90,9 +91,8 @@ public class FaceSearchMNActivity extends BaseActivity {
                 .setThreshold(0.85f)            //识别成功阈值设置，范围仅限 0.85-0.95！默认0.85
                 .setFaceLibFolder(CACHE_SEARCH_FACE_DIR)  //内部存储目录中保存N 个图片库的目录
                 .setSearchType(SearchProcessBuilder.SearchType.N_SEARCH_M) //1:N 搜索
-                .setImageFlipped(cameraLensFacing == CameraSelector.LENS_FACING_FRONT) //手机的前置摄像头imageProxy 拿到的图可能左右翻转
+                .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT) //手机的前置摄像头imageProxy左右翻转影响人脸框
                 .setProcessCallBack(new SearchProcessCallBack() {
-
 
                     /**
                      * 检测到人脸的位置信息，画框用.MN 人脸搜索人脸检测，人脸搜索识别结果都在这个回调里面

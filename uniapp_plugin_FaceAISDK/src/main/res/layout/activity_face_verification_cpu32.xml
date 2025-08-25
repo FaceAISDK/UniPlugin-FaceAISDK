@@ -37,6 +37,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/base_face"
+        android:layout_width="30dp"
+        android:layout_height="28dp"
+        app:layout_constraintStart_toEndOf="@+id/back"
+        app:layout_constraintBottom_toBottomOf="@+id/back"
+        app:layout_constraintTop_toTopOf="@+id/back" />
+
     <TextView
         android:id="@+id/tips_view"
         android:layout_width="wrap_content"
@@ -47,14 +55,15 @@
         android:paddingRight="10dp"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:layout_marginTop="6dp"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:layout_marginTop="15dp"
         android:text="@string/keep_face_visible"
         android:textColor="@color/face_lib_main_color"
+        android:textSize="17sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/back" />
+        app:layout_constraintTop_toBottomOf="@+id/base_face" />
+
 
     <!-- UI 设计仅供参考 -->
     <TextView
@@ -71,6 +80,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tips_view" />
 
+
+
+
+    <Button
+        android:id="@+id/start_verify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="33dp"
+        android:padding="5dp"
+        android:textColor="@color/red"
+        android:text="开始识别"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toTopOf="@+id/silent_Score"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+
     <TextView
         android:id="@+id/silent_Score"
         android:layout_width="wrap_content"
@@ -82,6 +108,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
