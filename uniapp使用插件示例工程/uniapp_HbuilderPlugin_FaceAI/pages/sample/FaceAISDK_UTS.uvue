@@ -1,7 +1,6 @@
 <template>
 	<view>
-		<button @tap="getStringTest"style="font-size: 20rpx;">请自行管理相机权限,UVC协议摄像头需成像清晰宽动态大于100Db</button>
-		<button @tap="addFaceImageDemo">录入人脸照片</button>
+		<button @tap="addFaceImageDemo">UTS录入人脸照片</button>
 		<button @tap="checkFaceExistDemo">检测人脸是否存在</button>
 		<button @tap="faceVerifyDemo">人脸识别活体检测</button>
 		<button @tap="insertFaceDemo">同步人脸照片</button>

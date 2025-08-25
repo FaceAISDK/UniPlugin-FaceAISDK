@@ -1,7 +1,7 @@
 <template>
 	<view class="uni-container">
 		<view class="uni-hello-text">
-			<text class="hello-text">uni原生插件_FaceAISDK（请自行管理相机权限）</text>
+			<text class="hello-text">uni原生插件_FaceAISDK（仅uniApp,UTS插件见主页说明）</text>
 		</view>
 		<view class="uni-panel" v-for="(item, index) in list" :key="item.id">
 			<view class="uni-panel-h" :class="item.open ? 'uni-panel-h-on' : ''" @click="triggerCollapse(index)">
