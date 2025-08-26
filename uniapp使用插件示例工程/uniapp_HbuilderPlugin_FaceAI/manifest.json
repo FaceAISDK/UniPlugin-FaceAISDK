@@ -2,8 +2,8 @@
     "name" : "自定义底座Uni",
     "appid" : "__UNI__D0091F1",
     "description" : "自定义底座UniApp FaceAI插件，调试包有提示，正式版没有",
-    "versionName" : "1.1.6",
-    "versionCode" : 16,
+    "versionName" : "1.1.7",
+    "versionCode" : 17,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
