@@ -17,6 +17,7 @@ import com.faceAI.demo.FaceAINaviActivity;
 import com.alibaba.fastjson.JSONObject;
 import com.faceAI.demo.SysCamera.verify.FaceVerificationActivity;
 import com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity;
+import com.faceAI.demo.SysCamera.verify.LivenessDetectActivity;
 import com.faceAI.demo.base.utils.BitmapUtils;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -35,9 +36,10 @@ import io.dcloud.feature.uniapp.common.UniModule;
  */
 public class FaceAISDKModule extends UniModule {
     private String TAG = "FaceAISDKModule";
+    private static int REQUEST_CODE_FOR_FACE_LIVENESS= 10085; //去人脸识别
     private static int REQUEST_CODE_FOR_FACE_VERIFY = 10086; //去人脸识别
     private static int REQUEST_CODE_FOR_ADD_FACE = 10087; //去添加人脸
-    private UniJSCallback faceVerifyCallBack,addFaceCallBack;
+    private UniJSCallback faceVerifyCallBack,addFaceCallBack,livenessCallback;
 
 
     public FaceAISDKModule() {
@@ -90,13 +92,29 @@ public class FaceAISDKModule extends UniModule {
                     jsonObject.put("faceID", faceID);
 
                     String faceFilePath = CACHE_BASE_FACE_DIR + faceID;
-//                    Bitmap baseBitmap = BitmapFactory.decodeFile(faceFilePath);
                     //对应的Face ID 人脸Bitmap 返回
                     jsonObject.put("faceBase64", BitmapUtils.bitmapToBase64(faceFilePath));
                     addFaceCallBack.invoke(jsonObject);
                 }
             }
 
+        }else if(requestCode == REQUEST_CODE_FOR_FACE_LIVENESS) {
+            if (resultCode == Activity.RESULT_OK) {
+                /**
+                 * 人脸图返回去
+                 */
+                if (livenessCallback != null) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("code", data.getIntExtra("code", 0));
+                    jsonObject.put("msg", data.getStringExtra("msg"));
+                    jsonObject.put("silentLivenessScore",data.getFloatExtra("silentLivenessScore",0));
+                    //把Bitmap 返回
+                    String faceFilePath = CACHE_BASE_FACE_DIR + "liveBitmap";
+                    //活体检测通过的人脸Bitmap 返回
+                    jsonObject.put("faceBase64", BitmapUtils.bitmapToBase64(faceFilePath));
+                    livenessCallback.invoke(jsonObject);
+                }
+            }
         }else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -230,6 +248,29 @@ public class FaceAISDKModule extends UniModule {
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
         }
     }
+
+
+    /**
+     * 仅活体检测
+     *
+     * @param jsonObject
+     * @param callback
+     */
+    @UniJSMethod (uiThread = true)
+    public void livenessVerify(JSONObject jsonObject, UniJSCallback callback) {
+        if(mUniSDKInstance != null && mUniSDKInstance.getContext() instanceof Activity) {
+
+            livenessCallback=callback;
+            FaceImageConfig.init(mUniSDKInstance.getContext());
+
+            Intent intent=new Intent(mUniSDKInstance.getContext(), LivenessDetectActivity.class);
+//            intent.putExtra(USER_FACE_ID_KEY,jsonObject.getString("faceID"));
+
+            ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_LIVENESS);
+        }
+    }
+
+
 
 
     /**

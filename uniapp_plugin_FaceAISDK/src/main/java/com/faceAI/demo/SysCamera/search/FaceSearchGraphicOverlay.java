@@ -13,7 +13,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ai.face.base.view.CameraXFragment;
 import com.ai.face.faceSearch.utils.FaceSearchResult;
 
 import java.util.ArrayList;
@@ -67,14 +66,6 @@ public class FaceSearchGraphicOverlay extends View {
     }
 
 
-    public void drawRect(List<FaceSearchResult> rectLabels, float scaleX, float scaleY) {
-        this.rectFList = adjustUVCBoundingRect(rectLabels);
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        postInvalidate();
-        requestLayout();
-    }
-
 
     public void clearRect() {
         this.rectFList.clear();
@@ -83,9 +74,10 @@ public class FaceSearchGraphicOverlay extends View {
     }
 
 
-    public void drawRect(List<FaceSearchResult> rectLabels, CameraXFragment cameraXFragment) {
-        this.scaleX = cameraXFragment.getScaleX();
-        this.scaleY = cameraXFragment.getScaleY();
+
+    public void drawRect(List<FaceSearchResult> rectLabels, float scaleX,float scaleY) {
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
         this.rectFList = adjustBoundingRect(rectLabels);
         postInvalidate();
         requestLayout();
@@ -114,27 +106,5 @@ public class FaceSearchGraphicOverlay extends View {
         return labels;
     }
 
-
-    /**
-     * USB带红外双目摄像头（两个摄像头，camera.getUsbDevice().getProductName()监听输出名字），并获取预览数据进一步处理
-     *
-     * @param rectLabels
-     * @return
-     */
-    private List<FaceSearchResult> adjustUVCBoundingRect(List<FaceSearchResult> rectLabels) {
-        List<FaceSearchResult> labels = new ArrayList<>();
-        // 画框处理后期再优化
-        for (FaceSearchResult rectLabel : rectLabels) {
-            Rect rect = new Rect(
-                    translateX(rectLabel.getRect().left) ,
-                    translateY(rectLabel.getRect().top),
-                    translateX(rectLabel.getRect().right),
-                    translateY(rectLabel.getRect().bottom)
-            );
-
-            labels.add(new FaceSearchResult(rect, rectLabel.getFaceName(), rectLabel.getFaceScore()));
-        }
-        return labels;
-    }
 
 }

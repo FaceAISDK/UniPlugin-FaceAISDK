@@ -122,7 +122,7 @@ public class FaceVerifyWelcomeActivity extends AbsAddFaceFromAlbumActivity {
             @Override
             public boolean onItemLongClick(@NonNull BaseQuickAdapter<?, ?> adapter, @NonNull View view, int i) {
                 startActivity(
-                        new Intent(getBaseContext(), FaceVerification32CPUTestActivityAbs.class)
+                        new Intent(getBaseContext(), FaceVerification32CPUTestActivity.class)
                                 .putExtra(USER_FACE_ID_KEY, faceImageList.get(i).name));
                 return false;
             }

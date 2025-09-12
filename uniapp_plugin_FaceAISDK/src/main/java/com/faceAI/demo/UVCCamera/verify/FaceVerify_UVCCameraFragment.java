@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.ai.face.base.baseImage.FaceEmbedding;
-import com.ai.face.base.utils.BrightnessUtil;
 import com.ai.face.faceVerify.verify.FaceProcessBuilder;
 import com.ai.face.faceVerify.verify.FaceVerifyUtils;
 import com.ai.face.faceVerify.verify.ProcessCallBack;
@@ -23,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.faceAI.demo.FaceImageConfig;
 import com.faceAI.demo.R;
+import com.faceAI.demo.base.utils.BrightnessUtil;
 import com.faceAI.demo.base.utils.VoicePlayer;
 
 
@@ -53,7 +53,7 @@ public class FaceVerify_UVCCameraFragment extends AbsFaceVerify_UVCCameraFragmen
         tipsTextView = binding.tipsView;
         secondTipsTextView = binding.secondTipsView;
         binding.back.setOnClickListener(v -> requireActivity().finish());
-        BrightnessUtil.setBrightness(requireActivity(), 1.0f);  //高亮白色背景屏幕光可以当补光灯
+        BrightnessUtil.setBrightness(requireActivity(), 0.9f);  //高亮白色背景屏幕光可以当补光灯
     }
 
     /**
@@ -288,6 +288,7 @@ public class FaceVerify_UVCCameraFragment extends AbsFaceVerify_UVCCameraFragmen
             });
         }
     }
+
 
     @Override
     public void onDestroyView() {

@@ -19,7 +19,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.ai.face.base.utils.BrightnessUtil;
 import com.ai.face.faceSearch.search.FaceSearchEngine;
 import com.ai.face.faceSearch.search.SearchProcessBuilder;
 import com.ai.face.faceSearch.search.SearchProcessCallBack;
@@ -27,6 +26,7 @@ import com.ai.face.faceSearch.utils.FaceSearchResult;
 import com.ai.face.faceVerify.verify.FaceVerifyUtils;
 import com.faceAI.demo.R;
 import com.faceAI.demo.SysCamera.search.ImageToast;
+import com.faceAI.demo.base.utils.BrightnessUtil;
 import com.faceAI.demo.base.utils.VoicePlayer;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public class FaceSearch_UVCCameraFragment extends AbsFaceSearch_UVCCameraFragmen
     public void initViews() {
         super.initViews();
         binding.close.setOnClickListener(v -> requireActivity().finish());
-        BrightnessUtil.setBrightness(requireActivity(), 1.0f);  //高亮白色背景屏幕光可以当补光灯
+        BrightnessUtil.setBrightness(requireActivity(), 0.9f);  //高亮白色背景屏幕光可以当补光灯
     }
 
     @Override

@@ -10,8 +10,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,8 +44,7 @@ import org.jetbrains.annotations.NotNull;
  * 32 位CPU人脸识别耗时测试，相机管理源码MyCameraFragment暴露出来了，方便定制开发
  * @author FaceAISDK.Service@gmail.com
  */
-public class FaceVerification32CPUTestActivityAbs extends AbsBaseActivity {
-
+public class FaceVerification32CPUTestActivity extends AbsBaseActivity {
     private final float silentLivenessThreshold = 0.81f; //静默活体分数通过的阈值,摄像头成像能力弱的自行调低
 
     public static final String USER_FACE_ID_KEY = "USER_FACE_ID_KEY";   //1:1 face verify ID KEY
@@ -159,7 +156,7 @@ public class FaceVerification32CPUTestActivityAbs extends AbsBaseActivity {
                 .setFaceEmbedding(faceEmbedding)        //1:1 人脸识别对比的底片人脸特征向量，以前是传bitmap，2025 08 18现在优化
                 .setCameraType(FaceProcessBuilder.CameraType.SYS_CAMERA)
                 .setCompareDurationTime(3500)           //人脸识别对比时间[3000,5000] 毫秒。相似度很低会持续设置的时间
-                .setLivenessType(MotionLivenessType.SILENT_MOTION) //活体检测可以静默&动作活体组合，静默活体效果和摄像头成像能力有关(宽动态>105Db)
+                .setLivenessType(MotionLivenessType.SILENT) //活体检测可以静默&动作活体组合，静默活体效果和摄像头成像能力有关(宽动态>105Db)
                 .setLivenessDetectionMode(MotionLivenessMode.FAST) //硬件配置低用FAST动作活体模式，否则用精确模式
                 .setMotionLivenessStepSize(1)           //随机动作活体的步骤个数[1-2]，SILENT_MOTION和MOTION 才有效
                 .setMotionLivenessTimeOut(10)           //动作活体检测，支持设置超时时间 [9,22] 秒 。API 名字0410 修改
@@ -207,18 +204,15 @@ public class FaceVerification32CPUTestActivityAbs extends AbsBaseActivity {
             //防止在识别过程中关闭页面导致Crash
             if (!isDestroyed() && !isFinishing()&&startFaceVerify) {
 
-                if(startTime == 0){
+                if(startTime == 0){ //从人脸正对摄像头，点击开始按钮计算耗时时间
                     startTime =System.currentTimeMillis();
-                    Log.e("verifyTime","开始送入数据： "+ startTime);
+                    Log.d("verifyTime","开始送入数据： "+ startTime);
                 }
 
-                //2.第二个参数是指圆形人脸框到屏幕边距，可加快裁剪图像和指定识别区域，设太大会裁剪掉人脸区域
+                //开始人脸识别
                 faceVerifyUtils.goVerifyWithImageProxy(imageProxy, faceCoverView.getMargin());
-
             }
         });
-
-
     }
 
     /**
@@ -236,7 +230,7 @@ public class FaceVerification32CPUTestActivityAbs extends AbsBaseActivity {
             //1.静默活体分数判断
             if (silentLivenessScore < silentLivenessThreshold) {
                 tipsTextView.setText(R.string.silent_anti_spoofing_error);
-                new AlertDialog.Builder(FaceVerification32CPUTestActivityAbs.this)
+                new AlertDialog.Builder(FaceVerification32CPUTestActivity.this)
                         .setMessage(R.string.silent_anti_spoofing_error)
                         .setCancelable(false)
                         .setPositiveButton(R.string.confirm, (dialogInterface, i) -> {
@@ -246,15 +240,12 @@ public class FaceVerification32CPUTestActivityAbs extends AbsBaseActivity {
             } else if (isVerifyMatched) {
                 //2.和底片同一人
                 VoicePlayer.getInstance().addPayList(R.raw.verify_success);
+                finishFaceVerify(1, "人脸识别成功");
                 new ImageToast().show(getApplicationContext(), bitmap, "识别成功"+similarity);
-
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    finishFaceVerify(1, "人脸识别成功");
-                }, 1200);
             } else {
                 //3.和底片不是同一个人
                 VoicePlayer.getInstance().addPayList(R.raw.verify_failed);
-                new AlertDialog.Builder(FaceVerification32CPUTestActivityAbs.this)
+                new AlertDialog.Builder(FaceVerification32CPUTestActivity.this)
                         .setTitle("识别失败，相似度 " + similarity)
                         .setMessage(R.string.face_verify_failed)
                         .setCancelable(false)

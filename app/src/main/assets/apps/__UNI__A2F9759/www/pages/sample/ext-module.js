@@ -299,6 +299,22 @@
 						}))
 					},
 
+					livenessVerify: function() {
+						n.livenessVerify({
+                                         "faceID": "yourFaceID_uniApp",
+                                          "threshold": 0.85,
+                                          "silentThreshold": 0.85,
+                                          "faceLivenessType": 0,
+                                          "motionStepSize": 1,
+                                          "verifyTimeOut": 16
+                                       }, (function(t) {
+							i.toast({
+								message: t,
+								duration: 1.5
+							})
+						}))
+					},
+
 					isFaceExist: function() {
 						n.isFaceExist({
                                          "faceID": "yourFaceID_uniApp"
@@ -364,6 +380,15 @@
 					click: this.faceVerify
 				}
 			}, [this._v("人脸识别")]),
+
+			 e("button", {
+				attrs: {
+					type: "primary"
+				},
+				on: {
+					click: this.livenessVerify
+				}
+			}, [this._v("仅活体检测")]),
 
 			 e("button", {
 				attrs: {

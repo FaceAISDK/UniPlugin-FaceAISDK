@@ -2,7 +2,6 @@ package com.faceAI.demo
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -16,7 +15,6 @@ import com.faceAI.demo.SysCamera.verify.FaceVerifyWelcomeActivity
 import com.faceAI.demo.SysCamera.verify.LivenessDetectActivity
 import com.faceAI.demo.SysCamera.verify.TwoFaceImageVerifyActivity
 import com.faceAI.demo.databinding.ActivityFaceAiNaviBinding
-import com.tencent.bugly.crashreport.CrashReport
 
 
 /**
@@ -31,10 +29,7 @@ class FaceAINaviActivity : AppCompatActivity() {
         viewBinding = ActivityFaceAiNaviBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        // 收集Crash,ANR 运行日志
-        if(!FaceImageConfig.isDebugMode(baseContext)){
-            CrashReport.initCrashReport(application, "36fade54d8", true)
-        }
+
 
         //人脸图保存路径初始化
         FaceImageConfig.init(this)
@@ -42,9 +37,9 @@ class FaceAINaviActivity : AppCompatActivity() {
         //分享
         viewBinding.shareLayout.setOnClickListener {
             val intent = Intent()
-            intent.setAction(Intent.ACTION_SEND)
+            intent.action = Intent.ACTION_SEND
             intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_faceai_sdk_content))
-            intent.setType("text/plain")
+            intent.type = "text/plain"
             startActivity(intent)
         }
 
@@ -82,7 +77,6 @@ class FaceAINaviActivity : AppCompatActivity() {
         // 长按打印Log 信息
         viewBinding.systemInfo.setOnLongClickListener {
             FaceVerifyUtils().printInfo(this@FaceAINaviActivity);
-            CrashReport.testJavaCrash();
             return@setOnLongClickListener true
         }
 
@@ -111,22 +105,9 @@ class FaceAINaviActivity : AppCompatActivity() {
         viewBinding.twoFaceVerify.setOnClickListener {
             startActivity(Intent(this@FaceAINaviActivity, TwoFaceImageVerifyActivity::class.java))
         }
-        viewBinding.appVersion.text = "SDK 版本： v"+getVersionName(baseContext)
 
         showTipsDialog()
     }
-
-
-     fun getVersionName(context: Context): String? {
-        try {
-            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            return pInfo.versionName
-        } catch (e: NameNotFoundException) {
-            e.printStackTrace()
-            return null
-        }
-    }
-
 
 
     /**
@@ -157,7 +138,7 @@ class FaceAINaviActivity : AppCompatActivity() {
     private fun showTipsDialog() {
         val sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE)
         val showTime = sharedPref.getLong("showFaceAISDKTips", 0)
-        if (System.currentTimeMillis() - showTime > 11 * 60 * 60 * 1000) {
+        if (System.currentTimeMillis() - showTime > 31 * 60 * 60 * 1000) {
 
             val builder = AlertDialog.Builder(this)
             val dialog = builder.create()

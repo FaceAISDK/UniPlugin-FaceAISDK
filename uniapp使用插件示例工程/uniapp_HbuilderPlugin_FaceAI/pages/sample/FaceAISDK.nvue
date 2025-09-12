@@ -1,7 +1,8 @@
 <template>
 	<div>
 		<button type="primary" @click="addFaceImage">添加人脸图</button>
-		<button type="primary" @click="faceVerify">人脸识别</button>
+		<button type="primary" @click="faceVerify">人脸识别+活体检测</button>
+		<button type="primary" @click="livenessVerify">仅活体检测</button>
 		<button type="primary" @click="isFaceExist">检查人脸是否存在</button>
         <button type="primary" @click="insertFace2SDK">同步人脸Base64到SDK</button>
 		<button type="primary" @click="gotoAboutFaceAIPage">体验完整FaceAISDK原生功能</button>
@@ -12,7 +13,7 @@
 </template>
 
 <script>
-	// 获取 module 这样写对吗
+	// 人脸识别插件
 	var faceAIModule = uni.requireNativePlugin("FaceAISDKModule")
 	const modal = uni.requireNativePlugin('modal');
 	export default {
@@ -40,7 +41,7 @@
 			},
 
 			faceVerify() {
-				// 人脸识别
+				// 人脸识别+活体检测
 				faceAIModule.faceVerify(
                                         {
                                          "faceID": "yourFaceID_uniApp",
@@ -50,6 +51,25 @@
                                           "motionStepSize": 1,
                                           "verifyTimeOut": 16
                                        } ,
+					(ret) => {
+						modal.toast({
+							message: ret,
+							duration: 2.0
+						});
+					})
+			},
+			
+			livenessVerify() {
+				// 仅仅活体检测
+				faceAIModule.livenessVerify(
+			                            {
+			                             "faceID": "yourFaceID_uniApp",
+			                              "threshold": 0.85,
+			                              "silentThreshold": 0.85,
+			                              "faceLivenessType": 0,
+			                              "motionStepSize": 1,
+			                              "verifyTimeOut": 16
+			                           } ,
 					(ret) => {
 						modal.toast({
 							message: ret,
