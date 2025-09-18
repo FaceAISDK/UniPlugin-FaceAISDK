@@ -1,6 +1,7 @@
 package io.face.uniplugin;
 
 import static com.faceAI.demo.FaceImageConfig.CACHE_BASE_FACE_DIR;
+import static com.faceAI.demo.FaceImageConfig.CACHE_FACE_LOG_DIR;
 import static com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity.ADD_FACE_IMAGE_TYPE_KEY;
 import static com.faceAI.demo.SysCamera.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
 
@@ -91,9 +92,11 @@ public class FaceAISDKModule extends UniModule {
                     jsonObject.put("msg", data.getStringExtra("msg"));
                     jsonObject.put("faceID", faceID);
 
-                    String faceFilePath = CACHE_BASE_FACE_DIR + faceID;
-                    //对应的Face ID 人脸Bitmap 返回
+                    //把Bitmap 返回
+                    String faceFilePath = CACHE_FACE_LOG_DIR + "verifyBitmap";
+                    //人脸识别的场景Bitmap 返回
                     jsonObject.put("faceBase64", BitmapUtils.bitmapToBase64(faceFilePath));
+
                     addFaceCallBack.invoke(jsonObject);
                 }
             }
@@ -109,7 +112,7 @@ public class FaceAISDKModule extends UniModule {
                     jsonObject.put("msg", data.getStringExtra("msg"));
                     jsonObject.put("silentLivenessScore",data.getFloatExtra("silentLivenessScore",0));
                     //把Bitmap 返回
-                    String faceFilePath = CACHE_BASE_FACE_DIR + "liveBitmap";
+                    String faceFilePath = CACHE_FACE_LOG_DIR + "liveBitmap";
                     //活体检测通过的人脸Bitmap 返回
                     jsonObject.put("faceBase64", BitmapUtils.bitmapToBase64(faceFilePath));
                     livenessCallback.invoke(jsonObject);
@@ -245,6 +248,12 @@ public class FaceAISDKModule extends UniModule {
 
             Intent intent=new Intent(mUniSDKInstance.getContext(), FaceVerificationActivity.class);
             intent.putExtra(USER_FACE_ID_KEY,jsonObject.getString("faceID"));
+            intent.putExtra(FaceVerificationActivity.THRESHOLD_KEY,jsonObject.getIntValue("threshold"));
+
+            intent.putExtra(FaceVerificationActivity.FACE_LIVENESS_TYPE,jsonObject.getIntValue("faceLivenessType"));
+            intent.putExtra(FaceVerificationActivity.MOTION_STEP_SIZE,jsonObject.getIntValue("motionStepSize"));
+            intent.putExtra(FaceVerificationActivity.MOTION_TIMEOUT,jsonObject.getIntValue("verifyTimeOut"));
+            intent.putExtra(FaceVerificationActivity.SILENT_THRESHOLD_KEY,jsonObject.getIntValue("silentThreshold"));
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
         }
     }
@@ -264,13 +273,14 @@ public class FaceAISDKModule extends UniModule {
             FaceImageConfig.init(mUniSDKInstance.getContext());
 
             Intent intent=new Intent(mUniSDKInstance.getContext(), LivenessDetectActivity.class);
-//            intent.putExtra(USER_FACE_ID_KEY,jsonObject.getString("faceID"));
+            intent.putExtra(LivenessDetectActivity.FACE_LIVENESS_TYPE,jsonObject.getIntValue("faceLivenessType"));
+            intent.putExtra(LivenessDetectActivity.MOTION_STEP_SIZE,jsonObject.getIntValue("motionStepSize"));
+            intent.putExtra(LivenessDetectActivity.MOTION_TIMEOUT,jsonObject.getIntValue("verifyTimeOut"));
+            intent.putExtra(LivenessDetectActivity.SILENT_THRESHOLD_KEY,jsonObject.getIntValue("silentThreshold"));
 
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_LIVENESS);
         }
     }
-
-
 
 
     /**

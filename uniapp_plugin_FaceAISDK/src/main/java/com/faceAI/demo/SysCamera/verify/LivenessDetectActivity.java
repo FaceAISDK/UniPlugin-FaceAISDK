@@ -2,7 +2,7 @@ package com.faceAI.demo.SysCamera.verify;
 
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
-import static com.faceAI.demo.FaceImageConfig.CACHE_BASE_FACE_DIR;
+import static com.faceAI.demo.FaceImageConfig.CACHE_FACE_LOG_DIR;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,17 +14,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.ai.face.base.view.CameraXFragment;
 import com.ai.face.base.view.camera.CameraXBuilder;
 import com.ai.face.faceVerify.verify.FaceProcessBuilder;
 import com.ai.face.faceVerify.verify.FaceVerifyUtils;
 import com.ai.face.faceVerify.verify.ProcessCallBack;
 import com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM;
 import com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM;
+import com.ai.face.faceVerify.verify.liveness.FaceLivenessType;
 import com.ai.face.faceVerify.verify.liveness.MotionLivenessMode;
-import com.ai.face.faceVerify.verify.liveness.MotionLivenessType;
 import com.faceAI.demo.FaceImageConfig;
 import com.faceAI.demo.R;
+import com.faceAI.demo.SysCamera.camera.MyCameraXFragment;
 import com.faceAI.demo.SysCamera.search.ImageToast;
 import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.BitmapUtils;
@@ -35,7 +35,7 @@ import com.faceAI.demo.base.view.DemoFaceCoverView;
  * 活体检测 SDK 接入演示Demo 代码.
  * 使用系统相机怎么活体检测，包含动作活体，静默活体（静默需要摄像头成像清晰，宽动态大于105Db）
  *
- * 摄像头管理源码开放了 {@link com.faceAI.demo.SysCamera.camera.MyCameraFragment}
+ * 摄像头管理源码开放了 {@link MyCameraXFragment}
  * @author FaceAISDK.Service@gmail.com
  */
 public class LivenessDetectActivity extends AbsBaseActivity {
@@ -43,8 +43,17 @@ public class LivenessDetectActivity extends AbsBaseActivity {
     private DemoFaceCoverView faceCoverView;
     private final FaceVerifyUtils faceVerifyUtils = new FaceVerifyUtils();
 
-    private CameraXFragment cameraXFragment;
-    private final float silentLivenessPassScore = 0.8f; //静默活体分数通过的阈值
+    private MyCameraXFragment cameraXFragment;
+
+    public static final String SILENT_THRESHOLD_KEY = "SILENT_THRESHOLD_KEY";   //RGB 静默活体KEY
+    public static final String FACE_LIVENESS_TYPE = "FACE_LIVENESS_TYPE";   //活体检测的类型
+    public static final String MOTION_STEP_SIZE = "MOTION_STEP_SIZE";   //动作活体的步骤数
+    public static final String MOTION_TIMEOUT = "MOTION_TIMEOUT";   //动作活体超时数据
+
+    private FaceLivenessType faceLivenessType = FaceLivenessType.SILENT_MOTION;//活体检测类型
+    private float silentLivenessThreshold = 0.85f; //静默活体分数通过的阈值,摄像头成像能力弱的自行调低
+    private int motionStepSize = 1; //动作活体的个数
+    private int motionTimeOut = 10; //动作超时秒
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +64,9 @@ public class LivenessDetectActivity extends AbsBaseActivity {
         tipsTextView = findViewById(R.id.tips_view);
         secondTipsTextView = findViewById(R.id.second_tips_view);
         faceCoverView = findViewById(R.id.face_cover);
-
         findViewById(R.id.back).setOnClickListener(v -> finishFaceVerify(0,"用户取消"));
+
+        getIntentParams();
 
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE);
         int cameraLensFacing = sharedPref.getInt( FRONT_BACK_CAMERA_FLAG, 0);
@@ -69,12 +79,50 @@ public class LivenessDetectActivity extends AbsBaseActivity {
                 .setRotation(degree)      //画面旋转方向
                 .create();
 
-        cameraXFragment = CameraXFragment.newInstance(cameraXBuilder);
+        cameraXFragment = MyCameraXFragment.newInstance(cameraXBuilder);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_camerax, cameraXFragment).commit();
 
 
         initFaceVerificationParam();
+    }
+
+
+    /**
+     * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
+     */
+    private void getIntentParams() {
+        Intent intent = getIntent(); // 获取发送过来的Intent对象
+        if (intent != null) {
+            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
+                silentLivenessThreshold = intent.getFloatExtra(SILENT_THRESHOLD_KEY, 0.85f);
+            }
+            if (intent.hasExtra(FACE_LIVENESS_TYPE)) {
+                int type = intent.getIntExtra(FACE_LIVENESS_TYPE, 3);
+                switch (type) {
+                    case 0:
+                        faceLivenessType = FaceLivenessType.NONE;
+                        break;
+                    case 1:
+                        faceLivenessType = FaceLivenessType.SILENT;
+                        break;
+                    case 2:
+                        faceLivenessType = FaceLivenessType.MOTION;
+                        break;
+                    default:
+                        faceLivenessType = FaceLivenessType.SILENT_MOTION;
+                }
+            }
+
+            if (intent.hasExtra(MOTION_STEP_SIZE)) {
+                motionStepSize = intent.getIntExtra(MOTION_STEP_SIZE, 2);
+            }
+            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
+                motionTimeOut = intent.getIntExtra(MOTION_TIMEOUT, 10);
+            }
+        } else {
+            // 数据不存在，执行其他操作
+        }
     }
 
 
@@ -86,11 +134,11 @@ public class LivenessDetectActivity extends AbsBaseActivity {
         //建议老的低配设备减少活体检测步骤
         FaceProcessBuilder faceProcessBuilder = new FaceProcessBuilder.Builder(LivenessDetectActivity.this)
                 .setLivenessOnly(true)
-                .setLivenessType(MotionLivenessType.SILENT_MOTION) //活体检测可以静默&动作活体组合，静默活体效果和摄像头成像能力有关(宽动态>105Db)
-                .setSilentLivenessThreshold(silentLivenessPassScore)  //静默活体阈值 [0.88,0.98]
+                .setLivenessType(faceLivenessType) //活体检测可以静默&动作活体组合，静默活体效果和摄像头成像能力有关(宽动态>105Db)
+                .setSilentLivenessThreshold(silentLivenessThreshold)  //静默活体阈值 [0.88,0.98]
+                .setMotionLivenessStepSize(motionStepSize)           //随机动作活体的步骤个数[1-2]，SILENT_MOTION和MOTION 才有效
+                .setMotionLivenessTimeOut(motionTimeOut)           //动作活体检测，支持设置超时时间 [9,22] 秒 。API 名字0410 修改
                 .setLivenessDetectionMode(MotionLivenessMode.FAST) //硬件配置低用FAST动作活体模式，否则用精确模式
-                .setMotionLivenessStepSize(2)           //随机动作活体的步骤个数[1-2]，SILENT_MOTION和MOTION 才有效
-                .setMotionLivenessTimeOut(12)           //动作活体检测，支持设置超时时间 [9,22] 秒 。API 名字0410 修改
 //                .setExceptMotionLivenessType(ALIVE_DETECT_TYPE_ENUM.SMILE) //动作活体去除微笑 或其他某一种
                 .setProcessCallBack(new ProcessCallBack() {
 
@@ -102,7 +150,7 @@ public class LivenessDetectActivity extends AbsBaseActivity {
                      */
                     @Override
                     public void onLivenessDetected(float silentLivenessValue, Bitmap bitmap) {
-                        BitmapUtils.saveBitmap(bitmap,CACHE_BASE_FACE_DIR,"liveBitmap");//给插件用
+                        BitmapUtils.saveBitmap(bitmap,CACHE_FACE_LOG_DIR,"liveBitmap");//给插件用
                         if(FaceImageConfig.isDebugMode(getBaseContext())){
                             runOnUiThread(() -> {
                                 scoreText.setText("RGB Live:"+silentLivenessValue);

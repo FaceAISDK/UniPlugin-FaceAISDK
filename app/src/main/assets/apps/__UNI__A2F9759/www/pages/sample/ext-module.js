@@ -288,7 +288,7 @@
                                          "faceID": "yourFaceID_uniApp",
                                           "threshold": 0.85,
                                           "silentThreshold": 0.85,
-                                          "faceLivenessType": 0,
+                                          "faceLivenessType": 3,
                                           "motionStepSize": 1,
                                           "verifyTimeOut": 16
                                        }, (function(t) {
@@ -301,12 +301,10 @@
 
 					livenessVerify: function() {
 						n.livenessVerify({
-                                         "faceID": "yourFaceID_uniApp",
-                                          "threshold": 0.85,
                                           "silentThreshold": 0.85,
-                                          "faceLivenessType": 0,
+                                          "faceLivenessType": 3,
                                           "motionStepSize": 1,
-                                          "verifyTimeOut": 16
+                                          "verifyTimeOut": 11
                                        }, (function(t) {
 							i.toast({
 								message: t,
@@ -408,8 +406,6 @@
 					click: this.insertFace2SDK
 				}
 			}, [this._v("同步远程人脸图Base64")]),
-
-
 
 			 e("button", {
 				attrs: {

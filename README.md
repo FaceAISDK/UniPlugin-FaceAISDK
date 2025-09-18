@@ -22,8 +22,9 @@ FaceAI App Android 体验包 https://www.pgyer.com/faceVerify （体验全程可
 我们封装了UniPlugin-FaceAISDK 插件，插件一期共提供4个方法接口
   - 1  isFaceExist(jsonObject, callback) 检测是否存在faceID 对应的人脸
   - 2  addFaceImage(jsonObject, callback) 调用SDK 录入人脸
-  - 3  faceVerify(jsonObject, callback) 人脸识别
+  - 3  faceVerify(jsonObject, callback) 人脸识别+活体检测
   - 4  insertFace2SDK(jsonObject, callback) 同步账号在服务器上的人脸到SDK
+  - 5  livenessVerify(jsonObject, callback) 仅仅活体检测
 
 插件的使用需要你熟悉Uni-App的开发的基础知识以及少量的原生插件集成经验，相关知识可以参考Uni-App官网
 注意 **调试包有相似度分数等提示，正式版没有**
@@ -62,7 +63,7 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
    "faceID": "yourFaceID_uniApp", //对应需要识别的人脸ID  
    "threshold": 0.85, //人脸识别相似度阈值  
    "silentThreshold": 0.85,//活体分数通过阈值  
-   "faceLivenessType": 0, //活体检测类型 //0 SILENT_MOTION; 1 MOTION; 2 SILENT; 3 NONE;  
+   "faceLivenessType": 0, //活体检测类型   //0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;  
    "motionStepSize": 1, //动作活体检测动作数量。比如2 表示需要用户做2个动作才能通过活体检测  
    "verifyTimeOut": 16 //活体检测超时时间 秒  
 }  
@@ -73,7 +74,7 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
    "code": "0 用户取消/失败,  1:录入完成",  
    "msg":"code 对应的提示",  
    "faceID": "录入人脸对应的face ID",  
-   "faceBase64":"人脸图像faceBase64转码"  
+   "faceBase64":"人脸场景图像faceBase64转码"  
 }  
 
 
@@ -85,11 +86,31 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
  "faceBase64": "图片Base64 编码String 后返回", //人脸识别相似度阈值
 }
 
-更多授权请联系：FaceAISDK.service@gmail.com
+## 5. livenessVerify(jsonObject, callback)
+调用SDK 录入人脸，SDK 会对人脸录入进行合规检查  
+**传入参数 jsonObject**  
+{
+"silentThreshold": 0.85,//活体分数通过阈值  
+"faceLivenessType": 0, //活体检测类型   //0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;  
+"motionStepSize": 1, //动作活体检测动作数量。比如2 表示需要用户做2个动作才能通过活体检测  
+"verifyTimeOut": 16 //活体检测超时时间 秒  
+}
 
 
+**返回参数 callback 会返回识别结果**   
+{  
+"code": "0 用户取消/失败,  1:录入完成",  
+"msg":"code 对应的提示",  
+"faceID": "录入人脸对应的face ID",  
+"faceBase64":"人脸场景图像faceBase64转码"  
+}
+
+
+更多定制授权请联系：FaceAISDK.service@gmail.com
 
 ## 故事的结尾
 
-由于本插件仅仅能在uniApp中使用，也无法再上架插件市场，我们后期将精力聚焦于开发能同时在uni-app x与uni-app使用的UTS版本插件上
+由于本插件仅仅能在uniApp（Android）中使用，也无法再上架插件市场，欢迎iOS大佬补全插件制作，iOS 原生工程：https://github.com/FaceAISDK/FaceAISDK_iOS
+  
+我们后期将精力聚焦于开发能同时在uni-app x与uni-app使用的UTS版本插件上，欢迎插件制作大佬一同完善
 **UTS重构版本 https://github.com/FaceAISDK/FaceAISDK_uniapp_UTS**

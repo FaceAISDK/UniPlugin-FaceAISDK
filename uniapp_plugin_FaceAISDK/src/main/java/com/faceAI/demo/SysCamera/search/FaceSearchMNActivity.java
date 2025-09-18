@@ -1,5 +1,7 @@
 package com.faceAI.demo.SysCamera.search;
 
+import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
+import static com.faceAI.demo.FaceImageConfig.CACHE_SEARCH_FACE_DIR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.EMGINE_INITING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_DIR_EMPTY;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_TOO_SMALL;
@@ -7,31 +9,25 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.MASK_DETECTION
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.NO_LIVE_FACE;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.NO_MATCHED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCHING;
-import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERROR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.TOO_MUCH_FACE;
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
-import static com.faceAI.demo.FaceImageConfig.CACHE_SEARCH_FACE_DIR;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import androidx.camera.core.CameraSelector;
-
 import com.ai.face.base.view.CameraXFragment;
 import com.ai.face.base.view.camera.CameraXBuilder;
 import com.ai.face.faceSearch.search.FaceSearchEngine;
 import com.ai.face.faceSearch.search.SearchProcessBuilder;
 import com.ai.face.faceSearch.search.SearchProcessCallBack;
 import com.ai.face.faceSearch.utils.FaceSearchResult;
-import com.faceAI.demo.R;
 import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.databinding.ActivityFaceSearchMnBinding;
-
+import com.faceAI.demo.R;
 import java.util.List;
 
 /**

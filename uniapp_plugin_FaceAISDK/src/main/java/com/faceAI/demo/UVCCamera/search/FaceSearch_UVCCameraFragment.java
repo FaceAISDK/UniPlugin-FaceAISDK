@@ -1,24 +1,22 @@
 package com.faceAI.demo.UVCCamera.search;
 
+import static com.ai.face.faceSearch.search.SearchProcessTipsCode.IR_LIVE_ERROR;
+import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
+import static com.faceAI.demo.FaceImageConfig.CACHE_SEARCH_FACE_DIR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.EMGINE_INITING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_DIR_EMPTY;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_SIZE_FIT;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_TOO_LARGE;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_TOO_SMALL;
-import static com.ai.face.faceSearch.search.SearchProcessTipsCode.IR_LIVE_ERROR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.MASK_DETECTION;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.NO_LIVE_FACE;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.NO_MATCHED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCHING;
-import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERROR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.TOO_MUCH_FACE;
-import static com.faceAI.demo.FaceImageConfig.CACHE_SEARCH_FACE_DIR;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-
 import com.ai.face.faceSearch.search.FaceSearchEngine;
 import com.ai.face.faceSearch.search.SearchProcessBuilder;
 import com.ai.face.faceSearch.search.SearchProcessCallBack;
@@ -28,7 +26,6 @@ import com.faceAI.demo.R;
 import com.faceAI.demo.SysCamera.search.ImageToast;
 import com.faceAI.demo.base.utils.BrightnessUtil;
 import com.faceAI.demo.base.utils.VoicePlayer;
-
 import java.util.List;
 
 
@@ -81,7 +78,8 @@ public class FaceSearch_UVCCameraFragment extends AbsFaceSearch_UVCCameraFragmen
                 .setThreshold(0.88f) //阈值设置，范围限 [0.85 , 0.95] 识别可信度，也是识别灵敏度
                 .setCallBackAllMatch(true) //默认是false,是否返回所有的大于设置阈值的搜索结果
                 .setFaceLibFolder(CACHE_SEARCH_FACE_DIR)  //内部存储目录中保存N 个图片库的目录
-                .setCameraType(SearchProcessBuilder.CameraType.UVC_CAMERA)
+                .setCameraType(SearchProcessBuilder.CameraType.UVC_CAMERA) //摄像头种类是UVC 协议
+                .setSearchIntervalTime(1900) //默认2000，范围[1500,3000]毫秒。搜索成功后的继续下一次搜索的间隔时间，不然会一直搜索一直回调结果
                 .setProcessCallBack(new SearchProcessCallBack() {
 
                     // 得分最高的搜索结果

@@ -6,14 +6,13 @@
 		<button type="primary" @click="isFaceExist">检查人脸是否存在</button>
         <button type="primary" @click="insertFace2SDK">同步人脸Base64到SDK</button>
 		<button type="primary" @click="gotoAboutFaceAIPage">体验完整FaceAISDK原生功能</button>
-		
 		<text type="primary" @click="tips">UniApp接入Demo工程</text>
-		
 	</div>
 </template>
 
 <script>
 	// 人脸识别插件
+	// 欢迎iOS大佬补全插件制作，iOS 原生工程：https://github.com/FaceAISDK/FaceAISDK_iOS
 	var faceAIModule = uni.requireNativePlugin("FaceAISDKModule")
 	const modal = uni.requireNativePlugin('modal');
 	export default {
@@ -42,14 +41,15 @@
 
 			faceVerify() {
 				// 人脸识别+活体检测
+				//0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;  
 				faceAIModule.faceVerify(
                                         {
-                                         "faceID": "yourFaceID_uniApp",
+                                          "faceID": "yourFaceID_uniApp",
                                           "threshold": 0.85,
                                           "silentThreshold": 0.85,
-                                          "faceLivenessType": 0,
-                                          "motionStepSize": 1,
-                                          "verifyTimeOut": 16
+                                          "faceLivenessType": 3,
+                                          "motionStepSize": 2,
+                                          "verifyTimeOut": 11
                                        } ,
 					(ret) => {
 						modal.toast({
@@ -61,14 +61,13 @@
 			
 			livenessVerify() {
 				// 仅仅活体检测
+				//0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;  
 				faceAIModule.livenessVerify(
 			                            {
-			                             "faceID": "yourFaceID_uniApp",
-			                              "threshold": 0.85,
 			                              "silentThreshold": 0.85,
-			                              "faceLivenessType": 0,
-			                              "motionStepSize": 1,
-			                              "verifyTimeOut": 16
+			                              "faceLivenessType": 3,
+			                              "motionStepSize": 2,
+			                              "verifyTimeOut": 11
 			                           } ,
 					(ret) => {
 						modal.toast({

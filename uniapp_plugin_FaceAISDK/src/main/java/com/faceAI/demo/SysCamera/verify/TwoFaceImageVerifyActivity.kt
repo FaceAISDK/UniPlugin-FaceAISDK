@@ -17,12 +17,12 @@ import android.provider.MediaStore
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toDrawable
+import com.faceAI.demo.BuildConfig
 import com.ai.face.base.baseImage.FaceAIUtils
 import com.ai.face.faceVerify.verify.FaceVerifyUtils
-import com.faceAI.demo.BuildConfig
 import com.faceAI.demo.base.utils.fileUtils.MyFileUtils
 import com.faceAI.demo.databinding.ActivityTwoFaceImageVerifyBinding
+import androidx.core.graphics.drawable.toDrawable
 
 
 /**

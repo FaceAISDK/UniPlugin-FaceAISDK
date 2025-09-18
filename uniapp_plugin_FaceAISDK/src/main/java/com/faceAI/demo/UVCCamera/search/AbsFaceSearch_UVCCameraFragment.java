@@ -22,9 +22,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.ai.face.faceVerify.verify.FaceVerifyUtils;
 import com.faceAI.demo.UVCCamera.manger.CameraBuilder;
 import com.faceAI.demo.UVCCamera.manger.UVCCameraManager;
+import com.ai.face.faceVerify.verify.FaceVerifyUtils;
 import com.faceAI.demo.databinding.FragmentFaceSearchUvcCameraBinding;
 
 /**
