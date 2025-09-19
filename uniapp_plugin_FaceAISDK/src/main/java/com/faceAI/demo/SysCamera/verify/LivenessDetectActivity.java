@@ -3,7 +3,6 @@ package com.faceAI.demo.SysCamera.verify;
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
 import static com.faceAI.demo.FaceImageConfig.CACHE_FACE_LOG_DIR;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,17 +10,15 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
-
 import com.ai.face.base.view.camera.CameraXBuilder;
 import com.ai.face.faceVerify.verify.FaceProcessBuilder;
 import com.ai.face.faceVerify.verify.FaceVerifyUtils;
 import com.ai.face.faceVerify.verify.ProcessCallBack;
 import com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM;
 import com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM;
-import com.ai.face.faceVerify.verify.liveness.FaceLivenessType;
 import com.ai.face.faceVerify.verify.liveness.MotionLivenessMode;
+import com.ai.face.faceVerify.verify.liveness.FaceLivenessType;
 import com.faceAI.demo.FaceImageConfig;
 import com.faceAI.demo.R;
 import com.faceAI.demo.SysCamera.camera.MyCameraXFragment;
@@ -66,7 +63,7 @@ public class LivenessDetectActivity extends AbsBaseActivity {
         faceCoverView = findViewById(R.id.face_cover);
         findViewById(R.id.back).setOnClickListener(v -> finishFaceVerify(0,"用户取消"));
 
-        getIntentParams();
+        getIntentParams(); //接收三方插件的参数 数据
 
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE);
         int cameraLensFacing = sharedPref.getInt( FRONT_BACK_CAMERA_FLAG, 0);
@@ -83,48 +80,8 @@ public class LivenessDetectActivity extends AbsBaseActivity {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_camerax, cameraXFragment).commit();
 
-
         initFaceVerificationParam();
     }
-
-
-    /**
-     * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
-     */
-    private void getIntentParams() {
-        Intent intent = getIntent(); // 获取发送过来的Intent对象
-        if (intent != null) {
-            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
-                silentLivenessThreshold = intent.getFloatExtra(SILENT_THRESHOLD_KEY, 0.85f);
-            }
-            if (intent.hasExtra(FACE_LIVENESS_TYPE)) {
-                int type = intent.getIntExtra(FACE_LIVENESS_TYPE, 3);
-                switch (type) {
-                    case 0:
-                        faceLivenessType = FaceLivenessType.NONE;
-                        break;
-                    case 1:
-                        faceLivenessType = FaceLivenessType.SILENT;
-                        break;
-                    case 2:
-                        faceLivenessType = FaceLivenessType.MOTION;
-                        break;
-                    default:
-                        faceLivenessType = FaceLivenessType.SILENT_MOTION;
-                }
-            }
-
-            if (intent.hasExtra(MOTION_STEP_SIZE)) {
-                motionStepSize = intent.getIntExtra(MOTION_STEP_SIZE, 2);
-            }
-            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
-                motionTimeOut = intent.getIntExtra(MOTION_TIMEOUT, 10);
-            }
-        } else {
-            // 数据不存在，执行其他操作
-        }
-    }
-
 
 
     /**
@@ -150,7 +107,7 @@ public class LivenessDetectActivity extends AbsBaseActivity {
                      */
                     @Override
                     public void onLivenessDetected(float silentLivenessValue, Bitmap bitmap) {
-                        BitmapUtils.saveBitmap(bitmap,CACHE_FACE_LOG_DIR,"liveBitmap");//给插件用
+                        BitmapUtils.saveBitmap(bitmap,CACHE_FACE_LOG_DIR,"liveBitmap"); //给插件用
                         if(FaceImageConfig.isDebugMode(getBaseContext())){
                             runOnUiThread(() -> {
                                 scoreText.setText("RGB Live:"+silentLivenessValue);
@@ -325,23 +282,7 @@ public class LivenessDetectActivity extends AbsBaseActivity {
         }
     }
 
-    /**
-     * 识别结束返回结果, 为了给uniApp UTS插件，RN，Flutter统一的交互返回格式
-     *
-     * @param code
-     * @param msg
-     */
-    private void finishFaceVerify(int code, String msg) {
-        finishFaceVerify(code,msg,0f);
-    }
 
-    private void finishFaceVerify(int code, String msg,float silentLivenessScore) {
-        Intent intent = new Intent().putExtra("code", code)
-                .putExtra("msg", msg)
-                .putExtra("silentLivenessScore", silentLivenessScore);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
 
     /**
      * 资源释放
@@ -358,6 +299,65 @@ public class LivenessDetectActivity extends AbsBaseActivity {
     protected void onStop() {
         super.onStop();
         faceVerifyUtils.pauseProcess();
+    }
+
+
+    // ************************** 下面代码是为了兼容三方插件，原生开放可以忽略   ***********************************
+
+    /**
+     * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
+     */
+    private void getIntentParams() {
+        Intent intent = getIntent(); // 获取发送过来的Intent对象
+        if (intent != null) {
+            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
+                silentLivenessThreshold = intent.getFloatExtra(SILENT_THRESHOLD_KEY, 0.85f);
+            }
+            if (intent.hasExtra(FACE_LIVENESS_TYPE)) {
+                int type = intent.getIntExtra(FACE_LIVENESS_TYPE, 3);
+                switch (type) {
+                    case 0:
+                        faceLivenessType = FaceLivenessType.NONE;
+                        break;
+                    case 1:
+                        faceLivenessType = FaceLivenessType.SILENT;
+                        break;
+                    case 2:
+                        faceLivenessType = FaceLivenessType.MOTION;
+                        break;
+                    default:
+                        faceLivenessType = FaceLivenessType.SILENT_MOTION;
+                }
+            }
+
+            if (intent.hasExtra(MOTION_STEP_SIZE)) {
+                motionStepSize = intent.getIntExtra(MOTION_STEP_SIZE, 2);
+            }
+            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
+                motionTimeOut = intent.getIntExtra(MOTION_TIMEOUT, 10);
+            }
+        } else {
+            // 数据不存在，执行其他操作
+        }
+    }
+
+
+    /**
+     * 识别结束返回结果, 为了给uniApp UTS插件，RN，Flutter统一的交互返回格式
+     *
+     * @param code
+     * @param msg
+     */
+    private void finishFaceVerify(int code, String msg) {
+        finishFaceVerify(code,msg,0f);
+    }
+
+    private void finishFaceVerify(int code, String msg,float silentLivenessScore) {
+        Intent intent = new Intent().putExtra("code", code)
+                .putExtra("msg", msg)
+                .putExtra("silentLivenessScore", silentLivenessScore);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }
 

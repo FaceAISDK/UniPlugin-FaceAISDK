@@ -1,9 +1,9 @@
 {
-    "name" : "自定义底座Uni",
+    "name" : "人脸识别",
     "appid" : "__UNI__D0091F1",
-    "description" : "自定义底座UniApp FaceAI插件，调试包有提示，正式版没有",
-    "versionName" : "1.1.7",
-    "versionCode" : 17,
+    "description" : "UniApp 人脸识别活体检测插件，调试包有提示正式版没有",
+    "versionName" : "1.1.8",
+    "versionCode" : 18,
     "transformPx" : false,
     /* 5+App特有相关 */
     "app-plus" : {
@@ -73,5 +73,6 @@
     "mp-toutiao" : {
         "usingComponents" : true
     },
-    "vueVersion" : "2"
+    "vueVersion" : "2",
+    "locale" : "zh-Hans"
 }

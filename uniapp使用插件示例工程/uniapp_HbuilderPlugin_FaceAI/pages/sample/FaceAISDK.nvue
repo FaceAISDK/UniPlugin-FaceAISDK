@@ -27,9 +27,10 @@
 		methods: {
 			
 			addFaceImage() {
-				// 添加人脸 
+				// 添加人脸, 建议选择配置为精确模式，如果用户群体操作不方便退为快速模式
 				faceAIModule.addFaceImage({
-						"faceID": "yourFaceID_uniApp"
+						"faceID": "yourFaceID_uniApp",
+						"addFacePerformanceMode": 2   // 1 快速模式  2 精确模式"
 						},
 					(ret) => {
 						modal.toast({

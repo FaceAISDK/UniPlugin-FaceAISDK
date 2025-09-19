@@ -81,58 +81,12 @@ public class FaceVerificationActivity extends AbsBaseActivity {
         faceCoverView = findViewById(R.id.face_cover);
         findViewById(R.id.back).setOnClickListener(v -> finishFaceVerify(0, "用户取消"));
 
-        getIntentParams();
+        getIntentParams(); //接收三方插件传递的参数，原生开放可以忽略
 
         initCameraX();
         initFaceVerifyEmbedding();
     }
 
-
-    /**
-     * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
-     */
-    private void getIntentParams() {
-        Intent intent = getIntent(); // 获取发送过来的Intent对象
-        if (intent != null) {
-            if (intent.hasExtra(USER_FACE_ID_KEY)) {
-                faceID = intent.getStringExtra(USER_FACE_ID_KEY);
-            } else {
-                Toast.makeText(this, R.string.input_face_id_tips, Toast.LENGTH_LONG).show();
-            }
-
-            if (intent.hasExtra(THRESHOLD_KEY)) {
-                verifyThreshold = intent.getFloatExtra(THRESHOLD_KEY, 0.85f);
-            }
-            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
-                silentLivenessThreshold = intent.getFloatExtra(SILENT_THRESHOLD_KEY, 0.85f);
-            }
-            if (intent.hasExtra(FACE_LIVENESS_TYPE)) {
-                int type = intent.getIntExtra(FACE_LIVENESS_TYPE, 3);
-                switch (type) {
-                    case 0:
-                        faceLivenessType = FaceLivenessType.NONE;
-                        break;
-                    case 1:
-                        faceLivenessType = FaceLivenessType.SILENT;
-                        break;
-                    case 2:
-                        faceLivenessType = FaceLivenessType.MOTION;
-                        break;
-                    default:
-                        faceLivenessType = FaceLivenessType.SILENT_MOTION;
-                }
-            }
-
-            if (intent.hasExtra(MOTION_STEP_SIZE)) {
-                motionStepSize = intent.getIntExtra(MOTION_STEP_SIZE, 2);
-            }
-            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
-                motionTimeOut = intent.getIntExtra(MOTION_TIMEOUT, 10);
-            }
-        } else {
-            // 数据不存在，执行其他操作
-        }
-    }
 
     /**
      * 初始化摄像头
@@ -410,24 +364,6 @@ public class FaceVerificationActivity extends AbsBaseActivity {
         finishFaceVerify(0, "用户取消");
     }
 
-    /**
-     * 识别结束返回结果, 为了给uniApp UTS插件，RN，Flutter统一的交互返回格式
-     *
-     * @param code
-     * @param msg
-     */
-    private void finishFaceVerify(int code, String msg) {
-        finishFaceVerify(code, msg, 0f);
-    }
-
-    private void finishFaceVerify(int code, String msg, float silentLivenessScore) {
-        Intent intent = new Intent().putExtra("code", code)
-                .putExtra("faceID", faceID)
-                .putExtra("msg", msg)
-                .putExtra("silentLivenessScore", silentLivenessScore);
-        setResult(RESULT_OK, intent);
-        finish();
-    }
 
     /**
      * 资源释放
@@ -481,5 +417,73 @@ public class FaceVerificationActivity extends AbsBaseActivity {
         }
     }
 
+
+    // ************************** 下面代码是为了兼容三方插件，原生开放可以忽略   ***********************************
+
+    /**
+     * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
+     */
+    private void getIntentParams() {
+        Intent intent = getIntent(); // 获取发送过来的Intent对象
+        if (intent != null) {
+            if (intent.hasExtra(USER_FACE_ID_KEY)) {
+                faceID = intent.getStringExtra(USER_FACE_ID_KEY);
+            } else {
+                Toast.makeText(this, R.string.input_face_id_tips, Toast.LENGTH_LONG).show();
+            }
+
+            if (intent.hasExtra(THRESHOLD_KEY)) {
+                verifyThreshold = intent.getFloatExtra(THRESHOLD_KEY, 0.85f);
+            }
+            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
+                silentLivenessThreshold = intent.getFloatExtra(SILENT_THRESHOLD_KEY, 0.85f);
+            }
+            if (intent.hasExtra(FACE_LIVENESS_TYPE)) {
+                int type = intent.getIntExtra(FACE_LIVENESS_TYPE, 3);
+                switch (type) {
+                    case 0:
+                        faceLivenessType = FaceLivenessType.NONE;
+                        break;
+                    case 1:
+                        faceLivenessType = FaceLivenessType.SILENT;
+                        break;
+                    case 2:
+                        faceLivenessType = FaceLivenessType.MOTION;
+                        break;
+                    default:
+                        faceLivenessType = FaceLivenessType.SILENT_MOTION;
+                }
+            }
+
+            if (intent.hasExtra(MOTION_STEP_SIZE)) {
+                motionStepSize = intent.getIntExtra(MOTION_STEP_SIZE, 2);
+            }
+            if (intent.hasExtra(SILENT_THRESHOLD_KEY)) {
+                motionTimeOut = intent.getIntExtra(MOTION_TIMEOUT, 10);
+            }
+        } else {
+            // 数据不存在，执行其他操作
+        }
+    }
+
+
+    /**
+     * 识别结束返回结果, 为了给uniApp UTS插件，RN，Flutter统一的交互返回格式
+     *
+     * @param code
+     * @param msg
+     */
+    private void finishFaceVerify(int code, String msg) {
+        finishFaceVerify(code, msg, 0f);
+    }
+
+    private void finishFaceVerify(int code, String msg, float silentLivenessScore) {
+        Intent intent = new Intent().putExtra("code", code)
+                .putExtra("faceID", faceID)
+                .putExtra("msg", msg)
+                .putExtra("silentLivenessScore", silentLivenessScore);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }
 

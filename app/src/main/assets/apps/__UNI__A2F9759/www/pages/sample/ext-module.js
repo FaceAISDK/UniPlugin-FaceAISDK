@@ -273,7 +273,8 @@
 				methods: {
 					addFaceImage: function() {
 						n.addFaceImage({
-                                         "faceID": "yourFaceID_uniApp"
+                                         "faceID": "yourFaceID_uniApp",
+                                          "addFacePerformanceMode": 2
                                        }, (function(t) {
 							i.toast({
 								message: t,

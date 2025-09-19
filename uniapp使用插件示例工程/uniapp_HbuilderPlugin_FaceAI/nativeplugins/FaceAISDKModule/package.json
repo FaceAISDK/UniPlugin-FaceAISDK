@@ -16,8 +16,7 @@
             "hooksClass": "",  
             "integrateType": "aar",  
             "dependencies": [
-              "io.github.faceaisdk:Android:2025.09.18.faceLivenessType",
-              "io.github.faceaisdk:UVCCamera:2025.07.30",
+              "io.github.faceaisdk:Android:2025.09.19.02",
               "com.airbnb.android:lottie:6.0.0",
               "androidx.constraintlayout:constraintlayout:2.1.4",
               "pub.devrel:easypermissions:3.0.0",

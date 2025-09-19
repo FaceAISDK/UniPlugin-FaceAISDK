@@ -3,6 +3,7 @@ package io.face.uniplugin;
 import static com.faceAI.demo.FaceImageConfig.CACHE_BASE_FACE_DIR;
 import static com.faceAI.demo.FaceImageConfig.CACHE_FACE_LOG_DIR;
 import static com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity.ADD_FACE_IMAGE_TYPE_KEY;
+import static com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity.ADD_FACE_PERFORMANCE_MODE;
 import static com.faceAI.demo.SysCamera.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
 
 import android.app.Activity;
@@ -75,6 +76,12 @@ public class FaceAISDKModule extends UniModule {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("code", data.getIntExtra("code", 0));
                     jsonObject.put("msg", data.getStringExtra("msg"));
+
+                    //把Bitmap 返回
+                    String faceFilePath = CACHE_FACE_LOG_DIR + "verifyBitmap";
+                    //人脸识别的场景Bitmap 返回
+                    jsonObject.put("faceBase64", BitmapUtils.bitmapToBase64(faceFilePath));
+
                     faceVerifyCallBack.invoke(jsonObject);
                 }
             }
@@ -91,11 +98,6 @@ public class FaceAISDKModule extends UniModule {
                     jsonObject.put("code", data.getIntExtra("code", 0));
                     jsonObject.put("msg", data.getStringExtra("msg"));
                     jsonObject.put("faceID", faceID);
-
-                    //把Bitmap 返回
-                    String faceFilePath = CACHE_FACE_LOG_DIR + "verifyBitmap";
-                    //人脸识别的场景Bitmap 返回
-                    jsonObject.put("faceBase64", BitmapUtils.bitmapToBase64(faceFilePath));
 
                     addFaceCallBack.invoke(jsonObject);
                 }
@@ -229,6 +231,9 @@ public class FaceAISDKModule extends UniModule {
                     .putExtra(ADD_FACE_IMAGE_TYPE_KEY, AddFaceImageActivity.AddFaceImageTypeEnum.FACE_VERIFY.name());
 
             intent.putExtra(USER_FACE_ID_KEY,jsonObject.getString("faceID"));
+            //录入人脸的精度 1 快速模式  2 精确模式
+            intent.putExtra(ADD_FACE_PERFORMANCE_MODE,jsonObject.getIntValue("addFacePerformanceMode"));
+
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_ADD_FACE);
         }
     }

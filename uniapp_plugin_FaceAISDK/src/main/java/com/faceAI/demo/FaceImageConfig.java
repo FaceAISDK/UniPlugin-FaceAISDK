@@ -16,6 +16,7 @@ public class FaceImageConfig {
 
     public static String CACHE_FACE_LOG_DIR;    //本地保存某次人脸校验完成后的场景图目录
 
+
     /**
      * 初始化人脸本地图片存储目录，也可以不存图片转化为人脸特征向量保存
      *
@@ -30,6 +31,7 @@ public class FaceImageConfig {
 
         //语音提示播报
         VoicePlayer.getInstance().init(context);
+
     }
 
 
