@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/face_lib_main_color"
+    android:background="@color/face_main_color"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
 
     <ImageView
         android:id="@+id/back"
@@ -31,7 +31,6 @@
         android:textSize="14sp"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <TextView
         android:id="@+id/email"
         android:layout_width="match_parent"
@@ -44,7 +43,6 @@
         android:textColor="@android:color/white"
         android:textSize="14sp"
         app:layout_constraintTop_toTopOf="@+id/wechat" />
-
 
     <TextView
         android:id="@+id/system_info"
@@ -71,7 +69,6 @@
         android:textSize="15sp"
         app:layout_constraintTop_toTopOf="@+id/system_info" />
 
-
     <TextView
         android:id="@+id/new_app_check"
         android:layout_width="match_parent"
@@ -83,7 +80,6 @@
         android:textColor="@android:color/white"
         android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@+id/more_about_me" />
-
 
     <TextView
         android:id="@+id/more_about_me"
