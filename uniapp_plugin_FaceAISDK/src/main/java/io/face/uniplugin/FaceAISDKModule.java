@@ -164,7 +164,7 @@ public class FaceAISDKModule extends UniModule {
 
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("code", 1);
-                            jsonObject.put("msg", "insertFace2SDK 成功");
+                            jsonObject.put("msg", "insertFace 2 SDK成功");
                             jsonObject.put("faceID", faceID);
                             callback.invoke(jsonObject);
                         }
