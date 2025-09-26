@@ -42,15 +42,17 @@
 
 			faceVerify() {
 				// 人脸识别+活体检测
-				//0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;  
+				//「活体检测类型」  0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;
+				//「排除某种动作活体」 "exceptMotionLiveness": -1  //1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
 				faceAIModule.faceVerify(
                                         {
                                           "faceID": "yourFaceID_uniApp",
-                                          "threshold": 0.85,
-                                          "silentThreshold": 0.85,
+                                          "threshold": 0.985,
+                                          "silentThreshold": 0.86,
                                           "faceLivenessType": 3,
                                           "motionStepSize": 2,
-                                          "verifyTimeOut": 11
+                                          "verifyTimeOut": 11,
+                                          "exceptMotionLiveness": -1
                                        } ,
 					(ret) => {
 						modal.toast({
@@ -62,13 +64,15 @@
 			
 			livenessVerify() {
 				// 仅仅活体检测
-				//0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;  
-				faceAIModule.livenessVerify(
+				//「活体检测类型」  0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;
+				//「排除某种动作活体」 "exceptMotionLiveness": -1  //1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
+					faceAIModule.livenessVerify(
 			                            {
-			                              "silentThreshold": 0.85,
+			                              "silentThreshold": 0.86,
 			                              "faceLivenessType": 3,
 			                              "motionStepSize": 2,
-			                              "verifyTimeOut": 11
+			                              "verifyTimeOut": 11,
+			                              "exceptMotionLiveness": -1
 			                           } ,
 					(ret) => {
 						modal.toast({

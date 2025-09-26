@@ -64,7 +64,8 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
    "silentThreshold": 0.85,//活体分数通过阈值  
    "faceLivenessType": 0, //活体检测类型   //0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION 动作活体+静默  
    "motionStepSize": 1, //动作活体检测动作数量。比如2 表示需要用户做2个动作才能通过活体检测  
-   "verifyTimeOut": 16 //活体检测超时时间 秒  
+   "verifyTimeOut": 16， //活体检测超时时间 秒  
+   "exceptMotionLiveness": -1  //1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
 }
 
 **返回参数 callback 会返回识别结果**   
@@ -90,7 +91,8 @@ IDE版本兼容性问题参考官方，本库开发版本如上；欢迎大家�
   "silentThreshold": 0.85,//活体分数通过阈值  
   "faceLivenessType": 0, //活体检测类型   //0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION 动作+静默;  
   "motionStepSize": 1, //动作活体检测动作数量。比如2 表示需要用户做2个动作才能通过活体检测  
-  "verifyTimeOut": 16 //活体检测超时时间 秒  
+  "verifyTimeOut": 16, //活体检测超时时间 秒  
+  "exceptMotionLiveness": -1  //1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
 }
 
 **返回参数 callback 会返回识别结果**   

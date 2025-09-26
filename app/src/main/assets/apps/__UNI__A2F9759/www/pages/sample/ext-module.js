@@ -291,7 +291,8 @@
                                           "silentThreshold": 0.85,
                                           "faceLivenessType": 3,
                                           "motionStepSize": 1,
-                                          "verifyTimeOut": 16
+                                          "verifyTimeOut": 16,
+                                          "exceptMotionLiveness": -1
                                        }, (function(t) {
 							i.toast({
 								message: t,
@@ -305,7 +306,8 @@
                                           "silentThreshold": 0.85,
                                           "faceLivenessType": 3,
                                           "motionStepSize": 1,
-                                          "verifyTimeOut": 11
+                                          "verifyTimeOut": 11,
+                                          "exceptMotionLiveness": -1
                                        }, (function(t) {
 							i.toast({
 								message: t,

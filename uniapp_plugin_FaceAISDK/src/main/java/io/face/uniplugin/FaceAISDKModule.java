@@ -76,6 +76,7 @@ public class FaceAISDKModule extends UniModule {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("code", data.getIntExtra("code", 0));
                     jsonObject.put("msg", data.getStringExtra("msg"));
+                    jsonObject.put("similarity", data.getFloatExtra("similarity",0.0f));
 
                     //把Bitmap 返回
                     String faceFilePath = CACHE_FACE_LOG_DIR + "verifyBitmap";
@@ -253,12 +254,13 @@ public class FaceAISDKModule extends UniModule {
 
             Intent intent=new Intent(mUniSDKInstance.getContext(), FaceVerificationActivity.class);
             intent.putExtra(USER_FACE_ID_KEY,jsonObject.getString("faceID"));
-            intent.putExtra(FaceVerificationActivity.THRESHOLD_KEY,jsonObject.getIntValue("threshold"));
-
+            intent.putExtra(FaceVerificationActivity.THRESHOLD_KEY,jsonObject.getFloatValue("threshold"));
             intent.putExtra(FaceVerificationActivity.FACE_LIVENESS_TYPE,jsonObject.getIntValue("faceLivenessType"));
             intent.putExtra(FaceVerificationActivity.MOTION_STEP_SIZE,jsonObject.getIntValue("motionStepSize"));
             intent.putExtra(FaceVerificationActivity.MOTION_TIMEOUT,jsonObject.getIntValue("verifyTimeOut"));
-            intent.putExtra(FaceVerificationActivity.SILENT_THRESHOLD_KEY,jsonObject.getIntValue("silentThreshold"));
+            intent.putExtra(FaceVerificationActivity.SILENT_THRESHOLD_KEY,jsonObject.getFloatValue("silentThreshold"));
+            intent.putExtra(FaceVerificationActivity.EXCEPT_MOTION_LIVENESS,jsonObject.getIntValue("exceptMotionLiveness"));
+
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_VERIFY);
         }
     }
@@ -281,7 +283,7 @@ public class FaceAISDKModule extends UniModule {
             intent.putExtra(LivenessDetectActivity.FACE_LIVENESS_TYPE,jsonObject.getIntValue("faceLivenessType"));
             intent.putExtra(LivenessDetectActivity.MOTION_STEP_SIZE,jsonObject.getIntValue("motionStepSize"));
             intent.putExtra(LivenessDetectActivity.MOTION_TIMEOUT,jsonObject.getIntValue("verifyTimeOut"));
-            intent.putExtra(LivenessDetectActivity.SILENT_THRESHOLD_KEY,jsonObject.getIntValue("silentThreshold"));
+            intent.putExtra(LivenessDetectActivity.SILENT_THRESHOLD_KEY,jsonObject.getFloatValue("silentThreshold"));
 
             ((Activity)mUniSDKInstance.getContext()).startActivityForResult(intent, REQUEST_CODE_FOR_FACE_LIVENESS);
         }
