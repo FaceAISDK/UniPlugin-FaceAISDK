@@ -2,12 +2,6 @@ package com.faceAI.demo.UVCCamera.addFace;
 
 import static android.view.View.GONE;
 import static com.ai.face.base.baseImage.BaseImageDispose.PERFORMANCE_MODE_FAST;
-import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.FACE_TOO_LARGE;
-import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.FACE_TOO_MANY;
-import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.FACE_TOO_SMALL;
-import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.NO_FACE_REPEATEDLY;
-import static com.faceAI.demo.FaceSDKConfig.CACHE_BASE_FACE_DIR;
-import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
 import static com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM.CLOSE_EYE;
 import static com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM.HEAD_CENTER;
 import static com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM.HEAD_DOWN;
@@ -15,9 +9,15 @@ import static com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM.
 import static com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM.HEAD_RIGHT;
 import static com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM.HEAD_UP;
 import static com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM.TILT_HEAD;
+import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.FACE_TOO_LARGE;
+import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.FACE_TOO_MANY;
+import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.FACE_TOO_SMALL;
+import static com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM.NO_FACE_REPEATEDLY;
 import static com.faceAI.demo.FaceAISettingsActivity.RGB_UVC_CAMERA_DEGREE;
 import static com.faceAI.demo.FaceAISettingsActivity.RGB_UVC_CAMERA_MIRROR_H;
 import static com.faceAI.demo.FaceAISettingsActivity.RGB_UVC_CAMERA_SELECT;
+import static com.faceAI.demo.FaceSDKConfig.CACHE_BASE_FACE_DIR;
+import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
 import static com.faceAI.demo.SysCamera.verify.FaceVerificationActivity.USER_FACE_ID_KEY;
 import static com.faceAI.demo.UVCCamera.manger.UVCCameraManager.RGB_KEY_DEFAULT;
 
@@ -42,16 +42,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.ai.face.base.baseImage.BaseImageCallBack;
+import com.ai.face.base.baseImage.BaseImageDispose;
 import com.ai.face.base.baseImage.FaceEmbedding;
+import com.ai.face.faceSearch.search.FaceSearchImagesManger;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.faceAI.demo.R;
 import com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity;
 import com.faceAI.demo.UVCCamera.manger.CameraBuilder;
 import com.faceAI.demo.UVCCamera.manger.UVCCameraManager;
-import com.ai.face.base.baseImage.BaseImageCallBack;
-import com.ai.face.base.baseImage.BaseImageDispose;
-import com.ai.face.faceSearch.search.FaceSearchImagesManger;
 import com.faceAI.demo.databinding.FragmentUvcCameraAddFaceBinding;
 
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +64,6 @@ import java.util.Objects;
  * @author FaceAISDK.Service@gmail.com
  */
 public class AddFace_UVCCameraFragment extends Fragment {
-    private static final String TAG = "AddFace";
     public FragmentUvcCameraAddFaceBinding binding;
     public static String ADD_FACE_IMAGE_TYPE_KEY = "ADD_FACE_IMAGE_TYPE_KEY";
     private TextView tipsTextView;
@@ -110,7 +109,7 @@ public class AddFace_UVCCameraFragment extends Fragment {
 
         String s=sp.getString(RGB_UVC_CAMERA_SELECT,RGB_KEY_DEFAULT);
         CameraBuilder cameraBuilder = new CameraBuilder.Builder()
-                .setCameraName("普通RGB摄像头")
+                .setCameraName("UVC RGB Camera")
                 .setCameraKey(s)
                 .setCameraView(binding.rgbCameraView)
                 .setContext(requireContext())
@@ -148,7 +147,7 @@ public class AddFace_UVCCameraFragment extends Fragment {
                 if (addFaceImageType.equals(AddFaceImageActivity.AddFaceImageTypeEnum.FACE_VERIFY.name())) {
                     float[] faceEmbedding = baseImageDispose.saveBaseImageGetEmbedding(bitmap, CACHE_BASE_FACE_DIR, faceID);//保存人脸底图,并返回人脸特征向量
                     FaceEmbedding.saveEmbedding(requireContext(),faceID,faceEmbedding); //保存特征向量
-                    Toast.makeText(requireContext(), "录入成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show();
                     requireActivity().finish();
                 } else {
                     //人脸搜索(1:N ，M：N )保存人脸
@@ -159,13 +158,13 @@ public class AddFace_UVCCameraFragment extends Fragment {
                             .insertOrUpdateFaceImage(bitmap, filePathName, new FaceSearchImagesManger.Callback() {
                                 @Override
                                 public void onSuccess(@NonNull Bitmap bitmap, @NonNull float[] faceEmbedding) {
-                                    Toast.makeText(requireContext(), "录入成功", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show();
                                     requireActivity().finish();
                                 }
 
                                 @Override
                                 public void onFailed(@NotNull String msg) {
-                                    Toast.makeText(requireContext(), "人脸图入库失败：：" + msg, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(requireContext(), "Failed：：" + msg, Toast.LENGTH_SHORT).show();
                                 }
                             });
                 }

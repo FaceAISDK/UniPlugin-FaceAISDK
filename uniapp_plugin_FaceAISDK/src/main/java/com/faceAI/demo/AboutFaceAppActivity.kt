@@ -5,13 +5,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.ai.face.base.baseImage.FaceEmbedding
+import androidx.core.net.toUri
 import com.faceAI.demo.databinding.ActivityAboutFaceAppBinding
 
 
@@ -40,7 +39,7 @@ class AboutFaceAppActivity : AppCompatActivity() {
         }
 
         viewBinding.newAppCheck.setOnClickListener {
-            val uri = Uri.parse("https://www.pgyer.com/faceVerify")
+            val uri = "https://www.pgyer.com/faceVerify".toUri()
             val intent = Intent(Intent.ACTION_VIEW)
             intent.addCategory(Intent.CATEGORY_BROWSABLE)
             intent.data = uri
@@ -75,8 +74,7 @@ class AboutFaceAppActivity : AppCompatActivity() {
 
     }
 
-
-    public fun getVersionName(context: Context): String? {
+    fun getVersionName(context: Context): String? {
         try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             return pInfo.versionName

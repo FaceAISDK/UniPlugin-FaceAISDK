@@ -1,7 +1,5 @@
 package com.faceAI.demo.SysCamera.search;
 
-import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
-import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.EMGINE_INITING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_DIR_EMPTY;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_SIZE_FIT;
@@ -11,13 +9,13 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.MASK_DETECTION
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.NO_LIVE_FACE;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.NO_MATCHED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCHING;
+import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERROR;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.TOO_MUCH_FACE;
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
+import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
 
-import com.faceAI.demo.FaceSDKConfig;
-import com.faceAI.demo.R;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,16 +25,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
 import androidx.camera.core.CameraSelector;
+
 import com.ai.face.base.view.camera.CameraXBuilder;
+import com.ai.face.core.utils.FaceAICameraType;
 import com.ai.face.faceSearch.search.FaceSearchEngine;
 import com.ai.face.faceSearch.search.SearchProcessBuilder;
 import com.ai.face.faceSearch.search.SearchProcessCallBack;
 import com.ai.face.faceSearch.utils.FaceSearchResult;
+import com.faceAI.demo.FaceSDKConfig;
+import com.faceAI.demo.R;
 import com.faceAI.demo.SysCamera.camera.MyCameraXFragment;
 import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import com.faceAI.demo.databinding.ActivityFaceSearchBinding;
+
 import java.util.List;
 
 /**
@@ -103,25 +107,13 @@ public class FaceSearch1NActivity extends AbsBaseActivity {
         // 2.各种参数的初始化设置
         SearchProcessBuilder faceProcessBuilder = new SearchProcessBuilder.Builder(this)
                 .setLifecycleOwner(this)
-                .setCameraType(SearchProcessBuilder.CameraType.SYS_CAMERA)
-                .setThreshold(0.88f) //阈值范围限 [0.85 , 0.95] 识别可信度，阈值高摄像头成像品质宽动态值以及人脸底片质量也要高
+                .setCameraType(FaceAICameraType.SYSTEM_CAMERA)
+                .setThreshold(0.85f) //阈值范围限 [0.85 , 0.95] 识别可信度，阈值高摄像头成像品质宽动态值以及人脸底片质量也要高
                 .setCallBackAllMatch(true) //默认是false,是否返回所有的大于设置阈值的搜索结果
                 .setFaceLibFolder(CACHE_SEARCH_FACE_DIR)  //内部存储目录中保存N 个图片库的目录
                 .setSearchIntervalTime(1900) //默认2000，范围[1500,3000]毫秒。搜索成功后的继续下一次搜索的间隔时间，不然会一直搜索一直回调结果
                 .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT) //后面版本去除次参数
                 .setProcessCallBack(new SearchProcessCallBack() {
-                    /**
-                     * 返回的人脸光线亮度，0920 添加
-                     * @param brightness
-                     */
-                    @Override
-                    public void onFaceBrightness(float brightness) {
-                            if(brightness>180){
-                                Toast.makeText(getBaseContext(),"光线过亮:"+brightness,Toast.LENGTH_SHORT).show();
-                            }else if(brightness<80){
-                                Toast.makeText(getBaseContext(),"光线过暗:"+brightness,Toast.LENGTH_SHORT).show();
-                            }
-                    }
 
                     /**
                      * 最相似的人脸搜索识别结果，得分最高
@@ -138,7 +130,9 @@ public class FaceSearch1NActivity extends AbsBaseActivity {
                     }
 
                     /**
-                     * 匹配到的大于设置Threshold的所有结果，搜索识别到多个很相似的人场景允许的话可以弹框让用户选择
+                     * onMostSimilar 是返回搜索到最相似的人脸，有可能光线人脸底片不合规导致错误匹配
+                     * 业务上可以添加容错处理，onFaceMatched会返回所有大于设置阈值的结果
+                     *
                      * 但还是强烈建议使用高品质摄像头，录入高品质人脸
                      * SearchProcessBuilder setCallBackAllMatch(true) onFaceMatched才会回调
                      */
@@ -146,6 +140,22 @@ public class FaceSearch1NActivity extends AbsBaseActivity {
                     public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap) {
                         //已经按照降序排列，可以弹出一个列表框
                         Log.d("onFaceMatched","符合设定阈值的结果: "+matchedResults.toString());
+                    }
+
+                    /**
+                     * 返回的人脸光线亮度，如果摄像头不支持宽动态（室内105db,室外120db），请硬件添加自动补光感应灯
+                     * @param brightness
+                     */
+                    @Override
+                    public void onFaceBrightness(float brightness) {
+                        //测试阶段，先在测试模式打开提示，大约11月中旬正式发布
+                        if(FaceSDKConfig.isDebugMode(getBaseContext())){
+                            if(brightness>180){
+                                Toast.makeText(getBaseContext(),"光线过亮:"+brightness,Toast.LENGTH_SHORT).show();
+                            }else if(brightness<80){
+                                Toast.makeText(getBaseContext(),"光线过暗:"+brightness,Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
 
                     /**
@@ -207,7 +217,6 @@ public class FaceSearch1NActivity extends AbsBaseActivity {
         switch (code) {
             case NO_MATCHED:
                 //本次没有搜索匹配到结果，下一帧继续
-//                setSecondTips(R.string.no_matched_face);
                 break;
 
             case FACE_DIR_EMPTY:
@@ -226,6 +235,7 @@ public class FaceSearch1NActivity extends AbsBaseActivity {
                 break;
 
             case  SEARCHING:
+                //后期将废除本状态
                 setSearchTips(R.string.keep_face_tips);
                 break;
 

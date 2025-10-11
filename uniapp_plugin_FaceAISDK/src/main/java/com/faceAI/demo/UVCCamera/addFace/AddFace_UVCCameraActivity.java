@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.faceAI.demo.R;
 
 
@@ -22,8 +23,8 @@ public class AddFace_UVCCameraActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        AddFace_UVCCameraFragment binocularUVCCameraFragment = new AddFace_UVCCameraFragment();
-        fragmentTransaction.replace(R.id.fragment_container, binocularUVCCameraFragment);
+        AddFace_UVCCameraFragment myUVCCameraFragment = new AddFace_UVCCameraFragment();
+        fragmentTransaction.replace(R.id.fragment_container, myUVCCameraFragment);
 
         fragmentTransaction.commit();
     }

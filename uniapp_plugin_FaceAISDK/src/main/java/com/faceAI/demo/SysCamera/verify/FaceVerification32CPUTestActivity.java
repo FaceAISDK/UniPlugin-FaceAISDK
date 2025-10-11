@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -22,17 +23,19 @@ import androidx.camera.core.CameraSelector;
 import com.ai.face.base.baseImage.FaceAIUtils;
 import com.ai.face.base.baseImage.FaceEmbedding;
 import com.ai.face.base.view.camera.CameraXBuilder;
+import com.ai.face.core.utils.FaceAICameraType;
 import com.ai.face.faceVerify.verify.FaceProcessBuilder;
 import com.ai.face.faceVerify.verify.FaceVerifyUtils;
 import com.ai.face.faceVerify.verify.ProcessCallBack;
 import com.ai.face.faceVerify.verify.VerifyStatus.ALIVE_DETECT_TYPE_ENUM;
 import com.ai.face.faceVerify.verify.VerifyStatus.VERIFY_DETECT_TIPS_ENUM;
-import com.ai.face.faceVerify.verify.liveness.MotionLivenessMode;
 import com.ai.face.faceVerify.verify.liveness.FaceLivenessType;
+import com.ai.face.faceVerify.verify.liveness.MotionLivenessMode;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.faceAI.demo.R;
-import com.faceAI.demo.SysCamera.camera.MyCameraXFragment;
+import com.faceAI.demo.SysCamera.camera.Camera1Fragment;
+import com.faceAI.demo.SysCamera.camera.Camera1Preview;
 import com.faceAI.demo.SysCamera.search.ImageToast;
 import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
@@ -44,7 +47,6 @@ import org.jetbrains.annotations.NotNull;
  * 32 位CPU人脸识别耗时测试，10.10 后删除
  * @author FaceAISDK.Service@gmail.com
  */
-@Deprecated
 public class FaceVerification32CPUTestActivity extends AbsBaseActivity {
     private final float silentLivenessThreshold = 0.81f; //静默活体分数通过的阈值,摄像头成像能力弱的自行调低
 
@@ -52,7 +54,7 @@ public class FaceVerification32CPUTestActivity extends AbsBaseActivity {
     private final FaceVerifyUtils faceVerifyUtils = new FaceVerifyUtils();
     private TextView tipsTextView, secondTipsTextView, scoreText;
     private DemoFaceCoverView faceCoverView;
-    private MyCameraXFragment cameraXFragment;  //摄像头管理源码暴露出来了，方便定制开发
+    private Camera1Fragment cameraFragment;  //摄像头管理源码暴露出来了，方便定制开发
 
     private String faceID; //你的业务系统中可以唯一定义一个账户的ID，手机号/身份证号等
 
@@ -94,9 +96,9 @@ public class FaceVerification32CPUTestActivity extends AbsBaseActivity {
                 .create();
 
         //MyCameraFragment 相机管理源码暴露
-        cameraXFragment = MyCameraXFragment.newInstance(cameraXBuilder);
+        cameraFragment = Camera1Fragment.newInstance(cameraXBuilder);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_camerax, cameraXFragment).commit();
+                .replace(R.id.fragment_camerax, cameraFragment).commit();
     }
 
 
@@ -155,12 +157,12 @@ public class FaceVerification32CPUTestActivity extends AbsBaseActivity {
         FaceProcessBuilder faceProcessBuilder = new FaceProcessBuilder.Builder(this)
                 .setThreshold(0.85f)                    //阈值设置，范围限 [0.75,0.95] ,低配摄像头可适量放低，默认0.85
                 .setFaceEmbedding(faceEmbedding)        //1:1 人脸识别对比的底片人脸特征向量，以前是传bitmap，2025 08 18现在优化
-                .setCameraType(FaceProcessBuilder.CameraType.SYS_CAMERA)
+                .setCameraType(FaceAICameraType.SYSTEM_CAMERA)
                 .setCompareDurationTime(3500)           //人脸识别对比时间[3000,5000] 毫秒。相似度很低会持续设置的时间
                 .setLivenessType(FaceLivenessType.SILENT) //活体检测可以静默&动作活体组合，静默活体效果和摄像头成像能力有关(宽动态>105Db)
                 .setLivenessDetectionMode(MotionLivenessMode.FAST) //硬件配置低用FAST动作活体模式，否则用精确模式
                 .setMotionLivenessStepSize(1)           //随机动作活体的步骤个数[1-2]，SILENT_MOTION和MOTION 才有效
-                .setMotionLivenessTimeOut(10)           //动作活体检测，支持设置超时时间 [9,22] 秒 。API 名字0410 修改
+                .setMotionLivenessTimeOut(10)           //动作活体检测，支持设置超时时间 [3,22] 秒 。API 名字0410 修改
                 .setSilentLivenessThreshold(silentLivenessThreshold)  //静默活体阈值 [0.66,0.98]
                 .setProcessCallBack(new ProcessCallBack() {
                     /**
@@ -201,19 +203,27 @@ public class FaceVerification32CPUTestActivity extends AbsBaseActivity {
 
         faceVerifyUtils.setDetectorParams(faceProcessBuilder);
 
-        cameraXFragment.setOnAnalyzerListener(imageProxy -> {
-            //防止在识别过程中关闭页面导致Crash
-            if (!isDestroyed() && !isFinishing()&&startFaceVerify) {
+//        cameraXFragment.setOnAnalyzerListener(imageProxy -> {
+//            //防止在识别过程中关闭页面导致Crash
+//            if (!isDestroyed() && !isFinishing()&&startFaceVerify) {
+//                if(startTime == 0){ //从人脸正对摄像头，点击开始按钮计算耗时时间
+//                    startTime =System.currentTimeMillis();
+//                    Log.d("verifyTime","开始送入数据： "+ startTime);
+//                }
+//                //开始人脸识别
+//                faceVerifyUtils.goVerifyWithImageProxy(imageProxy, faceCoverView.getMargin());
+//            }
+//        });
 
-                if(startTime == 0){ //从人脸正对摄像头，点击开始按钮计算耗时时间
-                    startTime =System.currentTimeMillis();
-                    Log.d("verifyTime","开始送入数据： "+ startTime);
-                }
 
-                //开始人脸识别
-                faceVerifyUtils.goVerifyWithImageProxy(imageProxy, faceCoverView.getMargin());
+        //callBack 在主线程
+        cameraFragment.setCameraDataCallBack(new Camera1Preview.OnCameraData() {
+            @Override
+            public void callBack(byte[] bytes, Camera camera) {
+
             }
         });
+
     }
 
     /**
