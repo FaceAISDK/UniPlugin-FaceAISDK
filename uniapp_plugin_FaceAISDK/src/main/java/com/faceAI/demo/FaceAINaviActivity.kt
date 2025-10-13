@@ -33,7 +33,7 @@ class FaceAINaviActivity : AppCompatActivity() {
         viewBinding = ActivityFaceAiNaviBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        // 人脸图保存路径初始化
+        //人脸图保存路径初始化
         FaceSDKConfig.init(this)
         setCameraType()
 
@@ -48,7 +48,7 @@ class FaceAINaviActivity : AppCompatActivity() {
             startActivity(verifyIntent)
         }
 
-        // 人脸搜索(系统相机和UVC 摄像头都支持) Face Search(System camera and UVC camera)
+        // 人脸搜索(系统相机和UVC 摄像头都支持) Face Search(support System&UVC camera)
         viewBinding.faceSearch.setOnClickListener {
             startActivity(Intent(this@FaceAINaviActivity, SearchNaviActivity::class.java))
         }
@@ -61,7 +61,7 @@ class FaceAINaviActivity : AppCompatActivity() {
         // 活体检测 livenessDetection
         viewBinding.livenessDetection.setOnClickListener {
             val sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE)
-            val uvcCameraType = sharedPref.getInt(UVC_CAMERA_TYPE, FaceAICameraType.UVC_CAMERA_RGB)
+            val uvcCameraType = sharedPref.getInt(UVC_CAMERA_TYPE, FaceAICameraType.SYSTEM_CAMERA)
 
             if(uvcCameraType== FaceAICameraType.SYSTEM_CAMERA){
                 startActivity(Intent(this@FaceAINaviActivity, LivenessDetectActivity::class.java))
@@ -161,9 +161,12 @@ class FaceAINaviActivity : AppCompatActivity() {
         builderSingle.show()
     }
 
+    /**
+     *  当前的相机类型
+     */
     private  fun setCameraType() {
         val sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE)
-        val uvcCameraType = sharedPref.getInt(UVC_CAMERA_TYPE, FaceAICameraType.UVC_CAMERA_RGB)
+        val uvcCameraType = sharedPref.getInt(UVC_CAMERA_TYPE, FaceAICameraType.SYSTEM_CAMERA)
         when (uvcCameraType) {
             FaceAICameraType.SYSTEM_CAMERA -> {
                 viewBinding.cameraTypeSelect.text = getString(R.string.camera_type_system)
@@ -203,9 +206,7 @@ class FaceAINaviActivity : AppCompatActivity() {
             }
             dialog.setCanceledOnTouchOutside(false)
             dialog.show()
-
         }
-
     }
 
 

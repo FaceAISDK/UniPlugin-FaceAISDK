@@ -15,7 +15,8 @@ import com.faceAI.demo.databinding.ActivityAboutFaceAppBinding
 
 
 /**
- * 关于我们
+ * 关于我们，WeChat：FaceAISDK
+ *
  * @author FaceAISDK.Service@gmail.com
  */
 class AboutFaceAppActivity : AppCompatActivity() {
