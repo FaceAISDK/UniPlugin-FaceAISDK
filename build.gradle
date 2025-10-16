@@ -17,6 +17,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
         //多放几个国内的依赖托管镜像源，工程师可以根据公司的网络屏蔽情况自行替换
         maven { url "https://s01.oss.sonatype.org/content/groups/public" }
 
