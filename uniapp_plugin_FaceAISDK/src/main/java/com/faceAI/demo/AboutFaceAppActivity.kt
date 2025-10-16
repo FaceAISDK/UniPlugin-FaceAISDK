@@ -5,13 +5,15 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.NameNotFoundException
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
+import com.ai.face.base.baseImage.FaceEmbedding
 import com.faceAI.demo.databinding.ActivityAboutFaceAppBinding
+import androidx.core.net.toUri
 
 
 /**

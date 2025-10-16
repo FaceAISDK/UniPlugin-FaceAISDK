@@ -23,16 +23,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ai.face.core.utils.FaceAICameraType;
+import com.faceAI.demo.SysCamera.verify.AbsAddFaceFromAlbumActivity;
+import com.faceAI.demo.UVCCamera.addFace.AddFace_UVCCameraActivity;
+import com.faceAI.demo.UVCCamera.addFace.AddFace_UVCCameraFragment;
+import com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity;
 import com.ai.face.faceSearch.search.FaceSearchImagesManger;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
-import com.faceAI.demo.R;
-import com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity;
-import com.faceAI.demo.SysCamera.verify.AbsAddFaceFromAlbumActivity;
-import com.faceAI.demo.UVCCamera.addFace.AddFace_UVCCameraActivity;
-import com.faceAI.demo.UVCCamera.addFace.AddFace_UVCCameraFragment;
 import com.lzf.easyfloat.EasyFloat;
 
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +42,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+
+import com.faceAI.demo.R;
 
 /**
  * 人脸库管理,增删 查，批量添加测试数据

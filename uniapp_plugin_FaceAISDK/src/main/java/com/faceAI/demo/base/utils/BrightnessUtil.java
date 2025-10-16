@@ -1,6 +1,10 @@
 package com.faceAI.demo.base.utils;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
+import android.os.CountDownTimer;
 import android.view.Window;
 import android.view.WindowManager;
 

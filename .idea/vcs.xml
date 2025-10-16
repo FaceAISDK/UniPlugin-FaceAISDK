@@ -2,5 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/uniapp使用插件示例工程/uniapp_HbuilderPlugin_FaceAI" vcs="Git" />
   </component>
 </project>

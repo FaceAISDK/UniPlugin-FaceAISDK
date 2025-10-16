@@ -5,9 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
-
 import com.ai.face.core.utils.FaceAICameraType;
 import com.ai.face.faceVerify.verify.FaceProcessBuilder;
 import com.ai.face.faceVerify.verify.FaceVerifyUtils;
@@ -117,10 +115,7 @@ public class Liveness_UVCCameraFragment extends AbsLiveness_UVCCameraFragment {
                 }).create();
 
         faceVerifyUtils.setDetectorParams(faceProcessBuilder);
-
     }
-
-
 
 
     /**
@@ -130,14 +125,14 @@ public class Liveness_UVCCameraFragment extends AbsLiveness_UVCCameraFragment {
      */
     void showFaceLivenessTips(int actionCode) {
         if (!requireActivity().isDestroyed() && !requireActivity().isFinishing()) {
-
             Log.e("RGBUVC","---- "+actionCode);
             requireActivity().runOnUiThread(() -> {
                 switch (actionCode) {
                     // 动作活体检测完成了
                     case VerifyStatus.ALIVE_DETECT_TYPE_ENUM.ALIVE_CHECK_DONE:
-                        VoicePlayer.getInstance().play(R.raw.face_camera);
-                        setTips(R.string.keep_face_visible);
+                        VoicePlayer.getInstance().play(R.raw.verify_success);
+                        setTips(R.string.liveness_detection_done);
+                        setSecondTips(0);
                         break;
 
                     case VerifyStatus.VERIFY_DETECT_TIPS_ENUM.IR_IMAGE_NULL:
