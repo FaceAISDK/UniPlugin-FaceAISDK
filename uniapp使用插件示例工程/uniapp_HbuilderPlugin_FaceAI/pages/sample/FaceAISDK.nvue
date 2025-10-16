@@ -41,7 +41,7 @@
 			},
 
 			faceVerify() {
-				// 人脸识别+活体检测
+				// 人脸识别+动作活体检测（[3,22]秒超时）
 				//「活体检测类型」  0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;
 				//「排除某种动作活体」 "exceptMotionLiveness": -1  //1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
 				faceAIModule.faceVerify(
@@ -51,7 +51,7 @@
                                           "silentThreshold": 0.86,
                                           "faceLivenessType": 3,
                                           "motionStepSize": 2,
-                                          "verifyTimeOut": 11,
+                                          "verifyTimeOut": 7,
                                           "exceptMotionLiveness": -1
                                        } ,
 					(ret) => {
@@ -63,7 +63,7 @@
 			},
 			
 			livenessVerify() {
-				// 仅仅活体检测
+				// 仅仅活体检测，超时时间[3,22]秒
 				//「活体检测类型」  0 NONE无活体;  1 SILENT静默活体和摄像头成像能力有关;   2 MOTION动作活体;   3 SILENT_MOTION;
 				//「排除某种动作活体」 "exceptMotionLiveness": -1  //1.张张嘴 2.微笑 3.眨眨眼 4.摇头 5.点头
 					faceAIModule.livenessVerify(
