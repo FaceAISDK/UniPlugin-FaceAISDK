@@ -74,7 +74,8 @@
 			addFaceSearchFeatureDemo: function() {
 				addFaceSearchFeature(
 					this.faceID,
-					1, // 1.快速模式 2.精确模式
+					1,    // 1.快速模式 2.精确模式
+					true, //是否需要显示确认框，强烈建议需要,防止抓取的人脸因为晃动等原因不合格
 					(result) => {
 						// 录入的人脸
 						this.faceAIResult = JSON.stringify(result)

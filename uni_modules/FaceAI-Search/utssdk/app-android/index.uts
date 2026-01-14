@@ -8,7 +8,7 @@ import FaceAISDKNative from "uts.sdk.modules.uniFaceAISDK.FaceAISDKNative";
 import FaceSearchActivity from "uts.sdk.modules.uniFaceAISDK.FaceSearchActivity";
 import FaceResultManager from "uts.sdk.modules.uniFaceAISDK.FaceResultManager";
 import System from 'java.lang.System'; // 引入 System 类以获取时间戳
-import AddFaceImageActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceImageActivity";
+import AddFaceFeatureActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity";
 import BitmapUtils from "com.faceAI.demo.base.utils.BitmapUtils";
 import FaceSearchFeatureManger from 'com.ai.face.faceSearch.search.FaceSearchFeatureManger';
 
@@ -174,15 +174,19 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
 export const addFaceSearchFeature : AddFaceSearchFeature = function (
     faceID:string,
 	addFacePerformanceMode:number,
+	needShowConfirmDialog:boolean,
 	callback : (result : ResultJSON) => void
 ) {
 	
 	UTSAndroid.getUniActivity()!.runOnUiThread(() => {
 		const context = UTSAndroid.getUniActivity() as Activity
 		FaceSDKConfig.init(context);
-		const intent = new Intent(context, AddFaceImageActivity().javaClass)
+		const intent = new Intent(context, AddFaceFeatureActivity().javaClass)
 		intent.putExtra("ADD_FACE_IMAGE_TYPE_KEY", "FACE_SEARCH");
 		intent.putExtra("ADD_FACE_PERFORMANCE_MODE", addFacePerformanceMode);
+		intent.putExtra("USER_FACE_ID_KEY", faceID);
+		intent.putExtra("NEED_CONFIRM_ADD_FACE", needShowConfirmDialog);
+		
 		context.startActivityForResult(intent, 10086)
 	});
 	
@@ -192,13 +196,6 @@ export const addFaceSearchFeature : AddFaceSearchFeature = function (
 			if(intentAct!=null){
 				const codeNow:number = intentAct.getIntExtra("code",0) as number
 				const msgNow:string=intentAct.getStringExtra("msg") as string
-				
-    //             const faceFeatureNew:string=intentAct.getStringExtra("faceFeature") as string
-				// let faceBase64="?"
-				// if(0!=codeNow){
-				// 	//用户取消了就不应该有这个值
-				// 	faceBase64=BitmapUtils.bitmapToBase64(FaceSDKConfig.CACHE_SEARCH_FACE_DIR+faceID)
-				// }
 				 
 				const resultJson:ResultJSON={
 					code:codeNow,

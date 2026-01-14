@@ -35,6 +35,7 @@ export type StartFaceSearch = (
 export type AddFaceSearchFeature = (
     faceID:string,
 	addFacePerformanceMode:number,
+	needShowConfirmDialog:boolean,
 	callback : (result : ResultJSON) => void) => void
 	
 	
