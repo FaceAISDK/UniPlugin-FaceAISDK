@@ -1,7 +1,7 @@
 {
 	"id": "FaceAI-Search",
 	"displayName": "FaceAI-人脸搜索识别",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "Android 1:N人脸搜索识别，可用于小区门禁多人身份验证等场景",
 	"keywords": [
         "人脸搜索,离线搜索"
@@ -26,7 +26,7 @@
 			"qq": ""
 		},
 		"declaration": {
-			"ads": "无",
+			"ads": "无 更多VIP 服务请联系 FaceAISDK.Service@gmail.com",
 			"data": "不采集",
 			"permissions": "相机"
 		},
