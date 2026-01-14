@@ -58,7 +58,7 @@ import com.faceAI.demo.SysCamera.search.ImageToast;
  */
 public class FaceSearchActivity extends AbsBaseActivity {
 
-    public static final String THRESHOLD_KEY = "THRESHOLD_KEY";           //人脸搜索阈值
+    public static final String THRESHOLD_KEY = "THRESHOLD_KEY";       //人脸搜索阈值
     public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";   //是否仅搜索一次就关闭搜索页
     public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";   //高分辨率远距离也可以工作，但是性能速度会下降
     public static final String CAMERA_ID = "CAMERA_ID";   //摄像头ID，部分摄像头可能需要适配

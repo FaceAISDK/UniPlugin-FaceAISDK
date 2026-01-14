@@ -6,9 +6,10 @@
 **插件Demo工程：**  
 [先跑通这个插件接入Demo工程](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)
 
-![demo](https://i.postimg.cc/LXdddddddn.png)
+![demo](https://i.postimg.cc/q7wT2QkP/face-Search.png)
 
-插件应用市场地址：https://ext.dcloud.net.cn/plugin?id=26467
+1:N 人脸搜索插件应用市场地址：https://ext.dcloud.net.cn/plugin?id=26467
+1:1人脸识别+活体检测插件地址：https://ext.dcloud.net.cn/plugin?id=23881
 
 ## 使用方法
   如果你是第一次运行UTS插件工程/引入UTS API插件，你应先安装官方说明配置好基础环境 [基础环境](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html) 
