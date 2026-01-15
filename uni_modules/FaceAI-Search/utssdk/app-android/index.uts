@@ -134,13 +134,11 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
  	
  		const resultJson:ResultJSON={
  				code:faceCount,
- 				msg:"insertManyFeatures"
+ 				msg:"code值为有效同步数据量"
  			}	
  		callback(resultJson)
  	})
  }
- 
- 
  
  
  
