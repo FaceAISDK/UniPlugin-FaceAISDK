@@ -80,8 +80,8 @@
 					 1,   //1.快速模式2.精确模式
 					 true, //是否需要显示确认框，强烈建议需要,防止抓取的人脸因为晃动等原因不合格
 					 (result: ResultJSON)  => {
-						//录入的人脸
-						this.faceAIResult =JSON.stringify(result)
+						//打印结果 json
+						this.faceAIResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
 					})
 			},
 			
@@ -109,7 +109,6 @@
 				   "tag",
 				   "group",
 					 (result: ResultJSON)  => {
-						//录入的人脸
 						this.faceAIResult =JSON.stringify(result)
 					})
 			},

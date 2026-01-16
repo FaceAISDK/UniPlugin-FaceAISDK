@@ -2,11 +2,12 @@
 
 
 /**
- * 业务方传给FaceAISDK 插件基础参数
+ * 返回给业务方 
  */
 export type ResultJSON = {
   code: number,       //code 含义参考Readme 
-  msg: string
+  msg: string,
+  faceBase64:string //人脸base64 编码，可用于辅助日志等
 }
 
 /**

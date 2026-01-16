@@ -68,7 +68,8 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
     if (faceID == null || faceID.trim() == "") {
         const errorResult: ResultJSON = {
             code: -1, // 错误码
-            msg: "参数错误: faceID 不能为空"
+            msg: "参数错误: faceID 不能为空",
+			faceBase64:""
         }
         console.error(errorResult.msg)
         callback(errorResult)
@@ -80,7 +81,8 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
         const currentLen = (faceFeature == null) ? 0 : faceFeature.length;
         const errorResult: ResultJSON = {
             code: -2, // 错误码
-            msg: "参数错误: faceFeature 长度必须为 1024 (当前长度: " + currentLen + ")"
+            msg: "参数错误: faceFeature 长度必须为 1024 (当前长度: " + currentLen + ")",
+			faceBase64:""
         }
         console.error(errorResult.msg)
         callback(errorResult)
@@ -101,7 +103,8 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
         // 构造成功回调
         const successResult: ResultJSON = {
             code: 1,
-            msg: "success"
+            msg: "success",
+			faceBase64:""
         }
         callback(successResult)
 
@@ -109,13 +112,13 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
         // 5. 【异常处理】捕获 Java 层可能的崩溃
         const catchResult: ResultJSON = {
             code: -3,
-            msg: "Native 执行异常: " + e.message
+            msg: "Native 执行异常: " + e.message,
+			faceBase64:""
         }
         console.error("insertFaceSearchFeature error: " + e.message)
         callback(catchResult)
     }
 }
- 
  
  
  
@@ -134,7 +137,8 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
  	
  		const resultJson:ResultJSON={
  				code:faceCount,
- 				msg:"code值为有效同步数据量"
+ 				msg:"code值为有效同步数据量",
+			    faceBase64:""
  			}	
  		callback(resultJson)
  	})
@@ -155,7 +159,8 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
  	
  		const resultJson:ResultJSON={
  				code:1,
- 				msg:"delete success"
+ 				msg:"delete success",
+			    faceBase64:""
  			}	
  		callback(resultJson)
  	})
@@ -194,19 +199,26 @@ export const addFaceSearchFeature : AddFaceSearchFeature = function (
 			if(intentAct!=null){
 				const codeNow:number = intentAct.getIntExtra("code",0) as number
 				const msgNow:string=intentAct.getStringExtra("msg") as string
+				
+				let faceBase64="?"
+				if(0!=codeNow){
+					//用户取消了就不应该有这个值
+					faceBase64=BitmapUtils.bitmapToBase64(FaceSDKConfig.CACHE_SEARCH_FACE_DIR+faceID)
+				}
 				 
 				const resultJson:ResultJSON={
 					code:codeNow,
-					msg:msgNow
+					msg:msgNow,
+			        faceBase64:faceBase64
 				}		
 				console.log("添加人脸人脸："+resultJson)
 				callback(resultJson)
 			}else{
 				const resultJson:ResultJSON={
 					code:-1,
-					msg:"添加失败"
+					msg:"添加失败",
+			        faceBase64:""
 				}
-				
 				callback(resultJson)
 			}
 		} 
