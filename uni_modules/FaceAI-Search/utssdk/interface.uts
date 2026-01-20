@@ -54,6 +54,17 @@ export type DeleteFaceSearchFeature = (
 
 
 /**
+ * 「1:N人脸搜索」查询人脸特征
+ * 
+ * @param faceID 用户ID  不传则查询所有数据
+ * @param callback 结果回调
+ */
+export type QueryFaceSearchFeature = (
+    faceID:string, 
+	callback : (result : string) => void) => void
+
+
+/**
  * 「1:N人脸搜索」录入一张人脸照片
  * 
  * @param faceID 用户ID

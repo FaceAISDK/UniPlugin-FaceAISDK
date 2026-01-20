@@ -1,4 +1,4 @@
-import { StartFaceSearch,AddFaceSearchFeature,DeleteFaceSearchFeature,FaceSearch,InsertFaceSearchFeature,ResultJSON, InsertManyFeatures} from '../interface.uts'
+import { StartFaceSearch,AddFaceSearchFeature,DeleteFaceSearchFeature,FaceSearch,InsertFaceSearchFeature,ResultJSON, InsertManyFeatures, QueryFaceSearchFeature} from '../interface.uts'
 
 import Application from 'android.app.Application';
 import Activity from 'android.app.Activity';
@@ -11,7 +11,7 @@ import System from 'java.lang.System'; // 引入 System 类以获取时间戳
 import AddFaceFeatureActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity";
 import BitmapUtils from "com.faceAI.demo.base.utils.BitmapUtils";
 import FaceSearchFeatureManger from 'com.ai.face.faceSearch.search.FaceSearchFeatureManger';
-
+import Gson from 'com.google.gson.Gson'
 
  /**
   * 启动持续人脸搜索 Activity
@@ -165,6 +165,49 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
  		callback(resultJson)
  	})
  }
+ 
+ 
+ 
+ /**
+  *  「1:N人脸搜索」查询人脸搜索人脸特征
+  *   faceID不为空则查询某一个值，否则查询所有
+  */
+
+export const queryFaceSearchFeature : QueryFaceSearchFeature = 
+  function (faceID : string, callback : (jsonResult: string) => void) {
+      const context = UTSAndroid.getAppContext() as Application
+      FaceSDKConfig.init(context);
+
+      try {
+          const manager = FaceSearchFeatureManger.getInstance(context);
+          
+          // 定义一个变量来接收 Native 返回的 Java 对象 (可能是 List 或 单个 Bean)
+          let nativeResult : any | null = null;
+
+          let jsonString = ""; // 默认为空数组字符串或空对象 "{}"
+
+          // 2. 根据条件获取 Java 对象
+          if (faceID == null || faceID.trim() == "") {
+              // 返回的是 Java List<FaceSearchFeature>
+              nativeResult = manager.queryAllFaceFaceFeature();
+          } else {
+              // 返回的是单个 Java FaceSearchFeature 对象
+              nativeResult = manager.queryFaceFeatureByID(faceID);
+          }
+
+          // 3. 【核心步骤】将 Java 对象转为 JSON 字符串
+          if (nativeResult != null) {
+              // Gson 会自动识别是 List 还是 Object 并转换格式
+              jsonString = new Gson().toJson(nativeResult);
+          } 
+          callback(jsonString);
+
+      } catch (e) {
+          console.error("queryFaceSearchFeature error: " + e.message);
+          callback("[]");
+      }
+}
+ 
  
 
 /**

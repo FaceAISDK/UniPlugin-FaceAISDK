@@ -3,6 +3,7 @@
 		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸搜索</button>
 		<button class="gray-button" @tap="addFaceSearchFeatureDemo">1:N人脸搜索录入人脸</button>
 		<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
+		<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
 		
@@ -23,6 +24,7 @@
 			insertManyFeatures,
 	        addFaceSearchFeature,
 			deleteFaceSearchFeature,
+			queryFaceSearchFeature,
 			ResultJSON} from "@/uni_modules/FaceAI-Search";
     import { JSON_FACE_FEATURES_DATA } from "./testData.uts";  //模拟服务端测试数据批量插入
 	
@@ -97,9 +99,27 @@
 					})
 			},
 			
-			
 			/**
-			* 人脸搜索人脸特征更新同步
+			* 删除人脸搜索人脸特征
+			* 
+			* faceID 传入值
+			* 查询成功返回json 单个对象，否则返回空 ""
+			* 
+			* faceID不传值（“” 代表查询所有）
+			* 返回jsong 数组[] 0到N 个对象
+			*/
+			queryFaceSearchFeatureDemo: function () {
+				queryFaceSearchFeature(
+				     this.faceID,  //不传则查询本地所有的数据
+					 (result: string)  => {
+						 //简单判断，result 长度小于1024 肯定是没数据结果
+						 this.faceAIResult = "【人脸查询回调】\n" + result;
+					})
+			},
+			
+			
+		   /**
+			* 人脸搜索人脸特征更新同步。人脸特征字符长度当前是1024
 			* 
 			*/
 			insertFaceSearchFeatureDemo: function () {
@@ -113,7 +133,7 @@
 					})
 			},
 			
-			/**
+		   /**
 			* 批量操作人脸搜索人脸特征更新同步
 			* 
 			*/
