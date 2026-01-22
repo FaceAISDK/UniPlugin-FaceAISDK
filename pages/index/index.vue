@@ -44,7 +44,7 @@
 				// 示例参数值：
 				const threshold = 0.88; // 阈值,只有人脸库中匹配到的人脸相似度大于此才有结果返回
 				const oneTime = false; // 搜索页持续搜索接收结果 还是仅仅搜索一次返回一次结果
-				const highRes = false; // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度
+				const highRes = false; // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
 				const camId = 0; // 0，前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）
 
 				startFaceSearch(

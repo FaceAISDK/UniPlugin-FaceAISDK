@@ -13,10 +13,7 @@ import BitmapUtils from "com.faceAI.demo.base.utils.BitmapUtils";
 import FaceSearchFeatureManger from 'com.ai.face.faceSearch.search.FaceSearchFeatureManger';
 
 
- /**
-  * 启动持续人脸搜索 Activity
-  * 该方法会启动 Activity 并不关闭，持续回调数据
-  */
+
 /**
  * 启动持续人脸搜索 Activity
  * 该方法会启动 Activity 并不关闭，持续回调数据
