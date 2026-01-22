@@ -23,18 +23,19 @@
 ## 使用方法
   如果你是第一次运行UTS插件工程/引入UTS API插件，你应先安装官方说明配置好基础环境 [基础环境](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html) 
 
-  - 1. 下载Demo工程[](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)先跑通。熟悉后参考文档集成到主项目
+  - 1.下载Demo工程[](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)先跑通。熟悉后参考文档集成到主项目
 
-  - 2. 按照文档 -》把插件引入项目（即 import {需要的方法} from "@/uni_modules/FaceAI-Search";）
+  - 2.按照文档 -》把插件引入项目（即 import {需要的方法} from "@/uni_modules/FaceAI-Search";）
 
-  - 3. 运行-》运行到手机或模拟器 -》制作自定义调试基座 -》打包 等基座制作完成   
+  - 3.运行 -》运行到手机或模拟器 -》**制作自定义调试基座** -》打包 等基座制作完成
     ![制作自定义调试基座](https://i.postimg.cc/QVZFgycd/1.png)
 
-  - 4. 运行 -》 运行到手机或模拟器-》运行到iOS/Android基座-》选择使用自定义基座运行-》选择手机-》运行
+  - 4.运行 -》运行到iOS/Android基座-》**使用自定义基座运行**-》选择手机-》运行
     ![运行到手机](https://i.postimg.cc/QdwtZM60/2.png)
-	**请手动勾选对正确的运行方式，很多朋友辛苦打好了自定义基座包，结果运行的时候没选对导致运行不了**  
 	
-	本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881
+  **一定要先制作自定义调试基准，然后运行的时候使用自定义基准，看图片步骤引导**
+  
+  本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881
 	
   注：只支持真机调试，需要用到硬件摄像头  
   Copyright © 2026 FaceAISDK. All rights reserved.           Email:FaceAISDK.Service@gmail.com
