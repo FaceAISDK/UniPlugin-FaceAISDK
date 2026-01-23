@@ -13,6 +13,7 @@
 			android:launchMode="singleTop"
 		    android:theme="@style/Theme.FaceAISDK.Fullscreen"
 			tools:replace="android:theme" />
+			
     </application>
 
 </manifest> 

@@ -25,6 +25,7 @@
 	        addFaceSearchFeature,
 			deleteFaceSearchFeature,
 			queryFaceSearchFeature,
+			toastMessage,
 			ResultJSON} from "@/uni_modules/FaceAI-Search";
     import { JSON_FACE_FEATURES_DATA } from "./testData.uts";  //模拟服务端测试数据批量插入
 	
@@ -43,10 +44,14 @@
 		
 		methods: {
 			
+			/**
+			 * 人脸搜索识别，返回大于threshold的json List数组，相似度高的在前面
+			 * 
+			 */
 			startFaceSearchDemo: function () {
 
 			                const threshold = 0.88;    // 阈值,只有人脸库中匹配到的人脸相似度大于此才有结果返回
-			                const oneTime = false;     // 搜索页持续搜索接收结果 还是仅仅搜索一次返回一次结果
+			                const oneTime = false;     // 搜索页持续搜索接收结果 还是仅仅搜索一次关闭页面返回结果
 			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度
 			                const camId = 0;           // 0，前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）
 			                
@@ -56,18 +61,23 @@
 			                    highRes,
 			                    camId,
 			                    (jsonStr: string) => {
-						            // 这里会持续不断地收到json list Str回调，按照降序排列好了 
-						            console.log("收到搜索结果:", jsonStr); 
-						            this.faceAIResult = "【人脸搜索回调】\n" + jsonStr; 
-									
-									// 2. 如果需要处理数据，建议包裹 try-catch 解析 JSON
-									// try {
-									//    const results = JSON.parse(jsonStr);
-									//    if(results.length > 0) {
-									//       // 可以在这里做业务逻辑，比如签到、开门等
-									//    }
-									// } catch(e) { console.error(e) }
-						        }
+									//[{"faceName":"User_1001","faceScore":0.939}]
+			                        console.log("收到搜索结果:", jsonStr);
+			                        this.faceAIResult = "【人脸搜索回调】\n" + jsonStr;
+			                        try {
+			                            const results = JSON.parse(jsonStr) as Array<UTSJSONObject>;
+			                            if (results.length > 0) {
+			                                const firstFace = results[0];
+			                                const name = firstFace.getString("faceName");
+			                                if (name != null) {
+												//Demo演示处理最相似的，原生方法 toastMessage出来
+			                                    toastMessage("识别成功: " + name);
+			                                }
+			                            }
+			                        } catch (e) {
+			                            console.error("解析数据失败:", e);
+			                        }
+			                    }
 						    );  
 						},
 			

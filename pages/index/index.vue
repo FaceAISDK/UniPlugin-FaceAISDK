@@ -1,5 +1,5 @@
 <template>
-  <view class="container">
+  <view>
     <button class="gray-button" @tap="startFaceSearchDemo">1:N人脸搜索</button>
     <button class="gray-button" @tap="addFaceSearchFeatureDemo">1:N人脸搜索录入人脸</button>
     <button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
@@ -8,171 +8,165 @@
     <button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
 
     <view class="result-box">
-      <view class="email-text">Email: FaceAISDK.Service@gmail.com</view>
+      <view> Email: FaceAISDK.Service@gmail.com</view>
       <scroll-view scroll-y="true" class="scroll-view-box">
-        <text class="text-content">{{ faceAIResult }}</text>
+        <text class="text-content">{{faceAIResult}}</text>
       </scroll-view>
     </view>
   </view>
 </template>
 
-<script lang="uts">
-  // 引入 UTS 插件接口
-  import {
-    startFaceSearch,
-    insertFaceSearchFeature,
-    insertManyFeatures,
-    addFaceSearchFeature,
-    deleteFaceSearchFeature,
-    queryFaceSearchFeature,
-    ResultJSON
-  } from "@/uni_modules/FaceAI-Search";
+<script>
+// 1. 引入模块 (去除 .uts 后缀或改为 .js)
+import {
+  startFaceSearch,
+  insertFaceSearchFeature,
+  insertManyFeatures,
+  addFaceSearchFeature,
+  deleteFaceSearchFeature,
+  queryFaceSearchFeature,
+  toastMessage
+} from "@/uni_modules/FaceAI-Search";
 
-  // 引入测试数据
-  import { JSON_FACE_FEATURES_DATA } from "./testData.uts";
+import { JSON_FACE_FEATURES_DATA } from "./testData.js";
 
-  export default {
-    data() {
-      return {
-        // 定义数据并初始化
-        faceID: 'Test',
-        faceFeature: 'faceFeature is a string with lenth 1024',
-        faceAIResult: '等待操作结果...'
-      }
+export default {
+  data() {
+    return {
+      faceID: 'Test',
+      faceFeature: 'faceFeature is a string with lenth 1024',
+      faceAIResult: 'faceAIResult'
+    }
+  },
+  onLoad() {
+
+  },
+
+  methods: {
+    /**
+     * 人脸搜索识别
+     */
+    startFaceSearchDemo: function() {
+      const threshold = 0.88; // 阈值
+      const oneTime = false; // 持续搜索
+      const highRes = false; // 高分辨率模式
+      const camId = 0; // 前置摄像头
+
+      startFaceSearch(
+        threshold,
+        oneTime,
+        highRes,
+        camId,
+        (jsonStr) => {
+          console.log("收到搜索结果:", jsonStr);
+          this.faceAIResult = "【人脸搜索回调】\n" + jsonStr;
+
+          try {
+            // JS中 JSON.parse 直接得到对象/数组
+            const results = JSON.parse(jsonStr);
+            if (results && results.length > 0) {
+              const firstFace = results[0];
+              const name = firstFace.faceName; // 直接访问属性
+              if (name) {
+                toastMessage("识别成功: " + name);
+              }
+            }
+          } catch (e) {
+            console.error("解析数据失败:", e);
+          }
+        }
+      );
     },
-    methods: {
-      /**
-       * 1:N 人脸搜索
-       */
-      startFaceSearchDemo() {
-        const threshold = 0.88; // 阈值
-        const oneTime = false; // 是否只搜索一次
-        const highRes = false; // 是否开启高分辨率模式
-        const camId = 0; // 0:前置, 1:后置
 
-        startFaceSearch(
-          threshold,
-          oneTime,
-          highRes,
-          camId,
-          (jsonStr: string) => {
-            // 这里会持续收到回调
-            console.log("收到搜索结果:", jsonStr);
-            this.faceAIResult = "【人脸搜索回调】\n" + jsonStr;
-          }
-        );
-      },
+    /**
+     * 人脸特征录入
+     */
+    addFaceSearchFeatureDemo: function() {
+      addFaceSearchFeature(
+        this.faceID,
+        1, // 1.快速模式 2.精确模式
+        true, // 是否显示确认框
+        (result) => {
+          this.faceAIResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
+        }
+      )
+    },
 
-      /**
-       * 录入人脸特征（通过相机）
-       */
-      addFaceSearchFeatureDemo() {
-        addFaceSearchFeature(
-          this.faceID,
-          1, // 1.快速模式 2.精确模式
-          true, // 显示确认框
-          (result: ResultJSON) => {
-            // 建议直接 stringify 对象，避免兼容性问题
-            this.faceAIResult = "【录入结果】\n" + JSON.stringify(result);
-            console.log(this.faceAIResult);
-          }
-        )
-      },
+    /**
+     * 删除特征值
+     */
+    deleteFaceSearchFeatureDemo: function() {
+      deleteFaceSearchFeature(
+        this.faceID,
+        (result) => {
+          this.faceAIResult = JSON.stringify(result)
+        }
+      )
+    },
 
-      /**
-       * 删除人脸特征
-       */
-      deleteFaceSearchFeatureDemo() {
-        deleteFaceSearchFeature(
-          this.faceID,
-          (result: ResultJSON) => {
-            this.faceAIResult = "【删除结果】\n" + JSON.stringify(result);
-          }
-        )
-      },
+    /**
+     * 查询特征值
+     */
+    queryFaceSearchFeatureDemo: function() {
+      queryFaceSearchFeature(
+        this.faceID,
+        (result) => {
+          this.faceAIResult = "【人脸查询回调】\n" + result;
+        }
+      )
+    },
 
-      /**
-       * 查询人脸特征
-       * faceID不传值（""）代表查询所有
-       */
-      queryFaceSearchFeatureDemo() {
-        queryFaceSearchFeature(
-          "", // 空字符串查询所有
-          (result: string) => {
-            // result 已经是 JSON 字符串，直接显示
-            this.faceAIResult = "【查询结果】\n" + result;
-            console.log("查询回调:", result);
-          }
-        )
-      },
+    /**
+     * 同步特征值
+     */
+    insertFaceSearchFeatureDemo: function() {
+      insertFaceSearchFeature(
+        this.faceID,
+        this.faceFeature,
+        "tag",
+        "group",
+        (result) => {
+          this.faceAIResult = JSON.stringify(result)
+        })
+    },
 
-      /**
-       * 同步单个人脸特征
-       */
-      insertFaceSearchFeatureDemo() {
-        insertFaceSearchFeature(
-          this.faceID,
-          this.faceFeature,
-          "tag",
-          "group",
-          (result: ResultJSON) => {
-            this.faceAIResult = "【同步结果】\n" + JSON.stringify(result);
-          }
-        )
-      },
-
-      /**
-       * 批量同步人脸特征
-       */
-      insertManyFaceFeatureSDemo() {
-        insertManyFeatures(
-          JSON_FACE_FEATURES_DATA,
-          (result: ResultJSON) => {
-            this.faceAIResult = "【批量同步结果】\n" + JSON.stringify(result);
-          }
-        )
-      }
+    /**
+     * 批量同步
+     */
+    insertManyFaceFeatureSDemo: function() {
+      insertManyFeatures(
+        JSON_FACE_FEATURES_DATA,
+        (result) => {
+          this.faceAIResult = JSON.stringify(result)
+        })
     }
   }
+}
 </script>
 
 <style>
-  .container {
-    padding: 20rpx;
+  .result-box {
+    margin: 20rpx;
+  }
+
+  .scroll-view-box {
+    height: 400rpx;
+    border: 1px solid #ccc;
+    border-radius: 10rpx;
+    background-color: #f8f8f8;
+    padding: 15rpx;
+    box-sizing: border-box;
+  }
+
+  .text-content {
+    font-size: 28rpx;
+    color: #333;
+    white-space: pre-wrap;
   }
 
   .gray-button {
     background-color: #ffffff;
     color: #800080;
-    border: 1px solid #eeeeee;
-    margin-bottom: 20rpx;
-    font-size: 30rpx;
-  }
-
-  .result-box {
-    margin-top: 30rpx;
-    padding: 10rpx;
-  }
-
-  .email-text {
-    font-size: 24rpx;
-    color: #999;
-    margin-bottom: 10rpx;
-  }
-
-  .scroll-view-box {
-    height: 500rpx; /* 增加高度以便更好地查看大量 JSON 数据 */
-    border: 1px solid #ccc;
-    border-radius: 10rpx;
-    background-color: #f8f8f8;
-    padding: 15rpx;
-  }
-
-  .text-content {
-    font-size: 26rpx;
-    color: #333;
-    /* 关键：确保 JSON 字符串在狭窄屏幕上能换行 */
-    word-break: break-all;
-    white-space: pre-wrap;
+    border: none;
   }
 </style>

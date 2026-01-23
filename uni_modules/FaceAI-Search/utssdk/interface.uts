@@ -91,5 +91,6 @@ export type InsertManyFeatures = (
 	jsonFaceFeatures : string,
 	callback : (result : ResultJSON) => void) => void
 	
+export type ToastMessage = (message : string) => void	
 
 
