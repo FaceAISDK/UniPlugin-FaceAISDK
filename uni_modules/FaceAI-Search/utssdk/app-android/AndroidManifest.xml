@@ -11,8 +11,7 @@
 		    android:name=".FaceSearchActivity"
 		    android:exported="false"
 			android:launchMode="singleTop"
-		    android:theme="@style/Theme.FaceAISDK.Fullscreen"
-			tools:replace="android:theme" />
+		    android:theme="@style/Theme.FaceAISDK.Fullscreen"/>
 			
     </application>
 

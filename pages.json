@@ -8,7 +8,7 @@
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
+		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "人脸搜索识别",
 		"navigationBarBackgroundColor": "#fc0107",
 		"backgroundColor": "#F8F8F8"

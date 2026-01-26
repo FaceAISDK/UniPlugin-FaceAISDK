@@ -1,7 +1,7 @@
 <template>
 	<view>
-		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸搜索</button>
-		<button class="gray-button" @tap="addFaceSearchFeatureDemo">1:N人脸搜索录入人脸</button>
+		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸 搜索识别</button>
+		<button class="gray-button" @tap="addFaceSearchFeatureDemo">1:N人脸搜索 录入人脸</button>
 		<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
 		<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
@@ -10,7 +10,7 @@
 		<view class="result-box">
 		      <view> Email: FaceAISDK.Service@gmail.com</view>
 		       <scroll-view scroll-y="true" class="scroll-view-box">
-		       <text class="text-content">{{faceAIResult}}</text>
+		       <text class="text-content">{{faceSearchResult}}</text>
 		       </scroll-view>
 		</view>
 	</view>
@@ -35,7 +35,7 @@
 			return {
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
-				faceAIResult: 'faceAIResult'
+				faceSearchResult: 'faceSearchResult'
 			}
 		},
 		onLoad() {
@@ -63,15 +63,17 @@
 			                    (jsonStr: string) => {
 									//[{"faceName":"User_1001","faceScore":0.939}]
 			                        console.log("收到搜索结果:", jsonStr);
-			                        this.faceAIResult = "【人脸搜索回调】\n" + jsonStr;
+			                        this.faceSearchResult = "【人脸搜索回调】\n" + jsonStr;
 			                        try {
 			                            const results = JSON.parse(jsonStr) as Array<UTSJSONObject>;
 			                            if (results.length > 0) {
 			                                const firstFace = results[0];
 			                                const name = firstFace.getString("faceName");
+											const score = firstFace.getNumber("faceScore");
+										
 			                                if (name != null) {
 												//Demo演示处理最相似的，原生方法 toastMessage出来
-			                                    toastMessage("识别成功: " + name);
+			                                    toastMessage("搜索最匹配: " + name+","+score);
 			                                }
 			                            }
 			                        } catch (e) {
@@ -93,7 +95,7 @@
 					 true, //是否需要显示确认框，强烈建议需要,防止抓取的人脸因为晃动等原因不合格
 					 (result: ResultJSON)  => {
 						//打印结果 json
-						this.faceAIResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
+						this.faceSearchResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
 					})
 			},
 			
@@ -105,7 +107,7 @@
 				deleteFaceSearchFeature(
 				     this.faceID,
 					 (result: ResultJSON)  => {
-						this.faceAIResult =JSON.stringify(result)
+						this.faceSearchResult =JSON.stringify(result)
 					})
 			},
 			
@@ -123,7 +125,7 @@
 				     this.faceID,  //不传则查询本地所有的数据
 					 (result: string)  => {
 						 //简单判断，result 长度小于1024 肯定是没数据结果
-						 this.faceAIResult = "【人脸查询回调】\n" + result;
+						 this.faceSearchResult = "【人脸查询回调】\n" + result;
 					})
 			},
 			
@@ -139,7 +141,7 @@
 				   "tag",
 				   "group",
 					 (result: ResultJSON)  => {
-						this.faceAIResult =JSON.stringify(result)
+						this.faceSearchResult =JSON.stringify(result)
 					})
 			},
 			
@@ -151,7 +153,7 @@
 				insertManyFeatures(
 				     JSON_FACE_FEATURES_DATA,
 					 (result: ResultJSON)  => {
-						this.faceAIResult =JSON.stringify(result)
+						this.faceSearchResult =JSON.stringify(result)
 					})
 
 			}
