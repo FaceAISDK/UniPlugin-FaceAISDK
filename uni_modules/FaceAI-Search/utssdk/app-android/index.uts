@@ -7,7 +7,7 @@ import FaceSDKConfig from "com.faceAI.demo.FaceSDKConfig";
 import FaceAISDKNative from "uts.sdk.modules.uniFaceAISDK.FaceAISDKNative";
 import FaceSearchActivity from "uts.sdk.modules.uniFaceAISDK.FaceSearchActivity";
 import FaceResultManager from "uts.sdk.modules.uniFaceAISDK.FaceResultManager";
-import System from 'java.lang.System'; // 引入 System 类以获取时间戳
+import System from 'java.lang.System'; 
 import AddFaceFeatureActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity";
 import BitmapUtils from "com.faceAI.demo.base.utils.BitmapUtils";
 import FaceSearchFeatureManger from 'com.ai.face.faceSearch.search.FaceSearchFeatureManger';
@@ -29,7 +29,6 @@ export const startFaceSearch: StartFaceSearch = function(
 	 UTSAndroid.getUniActivity()!.runOnUiThread(() => {
 	 	const context = UTSAndroid.getUniActivity() as Activity
 	 	FaceSDKConfig.init(context);
-		// UTS 会自动将这个 (json: string) => void 转换为 Kotlin 的 (String) -> Unit
 		FaceResultManager.setCallback((json: string) => {
 		    callback(json);
 		});
