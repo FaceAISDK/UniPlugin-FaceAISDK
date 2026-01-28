@@ -60,6 +60,8 @@ public class FaceSearchActivity extends AbsBaseActivity {
 
     public static final String THRESHOLD_KEY = "THRESHOLD_KEY";       //人脸搜索阈值
     public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";   //是否仅搜索一次就关闭搜索页
+	public static final String SEARCH_TIME_OUT = "SEARCH_TIME_OUT";   //仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
+	
     public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";   //高分辨率远距离也可以工作，但是性能速度会下降
     public static final String CAMERA_ID = "CAMERA_ID";   //摄像头ID，部分摄像头可能需要适配
 
@@ -67,6 +69,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 //    public static final String SEARCH_TAG = "MOTION_LIVENESS_TYPES"; //动作活体种类
     private float searchThreshold = 0.88f;  //搜索阈值
     private boolean searchOneTime = false;   //是否仅搜索一次就关闭搜索页
+	private int searchTimeOut = 5 ; //搜索超时时间
     private boolean isCameraSizeHigh = false; //是否高分辨率
     private int cameraId = CameraSelector.LENS_FACING_FRONT; //摄像头ID，部分摄像头可能需要适配
     private int cameraLensFacing;  //摄像头前置，后置，外接
@@ -76,6 +79,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
     private FaceCameraXFragment cameraXFragment; //摄像头请自行管理，源码全部开放
     private boolean pauseSearch =false; //控制是否送数据到SDK进行搜索
 
+    private long searchStartTime =0; //开始搜索时间
 
     /**
      * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
@@ -89,6 +93,9 @@ public class FaceSearchActivity extends AbsBaseActivity {
             if (intent.hasExtra(SEARCH_ONE_TIME)) {
                 searchOneTime = intent.getBooleanExtra(SEARCH_ONE_TIME, false);
             }
+			if (intent.hasExtra(SEARCH_TIME_OUT)) {
+			    searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 5);
+			}
             if (intent.hasExtra(IS_CAMERA_SIZE_HIGH)) {
                 isCameraSizeHigh = intent.getBooleanExtra(IS_CAMERA_SIZE_HIGH, false);
             }
@@ -232,6 +239,8 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 binding.graphicOverlay.setCameraInfo(imageWidth,imageHeight,cameraXFragment.isFrontCamera());
             }
         });
+		
+		searchStartTime= System.currentTimeMillis()/1000; //开始的秒
     }
 
     /**
@@ -244,6 +253,13 @@ public class FaceSearchActivity extends AbsBaseActivity {
             case NO_MATCHED:
                 //本次没有搜索匹配到结果.没有结果会持续尝试1秒之内没有结果会返回NO_MATCHED code
                 setSecondTips(R.string.no_matched_face);
+				
+				if(searchOneTime&&System.currentTimeMillis()/1000-searchStartTime>5){
+					//超时没有返回结果
+					FaceResultManager.INSTANCE.sendResult("[]"); //没有搜索结果
+				    FaceSearchActivity.this.finish();
+				}
+							
                 break;
 
             case FACE_DIR_EMPTY:

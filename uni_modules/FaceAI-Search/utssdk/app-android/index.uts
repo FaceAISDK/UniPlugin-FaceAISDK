@@ -21,6 +21,7 @@ import Gson from 'com.google.gson.Gson'
 export const startFaceSearch: StartFaceSearch = function(
     searchThreshold: number,
     searchOneTime: boolean,
+	searchTimeOut:number,
     isCameraSizeHigh: boolean,
     cameraId: number,
     callback: (jsonResult: string) => void
@@ -37,6 +38,7 @@ export const startFaceSearch: StartFaceSearch = function(
 		const intent = new Intent(context, FaceSearchActivity().javaClass);
 		intent.putExtra("THRESHOLD_KEY", searchThreshold);
 		intent.putExtra("SEARCH_ONE_TIME", searchOneTime);
+		intent.putExtra("SEARCH_TIME_OUT", searchTimeOut);
 		intent.putExtra("IS_CAMERA_SIZE_HIGH", isCameraSizeHigh);
 		intent.putExtra("CAMERA_ID", cameraId);
 		context.startActivity(intent);	

@@ -50,12 +50,14 @@
 			startFaceSearchDemo: function () {
 				const threshold = 0.88; // 阈值
 				const oneTime = false;  // 持续搜索
+				const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 				const highRes = false;  // 高分辨率模式
 				const camId = 0;        // 前置摄像头
 			                
 				startFaceSearch(
 					threshold,
 					oneTime,
+					searchTimeOut,
 					highRes,
 					camId,
 					(jsonStr) => { // 移除 :string 类型
