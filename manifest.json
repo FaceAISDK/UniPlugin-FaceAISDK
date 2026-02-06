@@ -2,8 +2,8 @@
 	"name": "人脸搜索",
 	"appid": "__UNI__C3F93BB",
 	"description": "人脸搜索识别，1:N人脸搜索",
-	"versionName": "1.1.5",
-	"versionCode": "115",
+	"versionName": "1.2.1",
+	"versionCode": "121",
 	"uni-app-x": {},
 	/* 快应用特有相关 */
 	"quickapp": {},
@@ -55,7 +55,8 @@
 			"minSdkVersion": "21",
 			"targetSdkVersion": "35",
 			"abiFilters": [
-				"arm64-v8a"
+				"arm64-v8a",
+				"armeabi-v7a"
 			]
 		}
 	},

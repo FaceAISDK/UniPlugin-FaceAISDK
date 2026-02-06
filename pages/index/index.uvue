@@ -27,6 +27,7 @@
 			queryFaceSearchFeature,
 			toastMessage,
 			ResultJSON} from "@/uni_modules/FaceAI-Search";
+	// 注意：vue应该使用 testData.uts 而不是 testData.js		
     import { JSON_FACE_FEATURES_DATA } from "./testData.uts";  //模拟服务端测试数据批量插入
 	
 	export default {
@@ -72,13 +73,12 @@
 			                                const firstFace = results[0];
 			                                const name = firstFace.getString("faceName");
 											const score = firstFace.getNumber("faceScore");
-										
 			                                if (name != null) {
 												//Demo演示处理最相似的，原生方法 toastMessage出来
 			                                    toastMessage("最佳匹配:" + name+","+score);
 			                                }
 			                            }else{
-											toastMessage("未有匹配结果");
+											toastMessage("无匹配结果"); // 背景颜色修改res/colols/face_lib_main_color
 										}
 			                        } catch (e) {
 			                            console.error("解析数据失败:", e);
