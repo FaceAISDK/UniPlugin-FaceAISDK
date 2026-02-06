@@ -47,7 +47,10 @@
 			"client": {
 				"uni-app": {
 					"vue": {
-						"vue2": "-",
+						"vue2": {
+                            "extVersion": "1.0.8",
+                            "minVersion": ""
+                        },
 						"vue3": "-"
 					},
 					"web": {
@@ -55,14 +58,14 @@
 						"chrome": "-"
 					},
 					"app": {
-						"vue": "-",
-						"nvue": "-",
+						"vue": "√",
+						"nvue": "√",
 						"android": {
                             "extVersion": "1.0.0",
                             "minVersion": "21"
                         },
-						"ios": "-",
-						"harmony": "-"
+						"ios": "x",
+						"harmony": "x"
 					},
 					"mp": {
 						"weixin": "x",
