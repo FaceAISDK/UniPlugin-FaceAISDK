@@ -28,7 +28,7 @@
 		toastMessage
 	} from "@/uni_modules/FaceAI-Search";
 	
-	// 注意：这里假设你已经将 testData.uts 转换为了 testData.js
+	// 注意：vue应该使用 testData.uts 而不是 testData.js	
 	import { JSON_FACE_FEATURES_DATA } from "./testData.js";
 	
 	export default {
@@ -60,17 +60,15 @@
 					searchTimeOut,
 					highRes,
 					camId,
-					(jsonStr) => { // 移除 :string 类型
+					(jsonStr) => { 
 						console.log("收到搜索结果:", jsonStr);
 						this.faceAIResult = "【人脸搜索回调】\n" + jsonStr;
 					  
 						try {
-							// 移除 as Array<UTSJSONObject> 强转
 							const results = JSON.parse(jsonStr);
 							
 							if (results && results.length > 0) {
 								const firstFace = results[0];
-								// 修改获取属性的方式：从 .getString("faceName") 改为 .faceName
 								const name = firstFace.faceName; 
 								
 								if (name) {
@@ -92,7 +90,7 @@
 					this.faceID,
 					1,    // 1.快速模式 2.精确模式
 					true, // 是否显示确认框
-					(result) => { // 移除 :ResultJSON 类型
+					(result) => { 
 						// 打印结果 json
 						this.faceAIResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
 					}
