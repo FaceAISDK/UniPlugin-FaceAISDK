@@ -1,4 +1,4 @@
-import { StartFaceSearch,AddFaceSearchFeature,DeleteFaceSearchFeature,FaceSearch,InsertFaceSearchFeature,ResultJSON, InsertManyFeatures, QueryFaceSearchFeature, ToastMessage} from '../interface.uts'
+import { StartFaceSearch, AddFaceSearchFeature, DeleteFaceSearchFeature, InsertFaceSearchFeature, ResultJSON, InsertManyFeatures, QueryFaceSearchFeature, ToastMessage } from '../interface.uts'
 
 import Application from 'android.app.Application';
 import Activity from 'android.app.Activity';
@@ -7,7 +7,7 @@ import FaceSDKConfig from "com.faceAI.demo.FaceSDKConfig";
 import FaceAISDKNative from "uts.sdk.modules.uniFaceAISDK.FaceAISDKNative";
 import FaceSearchActivity from "uts.sdk.modules.uniFaceAISDK.FaceSearchActivity";
 import FaceResultManager from "uts.sdk.modules.uniFaceAISDK.FaceResultManager";
-import System from 'java.lang.System'; // 引入 System 类以获取时间戳
+import System from 'java.lang.System';
 import AddFaceFeatureActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity";
 import BitmapUtils from "com.faceAI.demo.base.utils.BitmapUtils";
 import FaceSearchFeatureManger from 'com.ai.face.faceSearch.search.FaceSearchFeatureManger';
@@ -21,33 +21,42 @@ import Gson from 'com.google.gson.Gson'
 export const startFaceSearch: StartFaceSearch = function(
     searchThreshold: number,
     searchOneTime: boolean,
+    searchTimeOut: number,
     isCameraSizeHigh: boolean,
     cameraId: number,
     callback: (jsonResult: string) => void
 ) {
-	 
-	 UTSAndroid.getUniActivity()!.runOnUiThread(() => {
-	 	const context = UTSAndroid.getUniActivity() as Activity
-	 	FaceSDKConfig.init(context);
-		// UTS 会自动将这个 (json: string) => void 转换为 Kotlin 的 (String) -> Unit
-		FaceResultManager.setCallback((json: string) => {
-		    callback(json);
+
+    UTSAndroid.getUniActivity()!.runOnUiThread(() => {
+        const context = UTSAndroid.getUniActivity() as Activity
+        FaceSDKConfig.init(context);
+        // FaceResultManager.setCallback((json: string) => {
+        //     callback(json);
+        // });
+		
+		// 修改回调
+		FaceResultManager.setCallback((json: string, liveness: number,base64:string) => {
+		    // 这样前端可以同时获取到识别结果列表和活体值
+		    const finalJson = `{"data":${json},"liveness":${liveness},"base64":"${base64}"}`;
+		    callback(finalJson);
 		});
-		 
-		// 2. 启动搜索 Activity
-		const intent = new Intent(context, FaceSearchActivity().javaClass);
-		intent.putExtra("THRESHOLD_KEY", searchThreshold);
-		intent.putExtra("SEARCH_ONE_TIME", searchOneTime);
-		intent.putExtra("IS_CAMERA_SIZE_HIGH", isCameraSizeHigh);
-		intent.putExtra("CAMERA_ID", cameraId);
-		context.startActivity(intent);	
-	 });
- } 
- 
+				
+			   
+        // 2. 启动搜索 Activity
+        const intent = new Intent(context, FaceSearchActivity().javaClass);
+        intent.putExtra("THRESHOLD_KEY", searchThreshold);
+        intent.putExtra("SEARCH_ONE_TIME", searchOneTime);
+        intent.putExtra("SEARCH_TIME_OUT", searchTimeOut);
+        intent.putExtra("IS_CAMERA_SIZE_HIGH", isCameraSizeHigh);
+        intent.putExtra("CAMERA_ID", cameraId);
+        context.startActivity(intent);
+    });
+}
+
 //仅仅用于Android 提取人脸图片中的特征值。不建议通过此方式录入人脸，品质不高
-export const toastMessage : ToastMessage = function (message : string) {
-	const context = UTSAndroid.getUniActivity() as Activity
-	FaceAISDKNative.toastMessage(context,message)
+export const toastMessage: ToastMessage = function(message: string) {
+    const context = UTSAndroid.getUniActivity() as Activity
+    FaceAISDKNative.toastMessage(context, message)
 }
 
 
@@ -55,7 +64,7 @@ export const toastMessage : ToastMessage = function (message : string) {
  * 「1:N人脸搜索」人脸搜索人脸特征更新同步
  * 自行保证人脸特征值长度为1024
  */
-export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
+export const insertFaceSearchFeature: InsertFaceSearchFeature = function(
     faceID: string,
     faceFeature: string,
     tag: string,
@@ -65,26 +74,27 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
     // 1. 获取 Context
     const context = UTSAndroid.getAppContext() as Application
     FaceSDKConfig.init(context);
-
     // 2. 【校验】验证 faceID 不能为空
     if (faceID == null || faceID.trim() == "") {
         const errorResult: ResultJSON = {
             code: -1, // 错误码
             msg: "参数错误: faceID 不能为空",
-			faceBase64:""
+            faceBase64: ""
         }
         console.error(errorResult.msg)
         callback(errorResult)
         return // 终止执行
     }
 
+
     // 3. 【校验】验证 faceFeature 长度必须为 1024
     if (faceFeature == null || faceFeature.length != 1024) {
-        const currentLen = (faceFeature == null) ? 0 : faceFeature.length;
+        const currentLen = (faceFeature == null) ?
+            0 : faceFeature.length;
         const errorResult: ResultJSON = {
             code: -2, // 错误码
             msg: "参数错误: faceFeature 长度必须为 1024 (当前长度: " + currentLen + ")",
-			faceBase64:""
+            faceBase64: ""
         }
         console.error(errorResult.msg)
         callback(errorResult)
@@ -93,179 +103,176 @@ export const insertFaceSearchFeature: InsertFaceSearchFeature = function (
 
     // 4. 【执行】调用 Native 方法，并增加异常捕获
     try {
+
         // tag 和 group 可以用来做标记和分组
         // 建议：如果 tag/group 为空，可以传默认值，防止 Native 端空指针（视 Native 实现而定）
-        const safeTag = (tag == null) ? "" : tag;
+        const safeTag = (tag == null) ?
+            "" : tag;
         const safeGroup = (group == null) ? "" : group;
-
         const isSuccess = FaceSearchFeatureManger.getInstance(context)
             .insertFaceFeature(faceID, faceFeature, System.currentTimeMillis(), safeTag, safeGroup);
-
         // 假设 Native 方法返回 boolean (如果 Native 是 void，则这里只代表调用成功)
         // 构造成功回调
         const successResult: ResultJSON = {
             code: 1,
             msg: "success",
-			faceBase64:""
+            faceBase64: ""
         }
         callback(successResult)
 
     } catch (e: Exception) {
         // 5. 【异常处理】捕获 Java 层可能的崩溃
-        const catchResult: ResultJSON = {
+        const
+        catchResult: ResultJSON = {
             code: -3,
             msg: "Native 执行异常: " + e.message,
-			faceBase64:""
+            faceBase64: ""
         }
         console.error("insertFaceSearchFeature error: " + e.message)
         callback(catchResult)
     }
 }
- 
- 
- 
- /**
-  *  「1:N人脸搜索」批量插入人脸特征数据
-  *   自行保证人脸特征值长度为1024
-  */
- export const insertManyFeatures : InsertManyFeatures = 
-   function (jsonFaceFeatures : string, 
-   callback : (result : ResultJSON) => void) {
- 	    const context = UTSAndroid.getAppContext() as Application
- 	    FaceSDKConfig.init(context);	
- 	
-		let faceCount = FaceSearchFeatureManger.getInstance(context)
-		                .insertFeatures(jsonFaceFeatures)
- 	
- 		const resultJson:ResultJSON={
- 				code:faceCount,
- 				msg:"code值为有效同步数据量",
-			    faceBase64:""
- 			}	
- 		callback(resultJson)
- 	})
- }
- 
- 
- 
- /**
-  *  「1:N人脸搜索」人脸搜索人脸特征更新同步
-  */
- export const deleteFaceSearchFeature : DeleteFaceSearchFeature = 
-   function (faceID : string, callback : (result : ResultJSON) => void) {
- 	    const context = UTSAndroid.getAppContext() as Application
- 	    FaceSDKConfig.init(context);	
- 	
+
+
+
+/**
+ * 「1:N人脸搜索」批量插入人脸特征数据
+ * 自行保证人脸特征值长度为1024
+ */
+export const insertManyFeatures: InsertManyFeatures =
+    function(jsonFaceFeatures: string,
+        callback: (result: ResultJSON) => void) {
+        const context = UTSAndroid.getAppContext() as Application
+        FaceSDKConfig.init(context);
+        let faceCount = FaceSearchFeatureManger.getInstance(context)
+            .insertFeatures(jsonFaceFeatures)
+
+        const resultJson: ResultJSON = {
+            code: faceCount,
+            msg: "code值为有效同步数据量",
+            faceBase64: "-"
+        }
+
+        callback(resultJson)
+        // 修复点：这里删除了多余的 })
+    }
+
+
+
+/**
+ * 「1:N人脸搜索」人脸搜索人脸特征更新同步
+ */
+export const deleteFaceSearchFeature: DeleteFaceSearchFeature =
+    function(faceID: string, callback: (result: ResultJSON) => void) {
+        const context = UTSAndroid.getAppContext() as Application
+        FaceSDKConfig.init(context);
         //清除所有人脸搜索所有特征
         FaceSearchFeatureManger.getInstance(context).deleteFaceFaceFeature(faceID);
- 	
- 		const resultJson:ResultJSON={
- 				code:1,
- 				msg:"delete success",
-			    faceBase64:""
- 			}	
- 		callback(resultJson)
- 	})
- }
- 
- 
- 
- /**
-  *  「1:N人脸搜索」查询人脸搜索人脸特征
-  *   faceID不为空则查询某一个值，否则查询所有
-  */
 
-export const queryFaceSearchFeature : QueryFaceSearchFeature = 
-  function (faceID : string, callback : (jsonResult: string) => void) {
-      const context = UTSAndroid.getAppContext() as Application
-      FaceSDKConfig.init(context);
+        const resultJson: ResultJSON = {
+            code: 1,
+            msg: "delete success",
+            faceBase64: ""
+        }
+        callback(resultJson)
+        // 修复点：这里删除了多余的 })
+    }
 
-      try {
-          const manager = FaceSearchFeatureManger.getInstance(context);
-          
-          // 定义一个变量来接收 Native 返回的 Java 对象 (可能是 List 或 单个 Bean)
-          let nativeResult : any | null = null;
 
-          let jsonString = ""; // 默认为空数组字符串或空对象 "{}"
 
-          // 2. 根据条件获取 Java 对象
-          if (faceID == null || faceID.trim() == "") {
-              // 返回的是 Java List<FaceSearchFeature>
-              nativeResult = manager.queryAllFaceFaceFeature();
-          } else {
-              // 返回的是单个 Java FaceSearchFeature 对象
-              nativeResult = manager.queryFaceFeatureByID(faceID);
-          }
+/**
+ * 「1:N人脸搜索」查询人脸搜索人脸特征
+ * faceID不为空则查询某一个值，否则查询所有
+ */
 
-          // 3. 【核心步骤】将 Java 对象转为 JSON 字符串
-          if (nativeResult != null) {
-              // Gson 会自动识别是 List 还是 Object 并转换格式
-              jsonString = new Gson().toJson(nativeResult);
-          } 
-          callback(jsonString);
+export const queryFaceSearchFeature: QueryFaceSearchFeature =
+    function(faceID: string, callback: (jsonResult: string) => void) {
+        const context = UTSAndroid.getAppContext() as Application
+        FaceSDKConfig.init(context);
+        try {
+            const manager = FaceSearchFeatureManger.getInstance(context);
+            // 定义一个变量来接收 Native 返回的 Java 对象 (可能是 List 或 单个 Bean)
+            let nativeResult: any |
+                null = null;
 
-      } catch (e) {
-          console.error("queryFaceSearchFeature error: " + e.message);
-          callback("[]");
-      }
-}
- 
- 
+            let jsonString = ""; // 默认为空数组字符串或空对象 "{}"
+
+            // 2. 根据条件获取 Java 对象
+            if (faceID == null || faceID.trim() == "") {
+                // 返回的是 Java List<FaceSearchFeature>
+                nativeResult = manager.queryAllFaceFaceFeature();
+            } else {
+                // 返回的是单个 Java FaceSearchFeature 对象
+                nativeResult = manager.queryFaceFeatureByID(faceID);
+            }
+
+            // 3. 【核心步骤】将 Java 对象转为 JSON 字符串
+            if (nativeResult != null) {
+                // Gson 会自动识别是 List 还是 Object 并转换格式
+                jsonString = new Gson().toJson(nativeResult);
+            }
+            callback(jsonString);
+        } catch (e) {
+            console.error("queryFaceSearchFeature error: " + e.message);
+            callback("[]");
+        }
+    }
+
+
 
 /**
  * 「1:N人脸搜索」跳转到Android SDK中原生相机页面处理人脸录入
- * 
- * @param faceID 用户ID
- * @param addFacePerformanceMode 添加人脸角度检测模式. 1 快速模式   2 精确模式
+ * * @param faceID 用户ID
+ * @param addFacePerformanceMode 添加人脸角度检测模式.
+ 1 快速模式   2 精确模式
  * @param callback 结果回调
  */
-export const addFaceSearchFeature : AddFaceSearchFeature = function (
-    faceID:string,
-	addFacePerformanceMode:number,
-	needShowConfirmDialog:boolean,
-	callback : (result : ResultJSON) => void
+export const addFaceSearchFeature: AddFaceSearchFeature = function(
+    faceID: string,
+    addFacePerformanceMode: number,
+    needShowConfirmDialog: boolean,
+    callback: (result: ResultJSON) => void
 ) {
-	
-	UTSAndroid.getUniActivity()!.runOnUiThread(() => {
-		const context = UTSAndroid.getUniActivity() as Activity
-		FaceSDKConfig.init(context);
-		const intent = new Intent(context, AddFaceFeatureActivity().javaClass)
-		intent.putExtra("ADD_FACE_IMAGE_TYPE_KEY", "FACE_SEARCH");
-		intent.putExtra("ADD_FACE_PERFORMANCE_MODE", addFacePerformanceMode);
-		intent.putExtra("USER_FACE_ID_KEY", faceID);
-		intent.putExtra("NEED_CONFIRM_ADD_FACE", needShowConfirmDialog);
-		
-		context.startActivityForResult(intent, 10086)
-	});
-	
+
+    UTSAndroid.getUniActivity()!.runOnUiThread(() => {
+        const context = UTSAndroid.getUniActivity() as Activity
+        FaceSDKConfig.init(context);
+        const intent = new Intent(context, AddFaceFeatureActivity().javaClass)
+        intent.putExtra("ADD_FACE_IMAGE_TYPE_KEY", "FACE_SEARCH");
+        intent.putExtra("ADD_FACE_PERFORMANCE_MODE", addFacePerformanceMode);
+        intent.putExtra("USER_FACE_ID_KEY", faceID);
+        intent.putExtra("NEED_CONFIRM_ADD_FACE", needShowConfirmDialog);
+
+        context.startActivityForResult(intent, 10086)
+    });
     //语法不熟悉，先保证主流程跑通
-	UTSAndroid.onAppActivityResult((requestCode : Int, resultCode : Int, intentAct?: Intent) => {
-		if (requestCode == 10086) {
-			if(intentAct!=null){
-				const codeNow:number = intentAct.getIntExtra("code",0) as number
-				const msgNow:string=intentAct.getStringExtra("msg") as string
-				
-				let faceBase64="?"
-				if(0!=codeNow){
-					//用户取消了就不应该有这个值
-					faceBase64=BitmapUtils.bitmapToBase64(FaceSDKConfig.CACHE_SEARCH_FACE_DIR+faceID)
-				}
-				 
-				const resultJson:ResultJSON={
-					code:codeNow,
-					msg:msgNow,
-			        faceBase64:faceBase64
-				}		
-				console.log("添加人脸人脸："+resultJson)
-				callback(resultJson)
-			}else{
-				const resultJson:ResultJSON={
-					code:-1,
-					msg:"添加失败",
-			        faceBase64:""
-				}
-				callback(resultJson)
-			}
-		} 
-	});
+    UTSAndroid.onAppActivityResult((requestCode: Int, resultCode: Int, intentAct ? : Intent) => {
+        if (requestCode == 10086) {
+            if (intentAct != null) {
+                const codeNow: number = intentAct.getIntExtra("code", 0) as number
+                const msgNow: string = intentAct.getStringExtra("msg") as string
+
+                let faceBase64 = "?"
+                if (0 != codeNow) {
+                    //用户取消了就不应该有这个值
+                    faceBase64 = BitmapUtils.bitmapToBase64(FaceSDKConfig.CACHE_SEARCH_FACE_DIR + faceID)
+                }
+
+                const resultJson: ResultJSON = {
+                    code: codeNow,
+                    msg: msgNow,
+                    faceBase64: faceBase64
+                }
+                console.log("添加人脸人脸：" + resultJson)
+                callback(resultJson)
+            } else {
+                const resultJson: ResultJSON = {
+                    code: -1,
+                    msg: "添加失败",
+                    faceBase64: ""
+                }
+                callback(resultJson)
+            }
+        }
+    });
 }

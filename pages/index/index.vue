@@ -28,7 +28,7 @@
 		toastMessage
 	} from "@/uni_modules/FaceAI-Search";
 	
-	// 注意：这里假设你已经将 testData.uts 转换为了 testData.js
+	// 注意：vue应该使用 testData.uts 而不是 testData.js	
 	import { JSON_FACE_FEATURES_DATA } from "./testData.js";
 	
 	export default {
@@ -48,38 +48,49 @@
 			 * 人脸搜索识别
 			 */
 			startFaceSearchDemo: function () {
-				const threshold = 0.88; // 阈值
-				const oneTime = false;  // 持续搜索
-				const highRes = false;  // 高分辨率模式
-				const camId = 0;        // 前置摄像头
+			    const threshold = 0.88;
+			    const oneTime = false;
+			    const searchTimeOut = 5;
+			    const highRes = false;
+			    const camId = 0;
 			                
-				startFaceSearch(
-					threshold,
-					oneTime,
-					highRes,
-					camId,
-					(jsonStr) => { // 移除 :string 类型
-						console.log("收到搜索结果:", jsonStr);
-						this.faceAIResult = "【人脸搜索回调】\n" + jsonStr;
-					  
-						try {
-							// 移除 as Array<UTSJSONObject> 强转
-							const results = JSON.parse(jsonStr);
-							
-							if (results && results.length > 0) {
-								const firstFace = results[0];
-								// 修改获取属性的方式：从 .getString("faceName") 改为 .faceName
-								const name = firstFace.faceName; 
-								
-								if (name) {
-									toastMessage("识别成功: " + name);
-								}
-							}
-						} catch (e) {
-							console.error("解析数据失败:", e);
-						}
-					}
-				);
+			    startFaceSearch(
+			        threshold,
+			        oneTime,
+			        searchTimeOut,
+			        highRes,
+			        camId,
+			        (jsonStr) => { 
+			          
+			            try {
+			                // 移除 "as UTSJSONObject"，使用标准 JS 解析
+			                const root = JSON.parse(jsonStr);
+			                
+			                // 使用标准 JS 方式获取属性
+			                const results = root.data;
+			                const base64 = root.base64;
+			                const liveness = root.liveness;
+							console.log("收到搜索结果:", results);
+							console.log("liveness:", liveness);
+			            
+			                this.faceAIResult = "【人脸搜索回调】\nList: " + JSON.stringify(results) + "\nliveness: " + liveness;
+			              
+			                if (results && results.length > 0) {
+			                    const firstFace = results[0];
+			                    const name = firstFace.faceName;
+			                    const score = firstFace.faceScore;
+			                    
+			                    if (name != null) {
+			                        toastMessage("最匹配:" + name + "," + score + "," + liveness);
+			                    }
+			                } else {
+			                    toastMessage("无结果 (活体: " + liveness + ")");
+			                }
+			            } catch (e) {
+			                console.error("解析数据失败:", e);
+			            }
+			        }
+			    );
 			},
 			
 			/**
@@ -90,7 +101,7 @@
 					this.faceID,
 					1,    // 1.快速模式 2.精确模式
 					true, // 是否显示确认框
-					(result) => { // 移除 :ResultJSON 类型
+					(result) => { 
 						// 打印结果 json
 						this.faceAIResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
 					}

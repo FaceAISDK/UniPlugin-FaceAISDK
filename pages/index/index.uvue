@@ -27,6 +27,7 @@
 			queryFaceSearchFeature,
 			toastMessage,
 			ResultJSON} from "@/uni_modules/FaceAI-Search";
+	// 注意：vue应该使用 testData.uts 而不是 testData.js		
     import { JSON_FACE_FEATURES_DATA } from "./testData.uts";  //模拟服务端测试数据批量插入
 	
 	export default {
@@ -52,31 +53,44 @@
 
 			                const threshold = 0.88;    // 阈值,只有人脸库中匹配到的人脸相似度大于此才有结果返回
 			                const oneTime = false;     // 搜索页持续搜索接收结果 还是仅仅搜索一次返回一次结果
+							const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
 			                const camId = 0;           // 0，前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）
 			                
 						    startFaceSearch(
 			                    threshold,
 			                    oneTime,
+								searchTimeOut,
 			                    highRes,
 			                    camId,
 			                    (jsonStr: string) => {
-									//[{"faceName":"User_1001","faceScore":0.939}]
-			                        console.log("收到搜索结果:", jsonStr);
-			                        this.faceSearchResult = "【人脸搜索回调】\n" + jsonStr;
-			                        try {
-			                            const results = JSON.parse(jsonStr) as Array<UTSJSONObject>;
-			                            if (results.length > 0) {
-			                                const firstFace = results[0];
-			                                const name = firstFace.getString("faceName");
-											const score = firstFace.getNumber("faceScore");
-										
-			                                if (name != null) {
-												//Demo演示处理最相似的，原生方法 toastMessage出来
-			                                    toastMessage("搜索最匹配: " + name+","+score);
-			                                }
-			                            }
-			                        } catch (e) {
+					
+									try {
+										const root = JSON.parse(jsonStr) as UTSJSONObject;
+										    // 获取人脸列表
+										    const results = root.getArray<UTSJSONObject>("data");
+											//预留字段
+											const base64 = root.getString("base64");
+										    //预留字段
+										    const liveness = root.getNumber("liveness");
+											
+											console.log("收到搜索结果:", results);
+											console.log("liveness:", liveness);
+
+										    this.faceSearchResult = "【人脸搜索回调】\nList: " + JSON.stringify(results) + "\nliveness: " + liveness;
+										  
+										    if (results != null && results.length > 0) {
+										        const firstFace = results[0];
+										        const name = firstFace.getString("faceName");
+										        const score = firstFace.getNumber("faceScore");
+										        
+										        if (name != null) {
+										            toastMessage("最匹配:" + name + "," + score + ",:" + liveness);
+										        }
+										    } else {
+										        toastMessage("无结果。(活体: " + liveness + ")");
+										    }
+									}catch (e) {
 			                            console.error("解析数据失败:", e);
 			                        }
 			                    }

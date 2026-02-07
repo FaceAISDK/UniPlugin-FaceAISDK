@@ -2,20 +2,19 @@ package uts.sdk.modules.uniFaceAISDK
 
 /**
  * 全局单例管理器，用于连接 Activity 和 UTS
+ * 修改说明：回调增加 liveness 参数
  */
 object FaceResultManager {
 
-    // 1. 【修改】改名为 internalCallback 并设为 private
-    // 这样就不会自动生成冲突的 setCallback 方法了
-    private var internalCallback: ((String) -> Unit)? = null
+    // 修改回调签名，增加 Float 参数
+    private var internalCallback: ((String, Float,String) -> Unit)? = null
 
-    // 2. 【保持不变】供 UTS 调用的设置方法
-    fun setCallback(cb: (String) -> Unit) {
+    fun setCallback(cb: (String, Float,String) -> Unit) {
         this.internalCallback = cb
     }
 
-    // 3. 【修改】发送数据时，调用新的变量名
-    fun sendResult(json: String) {
-        internalCallback?.invoke(json)
+    // 发送结果时携带 livenessValue
+    fun sendResult(json: String, liveness: Float,base64:String) {
+        internalCallback?.invoke(json, liveness,base64)
     }
 }

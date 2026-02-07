@@ -1,7 +1,7 @@
 {
 	"id": "FaceAI-Search",
 	"displayName": "FaceAI-人脸搜索识别",
-	"version": "1.0.8",
+	"version": "2.0.1",
 	"description": "Android 1:N人脸搜索识别，可用于小区门禁多人身份验证等场景",
 	"keywords": [
         "人脸搜索,离线搜索"
@@ -9,8 +9,8 @@
 	"repository": "https://github.com/FaceAISDK/FaceSearch_uniapp_plugin",
 	"engines": {
 		"HBuilderX": "^3.6.8",
-		"uni-app": "^4.76",
-		"uni-app-x": "^4.76"
+		"uni-app": "^4.52",
+		"uni-app-x": "^4.62"
 	},
 	"dcloudext": {
 		"type": "uts",
@@ -48,24 +48,33 @@
 				"uni-app": {
 					"vue": {
 						"vue2": {
-                            "extVersion": "1.0.8",
+                            "extVersion": "2.0.0",
                             "minVersion": ""
                         },
-						"vue3": "-"
+						"vue3": {
+                            "extVersion": "2.0.0",
+                            "minVersion": ""
+                        }
 					},
 					"web": {
 						"safari": "-",
 						"chrome": "-"
 					},
 					"app": {
-						"vue": "√",
-						"nvue": "√",
+						"vue": {
+                            "extVersion": "2.0.0",
+                            "minVersion": ""
+                        },
+						"nvue": {
+                            "extVersion": "2.0.0",
+                            "minVersion": ""
+                        },
 						"android": {
                             "extVersion": "1.0.0",
                             "minVersion": "21"
                         },
 						"ios": "x",
-						"harmony": "x"
+						"harmony": "-"
 					},
 					"mp": {
 						"weixin": "x",
@@ -76,7 +85,8 @@
 						"jd": "x",
 						"harmony": "x",
 						"qq": "x",
-						"lark": "x"
+                        "lark": "x",
+                        "xhs": "-"
 					},
 					"quickapp": {
 						"huawei": "x",
@@ -93,7 +103,7 @@
                             "extVersion": "1.0.0",
                             "minVersion": "21"
                         },
-						"ios": "-",
+						"ios": "x",
 						"harmony": "x"
 					},
 					"mp": {

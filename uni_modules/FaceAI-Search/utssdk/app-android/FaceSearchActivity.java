@@ -15,6 +15,7 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERRO
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
 import com.ai.face.core.utils.FaceAICameraType;
+import com.faceAI.demo.base.utils.BitmapUtils;
 import com.faceAI.demo.R;
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +38,6 @@ import com.faceAI.demo.SysCamera.camera.FaceCameraXFragment;
 import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import com.faceAI.demo.databinding.ActivityFaceSearchBinding;
-import com.faceAI.demo.SysCamera.search.FaceSearchImageMangerActivity;
 import java.util.List;
 import com.google.gson.Gson;
 import com.faceAI.demo.SysCamera.search.ImageToast;
@@ -60,6 +60,8 @@ public class FaceSearchActivity extends AbsBaseActivity {
 
     public static final String THRESHOLD_KEY = "THRESHOLD_KEY";       //人脸搜索阈值
     public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";   //是否仅搜索一次就关闭搜索页
+	public static final String SEARCH_TIME_OUT = "SEARCH_TIME_OUT";   //仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
+	
     public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";   //高分辨率远距离也可以工作，但是性能速度会下降
     public static final String CAMERA_ID = "CAMERA_ID";   //摄像头ID，部分摄像头可能需要适配
 
@@ -67,6 +69,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 //    public static final String SEARCH_TAG = "MOTION_LIVENESS_TYPES"; //动作活体种类
     private float searchThreshold = 0.88f;  //搜索阈值
     private boolean searchOneTime = false;   //是否仅搜索一次就关闭搜索页
+	private int searchTimeOut = 5 ; //搜索超时时间
     private boolean isCameraSizeHigh = false; //是否高分辨率
     private int cameraId = CameraSelector.LENS_FACING_FRONT; //摄像头ID，部分摄像头可能需要适配
     private int cameraLensFacing;  //摄像头前置，后置，外接
@@ -76,6 +79,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
     private FaceCameraXFragment cameraXFragment; //摄像头请自行管理，源码全部开放
     private boolean pauseSearch =false; //控制是否送数据到SDK进行搜索
 
+    private long searchStartTime =0; //开始搜索时间
 
     /**
      * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
@@ -89,6 +93,9 @@ public class FaceSearchActivity extends AbsBaseActivity {
             if (intent.hasExtra(SEARCH_ONE_TIME)) {
                 searchOneTime = intent.getBooleanExtra(SEARCH_ONE_TIME, false);
             }
+			if (intent.hasExtra(SEARCH_TIME_OUT)) {
+			    searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 5);
+			}
             if (intent.hasExtra(IS_CAMERA_SIZE_HIGH)) {
                 isCameraSizeHigh = intent.getBooleanExtra(IS_CAMERA_SIZE_HIGH, false);
             }
@@ -107,10 +114,6 @@ public class FaceSearchActivity extends AbsBaseActivity {
         setContentView(binding.getRoot());
         binding.close.setOnClickListener(v -> finish());
 
-        binding.tips.setOnClickListener(v -> {
-            startActivity(new Intent(this, FaceSearchImageMangerActivity.class)
-                    .putExtra("isAdd", false));
-        });
 
         getIntentParams(); //接收三方插件传递的参数，原生开发可以忽略裁剪掉
 
@@ -148,7 +151,8 @@ public class FaceSearchActivity extends AbsBaseActivity {
 //                .setFaceTag()   //根据标记来搜索，比如有些场所只有VIP才能权限进入
                 .setThreshold(searchThreshold) //阈值范围限 [0.85 , 0.95] 识别可信度，阈值高摄像头成像品质宽动态值以及人脸底片质量也要高
                 .setCallBackAllMatch(true) //默认是false,是否返回所有的大于设置阈值的搜索结果
-                .setSearchIntervalTime(2000) //默认2000，范围[0,9000]毫秒。搜索成功后的继续下一次搜索的间隔时间，不然会一直搜索一直回调结果
+				.setNeedFaceLiveness(true)  //是否需要活体检测，只有1:N 搜索 有活体（选配，默认无）
+                .setSearchIntervalTime(1700) //默认2000，范围[1500,9000]毫秒。搜索成功后的继续下一次搜索的间隔时间，不然会一直搜索一直回调结果
                 .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT) //后面版本去除次参数
                 .setProcessCallBack(new SearchProcessCallBack() {
                     /**
@@ -159,9 +163,10 @@ public class FaceSearchActivity extends AbsBaseActivity {
                      * SearchProcessBuilder setCallBackAllMatch(true) onFaceMatched才会回调
                      */
                     @Override
-                    public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap) {
+                    public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float livenessValue) {
                         //已经按照降序排列，可以弹出一个列表框
                        String json = new Gson().toJson(matchedResults);
+					   String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
                        Log.d("onFaceMatched","符合设定阈值的结果: "+json);
 						// 2. 【关键】通过单例发送数据，而不关闭 Activity
 						// 注意：这里要在主线程还是子线程发送，取决于 UTS 回调是否要求主线程
@@ -169,7 +174,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 						runOnUiThread(new Runnable() {
 						        @Override
 						        public void run() {
-									FaceResultManager.INSTANCE.sendResult(json);
+									FaceResultManager.INSTANCE.sendResult(json,livenessValue,base64);
                                    if(searchOneTime){
                                        FaceSearchActivity.this.finish();
                                    }
@@ -187,7 +192,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
                     public void onMostSimilar(String faceID, float score, Bitmap bitmap) {
                         Bitmap mostSimilarBmp = BitmapFactory.decodeFile(CACHE_SEARCH_FACE_DIR + faceID);
                         // new ImageToast().show(getApplicationContext(), mostSimilarBmp, faceID+" , "+score); //插件可以自由提示
-                        VoicePlayer.getInstance().play(R.raw.success);
+                        // VoicePlayer.getInstance().play(R.raw.success);
                     }
 
                     /**
@@ -232,6 +237,8 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 binding.graphicOverlay.setCameraInfo(imageWidth,imageHeight,cameraXFragment.isFrontCamera());
             }
         });
+		
+		searchStartTime= System.currentTimeMillis()/1000; //开始的秒
     }
 
     /**
@@ -244,6 +251,13 @@ public class FaceSearchActivity extends AbsBaseActivity {
             case NO_MATCHED:
                 //本次没有搜索匹配到结果.没有结果会持续尝试1秒之内没有结果会返回NO_MATCHED code
                 setSecondTips(R.string.no_matched_face);
+				
+				if(searchOneTime&&System.currentTimeMillis()/1000-searchStartTime>5){
+					//超时没有返回结果
+					FaceResultManager.INSTANCE.sendResult("[]",0.0f,""); //没有搜索结果
+				    FaceSearchActivity.this.finish();
+				}
+							
                 break;
 
             case FACE_DIR_EMPTY:
