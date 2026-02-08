@@ -67,11 +67,10 @@
 			                const root = JSON.parse(jsonStr);
 			                const results = root.data;
 			                const base64 = root.base64;
-			                const liveness = root.liveness;
 							console.log("收到搜索结果:", results);
-							console.log("liveness:", liveness);
+							console.log("base64:", base64);
 			            
-			                this.faceAIResult = "【人脸搜索回调】\nList: " + JSON.stringify(results) + "\nliveness: " + liveness;
+			                this.faceAIResult = "【人脸搜索回调】\nList: " + JSON.stringify(results);
 			                if (results && results.length > 0) {
 								//结果已经排好序，第一个就是相似度最高的
 			                    const firstFace = results[0];
@@ -79,10 +78,10 @@
 			                    const score = firstFace.faceScore;
 			                    
 			                    if (name != null) {
-			                        toastMessage("最匹配:" + name + "," + score + "," + liveness);
+			                        toastMessage("最匹配:" + name + "," + score);
 			                    }
 			                } else {
-			                    toastMessage("无结果 (活体: " + liveness + ")");
+			                    toastMessage("无结果");
 			                }
 			            } catch (e) {
 			                console.error("解析数据失败:", e);

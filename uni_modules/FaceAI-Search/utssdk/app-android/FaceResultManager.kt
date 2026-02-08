@@ -17,4 +17,5 @@ object FaceResultManager {
     fun sendResult(json: String, liveness: Float, base64: String) {
         internalCallback?.invoke(json, liveness, base64)
     }
+	
 }

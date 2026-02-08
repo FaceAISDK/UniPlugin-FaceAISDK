@@ -9,7 +9,7 @@ const BASE_FEATURE = "zfCMvEdMijxXUje8ClGQvMREvrwK1Zm97h67ORP1k72muTC9xvcRPvu1sj
 // 2. Define the static/edge-case data first as real JS objects
 const rawData = [
     { 
-        faceID: "User_1001", 
+        faceID: "User_1", 
         tag: "vip", 
         group: "group_a", 
         faceFeature: BASE_FEATURE, 
