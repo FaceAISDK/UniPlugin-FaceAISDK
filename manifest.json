@@ -2,8 +2,8 @@
 	"name": "人脸搜索",
 	"appid": "__UNI__C3F93BB",
 	"description": "1:N人脸搜索识别+活体检测Beta",
-	"versionName": "1.3.1",
-	"versionCode": "131",
+	"versionName": "1.3.2",
+	"versionCode": "133",
 	"uni-app-x": {},
 	/* 快应用特有相关 */
 	"quickapp": {},
@@ -53,7 +53,7 @@
 				"default": {}
 			},
 			"minSdkVersion": "21",
-			"targetSdkVersion": "35",
+			"targetSdkVersion": "36",
 			"abiFilters": [
 				"arm64-v8a",
 				"armeabi-v7a"

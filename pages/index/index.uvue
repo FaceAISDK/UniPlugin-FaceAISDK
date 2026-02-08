@@ -80,12 +80,13 @@
 										    this.faceSearchResult = "【人脸搜索回调】\nList: " + JSON.stringify(results) + "\nliveness: " + liveness;
 										  
 										    if (results != null && results.length > 0) {
+												//结果已经排好序，第一个就是相似度最高的
 										        const firstFace = results[0];
 										        const name = firstFace.getString("faceName");
 										        const score = firstFace.getNumber("faceScore");
 										        
 										        if (name != null) {
-										            toastMessage("最匹配:" + name + "," + score + ",:" + liveness);
+										            toastMessage("最匹配:" + name + "," + score + "," + liveness);
 										        }
 										    } else {
 										        toastMessage("无结果。(活体: " + liveness + ")");

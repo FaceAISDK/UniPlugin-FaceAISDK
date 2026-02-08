@@ -63,10 +63,8 @@
 			        (jsonStr) => { 
 			          
 			            try {
-			                // 移除 "as UTSJSONObject"，使用标准 JS 解析
+			                // Vue2 测试通过
 			                const root = JSON.parse(jsonStr);
-			                
-			                // 使用标准 JS 方式获取属性
 			                const results = root.data;
 			                const base64 = root.base64;
 			                const liveness = root.liveness;
@@ -74,8 +72,8 @@
 							console.log("liveness:", liveness);
 			            
 			                this.faceAIResult = "【人脸搜索回调】\nList: " + JSON.stringify(results) + "\nliveness: " + liveness;
-			              
 			                if (results && results.length > 0) {
+								//结果已经排好序，第一个就是相似度最高的
 			                    const firstFace = results[0];
 			                    const name = firstFace.faceName;
 			                    const score = firstFace.faceScore;
