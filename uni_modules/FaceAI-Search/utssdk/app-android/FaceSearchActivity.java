@@ -113,10 +113,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
         binding = ActivityFaceSearchBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.close.setOnClickListener(v -> finish());
-
-
-        getIntentParams(); //接收三方插件传递的参数，原生开发可以忽略裁剪掉
-
+        getIntentParams(); 
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE);
         cameraLensFacing = sharedPref.getInt(FRONT_BACK_CAMERA_FLAG, cameraId); //默认前置
         int degree = sharedPref.getInt( SYSTEM_CAMERA_DEGREE, getWindowManager().getDefaultDisplay().getRotation());

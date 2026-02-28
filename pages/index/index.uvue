@@ -74,7 +74,6 @@
 											
 											console.log("收到搜索结果:", results);
 											console.log("base64:", base64);
-
 										    this.faceSearchResult = "【人脸搜索回调】\nList: " + JSON.stringify(results);
 										  
 										    if (results != null && results.length > 0) {
