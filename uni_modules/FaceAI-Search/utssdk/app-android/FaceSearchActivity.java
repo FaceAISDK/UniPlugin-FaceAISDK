@@ -168,7 +168,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 					   runOnUiThread(new Runnable() {
 						        @Override
 						        public void run() {
-									FaceResultManager.INSTANCE.sendResult(json,0.0f,base64);
+									FaceResultManager.INSTANCE.sendResult(json,livenessValue,base64);
                                    if(searchOneTime){
                                        FaceSearchActivity.this.finish();
                                    }
@@ -184,7 +184,6 @@ public class FaceSearchActivity extends AbsBaseActivity {
                      */
                     @Override
                     public void onMostSimilar(String faceID, float score, Bitmap bitmap) {
-                        Bitmap mostSimilarBmp = BitmapFactory.decodeFile(CACHE_SEARCH_FACE_DIR + faceID);
                         // VoicePlayer.getInstance().play(R.raw.success);
                     }
 
