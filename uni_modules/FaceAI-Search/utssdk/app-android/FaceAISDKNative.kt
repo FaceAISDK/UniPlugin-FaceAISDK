@@ -37,7 +37,7 @@ object FaceAISDKNative {
 	 * 
 	 */
 	fun toastMessage(context:Context,base64Image: String,message: String){
-        ImageToast().show(context, base64Image, message)
+        ImageToast().showBase64(context, base64Image, message)
 	}
 	
 }

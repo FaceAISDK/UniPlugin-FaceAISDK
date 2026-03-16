@@ -28,7 +28,7 @@ export function startFaceSearch(
     
     // 1. 在主作用域立即绑定回调，防止被回收
     FaceResultManager.setCallback((json: string, liveness: number, base64: string) => {
-        const finalJson = `{"data":${json},"liveness":${liveness},"faceFeature":${""},"base64":"${base64}"}`;
+        const finalJson = `{"data":${json},"liveness":${liveness},"base64":"${base64}"}`;
         try {
             callback(finalJson);
         } catch(e) {
@@ -60,7 +60,7 @@ export function toastMessage(base64Image: string,message: string): void {
 export function switchCamera(cameraID: number): void {
         const context = UTSAndroid.getAppContext() as Application;
         FaceSDKConfig.init(context);
-        FaceSDKConfig.setCameraID(context,cameraID)
+        FaceSDKConfig.setCameraID(context,cameraID.toInt())
 }
 
 

@@ -1,12 +1,12 @@
 <template>
 	<view>
-		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸 搜索识别</button>
-		<button class="gray-button" @tap="addFaceSearchFeatureDemo">1:N人脸搜索 录入人脸</button>
+		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸搜索识别</button>
+		<button class="gray-button" @tap="addFaceSearchFeatureDemo">录入人脸提取特征</button>
 		<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
 		<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
-		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">切换前后摄像头</button>
+		<button class="gray-button" @tap="switchCameraDemo">切换前后摄像头</button>
 		
 		<view class="result-box">
 		      <view> Email: FaceAISDK.Service@gmail.com</view>
@@ -74,7 +74,7 @@
 											// 修复点：添加默认值 ""，确保类型变为 string 而非 string | null
 											const base64 = root.getString("base64") ?? "";
 											
-											console.log("liveness:", root.getString("liveness")); //周五开放Beta
+											console.log("liveness:", root.getString("liveness")?? ""); //周五开放Beta
 											
 											
 											console.log("收到搜索结果:", results);
@@ -176,11 +176,11 @@
 			},
 			
 		   /**
-			* 切换前后摄像头
+			* 切换前后摄像头，一般0是前置， 1是后置 （但是部分定制Android设备不太标准）
 			* 
 			*/
 			switchCameraDemo: function () {
-				switchCamera(0)
+				switchCamera(1)
 			},		
 			
 			
