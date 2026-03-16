@@ -8,7 +8,7 @@
 
 快速体验完整人脸识别功能可以下载Demo App：
 <div align=center>
-<img src="https://www.pgyer.com/app/qrcode/faceVerify" width = 19%   alt="扫一扫下载Demo"/>
+<img src="https://www.pgyer.com/app/qrcode/faceVerify" width = 16%   alt="扫一扫下载Demo"/>
 </div>
 
 
