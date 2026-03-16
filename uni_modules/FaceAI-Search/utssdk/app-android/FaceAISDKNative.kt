@@ -36,8 +36,8 @@ object FaceAISDKNative {
 	 * Toast 信息
 	 * 
 	 */
-	fun toastMessage(context:Context,message: String){
-        ImageToast().show(context, null, message)
+	fun toastMessage(context:Context,base64Image: String,message: String){
+        ImageToast().show(context, base64Image, message)
 	}
 	
 }

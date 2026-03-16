@@ -91,6 +91,10 @@ export type InsertManyFeatures = (
 	jsonFaceFeatures : string,
 	callback : (result : ResultJSON) => void) => void
 	
-export type ToastMessage = (message : string) => void	
+export type ToastMessage = (base64Image : string,message : string) => void	
+
+
+export type SwitchCameta = (cameraID : number) => void	
+
 
 

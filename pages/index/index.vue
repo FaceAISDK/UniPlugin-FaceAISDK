@@ -20,6 +20,7 @@
 	// 引入模块，注意保持路径一致
 	import {
 		startFaceSearch,
+		switchCamera,
 		insertFaceSearchFeature,
 		insertManyFeatures,
 		addFaceSearchFeature,
@@ -66,7 +67,7 @@
 			                // Vue2 测试通过
 			                const root = JSON.parse(jsonStr);
 			                const results = root.data;
-			                const base64 = root.base64;
+			                const base64 = root.base64; //注意base64可能为空
 							console.log("收到搜索结果:", results);
 							console.log("base64:", base64);
 			            
@@ -78,10 +79,10 @@
 			                    const score = firstFace.faceScore;
 			                    
 			                    if (name != null) {
-			                        toastMessage("最匹配:" + name + "," + score);
+			                        toastMessage(base64,"最匹配:" + name + "," + score);
 			                    }
 			                } else {
-			                    toastMessage("无结果");
+			                    toastMessage("",无结果");
 			                }
 			            } catch (e) {
 			                console.error("解析数据失败:", e);
@@ -154,7 +155,17 @@
 						this.faceAIResult = JSON.stringify(result)
 					}
 				)
-			}
+			},
+			
+		   /**
+			* 切换前后摄像头
+			* 
+			*/
+			switchCameraDemo: function () {
+				switchCamera(0)
+			},					
+			
+			
 	   }			
 	}
 </script>

@@ -6,6 +6,7 @@
 		<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
+		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">切换前后摄像头</button>
 		
 		<view class="result-box">
 		      <view> Email: FaceAISDK.Service@gmail.com</view>
@@ -20,6 +21,7 @@
 
 <script> 
 	import {startFaceSearch,
+	        switchCamera,
 		    insertFaceSearchFeature,
 			insertManyFeatures,
 	        addFaceSearchFeature,
@@ -69,8 +71,11 @@
 										const root = JSON.parse(jsonStr) as UTSJSONObject;
 										    // 获取人脸列表
 										    const results = root.getArray<UTSJSONObject>("data");
-											//预留字段
-											const base64 = root.getString("base64");
+											// 修复点：添加默认值 ""，确保类型变为 string 而非 string | null
+											const base64 = root.getString("base64") ?? "";
+											
+											console.log("liveness:", root.getString("liveness")); //周五开放Beta
+											
 											
 											console.log("收到搜索结果:", results);
 											console.log("base64:", base64);
@@ -83,10 +88,10 @@
 										        const score = firstFace.getNumber("faceScore");
 										        
 										        if (name != null) {
-										            toastMessage("最匹配:" + name + "," + score);
+										            toastMessage(base64,"最匹配:" + name + "," + score);
 										        }
 										    } else {
-										        toastMessage("无结果");
+										        toastMessage("","无结果");
 										    }
 									}catch (e) {
 			                            console.error("解析数据失败:", e);
@@ -168,8 +173,16 @@
 					 (result: ResultJSON)  => {
 						this.faceSearchResult =JSON.stringify(result)
 					})
-
-			}
+			},
+			
+		   /**
+			* 切换前后摄像头
+			* 
+			*/
+			switchCameraDemo: function () {
+				switchCamera(0)
+			},		
+			
 			
 	   }			
 

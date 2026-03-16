@@ -51,10 +51,18 @@ export function startFaceSearch(
     });
 }
 
-export function toastMessage(message: string): void {
+export function toastMessage(base64Image: string,message: string): void {
     const context = UTSAndroid.getUniActivity() as Activity
-    FaceAISDKNative.toastMessage(context, message)
+    FaceAISDKNative.toastMessage(context,base64Image, message)
 }
+
+
+export function switchCamera(cameraID: number): void {
+        const context = UTSAndroid.getAppContext() as Application;
+        FaceSDKConfig.init(context);
+        FaceSDKConfig.setCameraID(context,cameraID)
+}
+
 
 export function insertFaceSearchFeature(
     faceID: string,
