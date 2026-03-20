@@ -160,15 +160,15 @@ public class FaceSearchActivity extends AbsBaseActivity {
                      * SearchProcessBuilder setCallBackAllMatch(true) onFaceMatched才会回调
                      */
                     @Override
-                    public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float livenessValue) {
+                    public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float liveness) {
                         //已经按照降序排列，可以弹出一个列表框
                        String json = new Gson().toJson(matchedResults);
 					   String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
-                       //Log.d("onFaceMatched","符合设定阈值的结果: "+json);
+                       Log.d("liveness","liveness静默活体分数: "+liveness);
 					   runOnUiThread(new Runnable() {
 						        @Override
 						        public void run() {
-									FaceResultManager.INSTANCE.sendResult(json,livenessValue,base64);
+									FaceResultManager.INSTANCE.sendResult(json,liveness,base64);
                                    if(searchOneTime){
                                        FaceSearchActivity.this.finish();
                                    }

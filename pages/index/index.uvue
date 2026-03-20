@@ -71,14 +71,17 @@
 										const root = JSON.parse(jsonStr) as UTSJSONObject;
 										    // 获取人脸列表
 										    const results = root.getArray<UTSJSONObject>("data");
-											// 修复点：添加默认值 ""，确保类型变为 string 而非 string | null
-											const base64 = root.getString("base64") ?? "";
-										
 											console.log("收到搜索结果:", results);
-											const liveness = root.getString("liveness") ?? "";
-											console.log("liveness:", liveness);
-										    this.faceSearchResult = "【人脸搜索回调】\nList: " + JSON.stringify(results);
-										  
+											this.faceSearchResult = "【人脸搜索回调】\nList: " + JSON.stringify(results);
+											
+											// 人脸搜索场景图，可作为日志备份
+											const base64 = root.getString("base64") ?? "";
+
+											// 获取活体分数  
+											const livenessNum = root.getNumber("liveness");
+											// const liveness = livenessNum != null ? livenessNum.toString() : "";
+											console.log("静默活体:", "分数："+livenessNum);
+
 										    if (results != null && results.length > 0) {
 												//大于阈值的结果已经排好序，第一个就是相似度最高的
 										        const firstFace = results[0];
