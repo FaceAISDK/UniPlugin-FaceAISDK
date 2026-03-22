@@ -26,9 +26,11 @@ export function startFaceSearch(
     callback: (jsonResult: string) => void
 ): void {
     
-    // 1. 在主作用域立即绑定回调，防止被回收
+    // 1. 添加静默活体liveness
     FaceResultManager.setCallback((json: string, liveness: number, base64: string) => {
-        const finalJson = `{"data":${json},"liveness":${liveness},"base64":"${base64}"}`;
+		// 使用 toFixed(2) 保留2位小数，再嵌套 Number() 保证它依然是个标准数字（去掉类似 0.90 末尾的0）
+		// const formatLiveness = Number(liveness.toFixed(2));        
+		const finalJson = `{"data":${json},"liveness":${liveness},"base64":"${base64}"}`
         try {
             callback(finalJson);
         } catch(e) {
