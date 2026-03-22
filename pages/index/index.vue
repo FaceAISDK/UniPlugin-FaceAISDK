@@ -48,12 +48,12 @@
 			/**
 			 * 人脸搜索识别
 			 */
-			startFaceSearchDemo: function () {
-			    const threshold = 0.88;
-			    const oneTime = false;
-			    const searchTimeOut = 5;
-			    const highRes = false;
-			    const camId = 0;
+			startFaceSearchDemo: function () {				
+				const threshold = 0.85;    // 阈值[0.8.0.95],只有人脸库中匹配到的人脸相似度大于此才有结果返回
+				const oneTime = false;     // 搜索页持续搜索接收结果 还是仅仅搜索一次返回一次结果
+				const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
+				const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
+				const camId = 0;           // 0，前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）
 			                
 			    startFaceSearch(
 			        threshold,

@@ -67,7 +67,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 
 //    public static final String SEARCH_GROUP = "SEARCH_GROUP";   //动作活体超时数据
 //    public static final String SEARCH_TAG = "MOTION_LIVENESS_TYPES"; //动作活体种类
-    private float searchThreshold = 0.88f;  //搜索阈值
+    private float searchThreshold = 0.85f;  //搜索阈值
     private boolean searchOneTime = false;   //是否仅搜索一次就关闭搜索页
 	private int searchTimeOut = 5 ; //搜索超时时间
     private boolean isCameraSizeHigh = false; //是否高分辨率
