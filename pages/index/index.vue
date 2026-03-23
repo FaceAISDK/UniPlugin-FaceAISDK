@@ -118,7 +118,7 @@
 				)
 			},
 			
-			/**
+		   /**
 			* 查询人脸搜索人脸特征
 			*/
 			queryFaceSearchFeatureDemo: function () {
@@ -164,7 +164,6 @@
 			switchCameraDemo: function () {
 				switchCamera(0)
 			},					
-			
 			
 	   }			
 	}
