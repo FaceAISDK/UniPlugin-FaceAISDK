@@ -57,7 +57,7 @@
 				            const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
 							const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
-			                const searchOne = false;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
+			                const searchOne = false;   // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
 						    startFaceSearch(
 			                    threshold,
 			                    oneTime,
@@ -67,19 +67,16 @@
 			                    (jsonStr: string) => {
 					
 									try {
-										const root = JSON.parse(jsonStr) as UTSJSONObject;
+										   const root = JSON.parse(jsonStr) as UTSJSONObject;
 										    // 获取人脸列表
 										    const results = root.getArray<UTSJSONObject>("data");
 											console.log("收到搜索结果:", results);
-											this.faceSearchResult = "【人脸搜索回调】\nList: " + JSON.stringify(results);
+											this.faceSearchResult = "【人脸搜索回调】\n " + JSON.stringify(results);
 											
 											// 人脸搜索场景图，可作为日志备份
-											const base64 = root.getString("base64") ?? "";
-
-											// 获取活体分数  
-											const livenessNum = root.getNumber("liveness");
-											// const liveness = livenessNum != null ? livenessNum.toString() : "";
-											console.log("静默活体:", "分数："+livenessNum);
+											const base64 = root.getString("base64") ?? ""; 
+											const liveness = root.getNumber("liveness");
+											//console.log("静默活体:", "分数："+liveness);
 
 										    if (results != null && results.length > 0) {
 												//1:N搜索大于阈值的结果已经排好序，第一个就是相似度最高的（M：N不排序）
@@ -87,11 +84,13 @@
 										        const name = firstFace.getString("faceName");
 										        const score = firstFace.getNumber("faceScore");
 										        
-										        if (name != null) {
+										        if (name != null&&searchOne) {
 										            toastMessage(base64,"最匹配:" + name + "," + score);
 										        }
 										    } else {
-										        toastMessage("","无结果");
+												if (searchOne) {
+													toastMessage("","无结果");
+												}
 										    }
 									}catch (e) {
 			                            console.error("解析数据失败:", e);

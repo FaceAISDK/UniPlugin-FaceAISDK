@@ -79,12 +79,14 @@
 			                    const name = firstFace.faceName;
 			                    const score = firstFace.faceScore;
 			                    
-			                    if (name != null) {
-			                        toastMessage(base64,"最匹配:" + name + "," + score);
+			                    if (name != null&&searchOne) {
+			                            toastMessage(base64,"最匹配:" + name + "," + score);
+			                        }
+			                    } else {
+			                    	if (searchOne) {
+			                    		toastMessage("","无结果");
+			                    	}
 			                    }
-			                } else {
-			                    toastMessage("",无结果");
-			                }
 			            } catch (e) {
 			                console.error("解析数据失败:", e);
 			            }

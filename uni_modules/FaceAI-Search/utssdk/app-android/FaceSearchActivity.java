@@ -1,4 +1,4 @@
-package com.faceAI.demo.SysCamera.search;
+package uts.sdk.modules.uniFaceAISDK;
 
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
@@ -39,6 +39,8 @@ import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import com.faceAI.demo.databinding.ActivityFaceSearchBinding;
 import java.util.List;
+import android.text.TextUtils;
+import java.util.Iterator;
 import com.google.gson.Gson;
 import com.faceAI.demo.SysCamera.search.ImageToast;
 
