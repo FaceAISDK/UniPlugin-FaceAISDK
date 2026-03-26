@@ -57,7 +57,7 @@
 				            const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
 							const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
-			                const searchOne = false;   // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
+			                const searchOne = true;   // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
 						    startFaceSearch(
 			                    threshold,
 			                    oneTime,
