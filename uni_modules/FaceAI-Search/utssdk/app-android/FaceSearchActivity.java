@@ -165,7 +165,14 @@ public class FaceSearchActivity extends AbsBaseActivity {
                      */
                     @Override
                     public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float liveness) {
-                        //已经按照降序排列，可以弹出一个列表框
+                        //1:N 已经按照降序排列 
+						Iterator<FaceSearchResult> iterator = matchedResults.iterator();
+                        while (iterator.hasNext()) {
+                            FaceSearchResult item = iterator.next();
+                            if (TextUtils.isEmpty(item.getFaceName()) && item.getFaceScore() == 0.0f) {
+                                iterator.remove();
+                            }
+                        }
                        String json = new Gson().toJson(matchedResults);
 					   String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
 					   runOnUiThread(new Runnable() {
