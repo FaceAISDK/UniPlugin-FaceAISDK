@@ -1,4 +1,4 @@
-package uts.sdk.modules.uniFaceAISDK;
+package com.faceAI.demo.SysCamera.search;
 
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
@@ -63,15 +63,15 @@ public class FaceSearchActivity extends AbsBaseActivity {
 	public static final String SEARCH_TIME_OUT = "SEARCH_TIME_OUT";   //仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 	
     public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";   //高分辨率远距离也可以工作，但是性能速度会下降
-    public static final String CAMERA_ID = "CAMERA_ID";   //摄像头ID，部分摄像头可能需要适配
+	public static final String SEARCH_ONE = "SEARCH_ONE";   //是否仅搜索镜头前最大的人脸
 
 //    public static final String SEARCH_GROUP = "SEARCH_GROUP";   //动作活体超时数据
 //    public static final String SEARCH_TAG = "MOTION_LIVENESS_TYPES"; //动作活体种类
     private float searchThreshold = 0.85f;  //搜索阈值
     private boolean searchOneTime = false;   //是否仅搜索一次就关闭搜索页
+	private boolean searchOne= true;   //是否仅搜索镜头前最大的人脸
 	private int searchTimeOut = 5 ; //搜索超时时间
     private boolean isCameraSizeHigh = false; //是否高分辨率
-    private int cameraId = CameraSelector.LENS_FACING_FRONT; //摄像头ID，部分摄像头可能需要适配
     private int cameraLensFacing;  //摄像头前置，后置，外接
 
     //如果设备在弱光环境没有补光灯，UI界面背景多一点白色的区域，利用屏幕的光作为补光
@@ -93,14 +93,18 @@ public class FaceSearchActivity extends AbsBaseActivity {
             if (intent.hasExtra(SEARCH_ONE_TIME)) {
                 searchOneTime = intent.getBooleanExtra(SEARCH_ONE_TIME, false);
             }
+			if (intent.hasExtra(SEARCH_ONE)) {
+			    searchOne = intent.getBooleanExtra(SEARCH_ONE, true);
+				if(!searchOne){
+					binding.faceCover.setVisibility(View.GONE);
+					Toast.makeText(this, "Beta Test", Toast.LENGTH_LONG).show();
+				}
+			}
 			if (intent.hasExtra(SEARCH_TIME_OUT)) {
 			    searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 5);
 			}
             if (intent.hasExtra(IS_CAMERA_SIZE_HIGH)) {
                 isCameraSizeHigh = intent.getBooleanExtra(IS_CAMERA_SIZE_HIGH, false);
-            }
-            if (intent.hasExtra(CAMERA_ID)) {
-                cameraId = intent.getIntExtra(CAMERA_ID, CameraSelector.LENS_FACING_FRONT);
             }
         }
     }
@@ -115,7 +119,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
         binding.close.setOnClickListener(v -> finish());
         getIntentParams(); 
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE);
-        cameraLensFacing = sharedPref.getInt(FRONT_BACK_CAMERA_FLAG, cameraId); //默认前置
+        cameraLensFacing = sharedPref.getInt(FRONT_BACK_CAMERA_FLAG, 0); //默认前置
         int degree = sharedPref.getInt( SYSTEM_CAMERA_DEGREE, getWindowManager().getDefaultDisplay().getRotation());
 
         //1. 摄像头相关参数配置
@@ -148,27 +152,30 @@ public class FaceSearchActivity extends AbsBaseActivity {
 //                .setFaceTag()   //根据标记来搜索，比如有些场所只有VIP才能权限进入
                 .setThreshold(searchThreshold) //阈值范围限 [0.85 , 0.95] 识别可信度，阈值高摄像头成像品质宽动态值以及人脸底片质量也要高
                 .setCallBackAllMatch(true)   //默认是false,是否返回所有的大于设置阈值的搜索结果
-				.setNeedFaceLiveness(true)  //是否需要活体检测，只有1:N 搜索 有活体（选配，默认无）
+				.setNeedFaceLiveness(true)   //是否需要活体检测，只有1:N 搜索 有活体（选配，默认无）
+				.setSearchType(searchOne?SearchProcessBuilder.SearchType.N_SEARCH_1:SearchProcessBuilder.SearchType.N_SEARCH_M) //1:N 还是M：N
                 .setSearchIntervalTime(1700) //默认2000，范围[1500,9000]毫秒。搜索成功后的继续下一次搜索的间隔时间，不然会一直搜索一直回调结果
                 .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT) //后面版本去除次参数
                 .setProcessCallBack(new SearchProcessCallBack() {
                     /**
-                     * onMostSimilar 是返回搜索到最相似的人脸，有可能光线弱，人脸底片不合规导致错误匹配
-                     * 业务上可以添加容错处理，onFaceMatched会返回所有大于设置阈值的结果并排序好
-                     *
-                     * 强烈建议使用支持宽动态的高品质摄像头，录入高品质人脸
-                     * SearchProcessBuilder setCallBackAllMatch(true) onFaceMatched才会回调
+                     * 人脸搜索结果
+                     * @param matchedResults  所有大于设置阈值的结果
+                     * @param searchBitmap    场景图用于log分析
+                     * @param liveness   仅仅1:N（M：N 暂无活体检测）
                      */
                     @Override
                     public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float liveness) {
                         //已经按照降序排列，可以弹出一个列表框
                        String json = new Gson().toJson(matchedResults);
 					   String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
-                       Log.d("liveness","liveness静默活体分数: "+liveness);
 					   runOnUiThread(new Runnable() {
 						        @Override
 						        public void run() {
-									FaceResultManager.INSTANCE.sendResult(json,liveness,base64);
+								   if(!searchOne){
+									   binding.graphicOverlay.drawRect(matchedResults);
+								   }
+									
+								   FaceResultManager.INSTANCE.sendResult(json,liveness,base64);
                                    if(searchOneTime){
                                        FaceSearchActivity.this.finish();
                                    }
@@ -183,7 +190,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
                      * @param bitmap  场景图，可以用来做使用记录log
                      */
                     @Override
-                    public void onMostSimilar(String faceID, float score, Bitmap bitmap) {
+                    public void onMostSimilar(String faceID, float score, Bitmap bitmap,float livenessValue) {
                         // VoicePlayer.getInstance().play(R.raw.success);
                     }
 
@@ -225,7 +232,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
             //后台用于人脸搜索分析的图片宽高，画人脸检测框需要
             @Override
             public void backImageSize(int imageWidth, int imageHeight) {
-                //第三个参数指：是否graphicOverlay画面要左右镜像，一般前置摄像头和部分定制非标准设备要
+                //第三个参数指：是否graphicOverlay人脸框画面要左右镜像，一般前置摄像头和部分定制非标准设备要
                 binding.graphicOverlay.setCameraInfo(imageWidth,imageHeight,cameraXFragment.isFrontCamera());
             }
         });

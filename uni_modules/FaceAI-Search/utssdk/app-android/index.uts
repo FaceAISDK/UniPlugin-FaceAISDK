@@ -22,7 +22,7 @@ export function startFaceSearch(
     searchOneTime: boolean,
     searchTimeOut: number,
     isCameraSizeHigh: boolean,
-    cameraId: number,
+	searchOne: boolean;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
     callback: (jsonResult: string) => void
 ): void {
     
@@ -48,21 +48,24 @@ export function startFaceSearch(
         intent.putExtra("SEARCH_ONE_TIME", searchOneTime);
         intent.putExtra("SEARCH_TIME_OUT", searchTimeOut);
         intent.putExtra("IS_CAMERA_SIZE_HIGH", isCameraSizeHigh);
-        intent.putExtra("CAMERA_ID", cameraId);
+		intent.putExtra("SEARCH_ONE", searchOne);
         context.startActivity(intent);
     });
 }
 
+// Toast 放到主线程
 export function toastMessage(base64Image: string,message: string): void {
-    const context = UTSAndroid.getUniActivity() as Activity
-    FaceAISDKNative.toastMessage(context,base64Image, message)
+	UTSAndroid.getUniActivity()!.runOnUiThread(() => {
+		const context = UTSAndroid.getUniActivity() as Activity
+		FaceAISDKNative.toastMessage(context,base64Image, message)
+	});
 }
 
 
 export function switchCamera(cameraID: number): void {
-        const context = UTSAndroid.getAppContext() as Application;
-        FaceSDKConfig.init(context);
-        FaceSDKConfig.setCameraID(context,cameraID.toInt())
+    const context = UTSAndroid.getAppContext() as Application;
+    FaceSDKConfig.init(context);
+    FaceSDKConfig.setCameraID(context,cameraID.toInt())
 }
 
 

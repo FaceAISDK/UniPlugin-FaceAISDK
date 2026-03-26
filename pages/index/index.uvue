@@ -48,23 +48,22 @@
 		methods: {
 			
 			/**
-			 * 人脸搜索识别，返回大于threshold的json List数组，相似度高的在前面
+			 * 人脸搜索识别，返回大于threshold的json List数组，1:N搜索相似度高的在最前面（M：N不排序）
 			 * 
 			 */
 			startFaceSearchDemo: function () {
 
 			                const threshold = 0.85;    // 阈值[0.8.0.95],只有人脸库中匹配到的人脸相似度大于此才有结果返回
-			                const oneTime = false;     // 搜索页持续搜索接收结果 还是仅仅搜索一次返回一次结果
+				            const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
 							const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
-			                const camId = 0;           // 0，前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）
-			                
+			                const searchOne = false;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
 						    startFaceSearch(
 			                    threshold,
 			                    oneTime,
 								searchTimeOut,
 			                    highRes,
-			                    camId,
+								searchOne,
 			                    (jsonStr: string) => {
 					
 									try {
@@ -83,7 +82,7 @@
 											console.log("静默活体:", "分数："+livenessNum);
 
 										    if (results != null && results.length > 0) {
-												//大于阈值的结果已经排好序，第一个就是相似度最高的
+												//1:N搜索大于阈值的结果已经排好序，第一个就是相似度最高的（M：N不排序）
 										        const firstFace = results[0];
 										        const name = firstFace.getString("faceName");
 										        const score = firstFace.getNumber("faceScore");

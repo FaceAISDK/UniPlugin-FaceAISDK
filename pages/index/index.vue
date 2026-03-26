@@ -50,10 +50,11 @@
 			 */
 			startFaceSearchDemo: function () {				
 				const threshold = 0.85;    // 阈值[0.8.0.95],只有人脸库中匹配到的人脸相似度大于此才有结果返回
-				const oneTime = false;     // 搜索页持续搜索接收结果 还是仅仅搜索一次返回一次结果
+				const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
 				const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 				const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
 				const camId = 0;           // 0，前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）
+			    const searchOne = true;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
 			                
 			    startFaceSearch(
 			        threshold,
@@ -61,8 +62,8 @@
 			        searchTimeOut,
 			        highRes,
 			        camId,
+					searchOne,
 			        (jsonStr) => { 
-			          
 			            try {
 			                // Vue2 测试通过
 			                const root = JSON.parse(jsonStr);
