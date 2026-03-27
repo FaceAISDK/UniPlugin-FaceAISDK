@@ -90,7 +90,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
         Intent intent = getIntent(); // 获取发送过来的Intent对象
         if (intent != null) {
             if (intent.hasExtra(THRESHOLD_KEY)) {
-                searchThreshold = intent.getFloatExtra(THRESHOLD_KEY, 0.88f);
+                searchThreshold = intent.getFloatExtra(THRESHOLD_KEY, 0.85f);
             }
             if (intent.hasExtra(SEARCH_ONE_TIME)) {
                 searchOneTime = intent.getBooleanExtra(SEARCH_ONE_TIME, false);
