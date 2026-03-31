@@ -5,7 +5,11 @@
 		"arm64-v8a"
   	],
   "dependencies": [
+<<<<<<< HEAD
 	"io.github.faceaisdk:Android:2026.02.09",
+=======
+	"io.github.faceaisdk:Android:2026.03.25.many",
+>>>>>>> refs/remotes/origin/main
 	"com.google.code.gson:gson:2.13.2",
 	"com.airbnb.android:lottie:6.5.2",
 	"com.tencent:mmkv:1.3.14",

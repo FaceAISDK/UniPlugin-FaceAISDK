@@ -4,7 +4,8 @@
 export type ResultJSON = {
   code: number,       //code 含义参考Readme 
   msg: string,
-  faceBase64:string //人脸base64 编码，可用于辅助日志等
+  faceFeature:string //人脸特征值，从人脸图提取出来的
+  faceBase64:string  //人脸base64 编码，可用于辅助日志等
 }
 
 /**
@@ -90,6 +91,10 @@ export type InsertManyFeatures = (
 	jsonFaceFeatures : string,
 	callback : (result : ResultJSON) => void) => void
 	
-export type ToastMessage = (message : string) => void	
+export type ToastMessage = (base64Image : string,message : string) => void	
+
+
+export type SwitchCameta = (cameraID : number) => void	
+
 
 

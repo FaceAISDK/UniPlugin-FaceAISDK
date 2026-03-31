@@ -2,8 +2,8 @@
 	"name": "人脸搜索",
 	"appid": "__UNI__C3F93BB",
 	"description": "1:N人脸搜索识别+活体检测Beta",
-	"versionName": "2.1.0",
-	"versionCode": "210",
+	"versionName": "2026.03.22",
+	"versionCode": "20260322",
 	"uni-app-x": {},
 	/* 快应用特有相关 */
 	"quickapp": {},
