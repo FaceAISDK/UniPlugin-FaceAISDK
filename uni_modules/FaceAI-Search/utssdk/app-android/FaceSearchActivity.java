@@ -1,4 +1,4 @@
-package com.faceAI.demo.SysCamera.search;
+package uts.sdk.modules.uniFaceAISDK;
 
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.SEARCH_PREPARED;
 import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
@@ -39,6 +39,8 @@ import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
 import com.faceAI.demo.databinding.ActivityFaceSearchBinding;
 import java.util.List;
+import android.text.TextUtils;
+import java.util.Iterator;
 import com.google.gson.Gson;
 import com.faceAI.demo.SysCamera.search.ImageToast;
 
@@ -88,7 +90,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
         Intent intent = getIntent(); // 获取发送过来的Intent对象
         if (intent != null) {
             if (intent.hasExtra(THRESHOLD_KEY)) {
-                searchThreshold = intent.getFloatExtra(THRESHOLD_KEY, 0.88f);
+                searchThreshold = intent.getFloatExtra(THRESHOLD_KEY, 0.85f);
             }
             if (intent.hasExtra(SEARCH_ONE_TIME)) {
                 searchOneTime = intent.getBooleanExtra(SEARCH_ONE_TIME, false);
@@ -165,7 +167,14 @@ public class FaceSearchActivity extends AbsBaseActivity {
                      */
                     @Override
                     public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float liveness) {
-                        //已经按照降序排列，可以弹出一个列表框
+                        //1:N 已经按照降序排列 
+						Iterator<FaceSearchResult> iterator = matchedResults.iterator();
+                        while (iterator.hasNext()) {
+                            FaceSearchResult item = iterator.next();
+                            if (TextUtils.isEmpty(item.getFaceName()) && item.getFaceScore() == 0.0f) {
+                                iterator.remove();
+                            }
+                        }
                        String json = new Gson().toJson(matchedResults);
 					   String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
 					   runOnUiThread(new Runnable() {

@@ -22,7 +22,7 @@ export function startFaceSearch(
     searchOneTime: boolean,
     searchTimeOut: number,
     isCameraSizeHigh: boolean,
-	searchOne: boolean;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
+	searchOne: boolean,    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
     callback: (jsonResult: string) => void
 ): void {
     
