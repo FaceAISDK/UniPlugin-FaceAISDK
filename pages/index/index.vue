@@ -41,7 +41,7 @@
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
 				faceAIResult: 'faceAIResult',
-				base64FaceImage:base64FaceImage as string //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
+				base64FaceImage:base64FaceImage  //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
 		},
 		onLoad() {
@@ -122,10 +122,10 @@
 				addFaceSearchFeatureByImage(
 				     this.faceID,
 					 this.base64FaceImage,
-					 (result: ResultJSON)  => {
+					 (result)  => {
 						//打印结果 json
 						console.log("result:", result);
-						this.faceSearchResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
+						this.faceAIResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
 					})
 			},
 			
