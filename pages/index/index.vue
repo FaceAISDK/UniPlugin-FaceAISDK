@@ -1,7 +1,8 @@
 <template>
 	<view>
 		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸搜索</button>
-		<button class="gray-button" @tap="addFaceSearchFeatureDemo">1:N人脸搜索录入人脸</button>
+		<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
+		<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>	
 		<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
 		<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
@@ -23,21 +24,24 @@
 		switchCamera,
 		insertFaceSearchFeature,
 		insertManyFeatures,
-		addFaceSearchFeature,
+	    addFaceSearchFeatureByCamera,
+		addFaceSearchFeatureByImage,
 		deleteFaceSearchFeature,
 		queryFaceSearchFeature,
 		toastMessage
 	} from "@/uni_modules/FaceAI-Search";
 	
 	// 注意：vue应该使用 testData.uts 而不是 testData.js	
-	import { JSON_FACE_FEATURES_DATA } from "./testData.js";
+	import { JSON_FACE_FEATURES_DATA } from "./faceFeatureList.js";
+	import { base64FaceImage } from './imageData.js';
 	
 	export default {
 		data() {
 			return {
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
-				faceAIResult: 'faceAIResult'
+				faceAIResult: 'faceAIResult',
+				base64FaceImage:base64FaceImage as string //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
 		},
 		onLoad() {
@@ -97,8 +101,8 @@
 			/**
 			* 人脸搜索人脸特征录入
 			*/
-			addFaceSearchFeatureDemo: function () {
-				addFaceSearchFeature(
+			addFaceSearchFeatureByCamera: function () {
+				addFaceSearchFeatureByCamera(
 					this.faceID,
 					1,    // 1.快速模式 2.精确模式
 					true, // 是否显示确认框
@@ -108,6 +112,23 @@
 					}
 				)
 			},
+			
+			/**
+			* 人脸搜索人脸特征录入，通过Base64图片
+			* 
+			* 建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
+			*/
+			addFaceSearchFeatureByImageDemo: function () {
+				addFaceSearchFeatureByImage(
+				     this.faceID,
+					 this.base64FaceImage,
+					 (result: ResultJSON)  => {
+						//打印结果 json
+						console.log("result:", result);
+						this.faceSearchResult = JSON.stringify(result, ['code', 'msg', 'faceBase64'], 4)
+					})
+			},
+			
 			
 			/**
 			* 删除人脸搜索人脸特征

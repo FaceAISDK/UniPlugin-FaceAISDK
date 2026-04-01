@@ -22,6 +22,8 @@
 ## 使用方法
   如果你是第一次运行UTS插件工程/引入UTS API插件，你应先安装官方说明配置好基础环境 [基础环境](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html) 
 
+  **开发调试阶段请开启调试模式**，Android-manifest.json distribute配置 "debuggable" : true,
+
   ### 1.下载Demo工程[](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)先跑通。熟悉后参考文档集成到主项目
 
   ### 2.按照文档 -》把插件引入项目（即 import {需要的方法} from "@/uni_modules/FaceAI-Search";）

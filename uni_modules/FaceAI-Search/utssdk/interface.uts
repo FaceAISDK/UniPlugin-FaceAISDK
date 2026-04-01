@@ -33,13 +33,23 @@ export type StartFaceSearch = (
  * @param faceID 用户ID
  * @param callback 结果回调
  */
-export type AddFaceSearchFeature = (
+export type AddFaceSearchFeatureByCamera = (
     faceID:string,
 	addFacePerformanceMode:number,
 	needShowConfirmDialog:boolean,
 	callback : (result : ResultJSON) => void) => void
 	
-	
+/**
+ * 「1:N人脸搜索」录入人脸特征值
+ * 
+ * @param faceID 用户ID
+ * @param callback 结果回调
+ */
+export type AddFaceSearchFeatureByImage = (
+    faceID:string,
+	base64FaceImage:string,
+	callback : (result : ResultJSON) => void) => void
+		
 	
 /**
  * 「1:N人脸搜索」删除一张人脸照片
