@@ -1,6 +1,6 @@
 {
 	"id": "FaceAI-Search",
-	"displayName": "FaceAI-人脸搜索识别",
+	"displayName": "人脸搜索识别FaceAISDK",
 	"version": "3.4.0",
 	"description": "Android 1:N人脸搜索识别，可用于小区门禁多人身份验证等场景",
 	"keywords": [
@@ -87,8 +87,7 @@
 						"jd": "-",
 						"harmony": "x",
 						"qq": "x",
-                        "lark": "x",
-                        "xhs": "-"
+                        "lark": "x"
 					},
 					"quickapp": {
 						"huawei": "-",
