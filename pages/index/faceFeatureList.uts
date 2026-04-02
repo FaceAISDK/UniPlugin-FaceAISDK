@@ -1,8 +1,8 @@
 // testData.uts
 
 /**
- * 导出测试用的 JSON 字符串常量
- * 使用反引号 (`) 可以轻松处理多行字符串，无需使用 + 拼接
+ *  人脸搜索特征数据批量插入测试，模拟各种有问题测试数据
+ *
  */
 export const JSON_FACE_FEATURES_DATA = `[
     {
