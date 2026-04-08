@@ -9,7 +9,7 @@
 
 快速体验完整人脸识别功能可以下载Demo App：
 <div align=center>
-<img src="https://www.pgyer.com/app/qrcode/faceVerify" width = 16%   alt="扫一扫下载Demo"/>
+<img src="https://www.pgyer.com/app/qrcode/faceVerify" width = 19%   alt="扫一扫下载Demo"/>
 </div>
 
 
@@ -23,7 +23,6 @@
   如果你是第一次运行UTS插件工程/引入UTS API插件，你应先安装官方说明配置好基础环境 [基础环境](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html) 
 
   **开发调试阶段请开启调试模式**，Android-manifest.json distribute配置 "debuggable" : true,
-
 
   ### 1.下载Demo工程[](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)先跑通。熟悉后参考文档集成到主项目
 
@@ -45,6 +44,6 @@
 	
 	
   注：只支持真机调试，需要用到硬件摄像头  
-  Copyright © 2026 FaceAISDK. All rights reserved.           Email:FaceAISDK.Service@gmail.com
+  Copyright © 2026 FaceAISDK. 商用联系 FaceAISDK.Service@gmail.com授权
 
 
