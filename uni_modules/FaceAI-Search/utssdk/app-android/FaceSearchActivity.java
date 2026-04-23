@@ -1,4 +1,4 @@
-package com.faceAI.demo.SysCamera.search;
+package uts.sdk.modules.uniFaceAISDK;
 
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.EMGINE_INITING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_DIR_EMPTY;
@@ -51,7 +51,7 @@ import java.util.List;
  *
  * @author FaceAISDK.Service@gmail.com
  */
-public class FaceSearch1NActivity extends AbsBaseActivity {
+public class FaceSearchActivity extends AbsBaseActivity {
     public static final String THRESHOLD_KEY = "THRESHOLD_KEY";    //人脸搜索阈值
     public static final String NEED_FACE_LIVE = "NEED_FACE_LIVE";   //是否开启活体检测
     public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";   //是否仅搜索一次就关闭搜索页
