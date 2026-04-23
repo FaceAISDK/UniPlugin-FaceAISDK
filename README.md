@@ -44,6 +44,6 @@
 	
 	
   注：只支持真机调试，需要用到硬件摄像头  
-  Copyright © 2026 FaceAISDK. 商用联系 FaceAISDK.Service@gmail.com授权
+  Copyright © 2026 FaceAISDK. 商用联系FaceAISDK.Service@gmail.com
 
 

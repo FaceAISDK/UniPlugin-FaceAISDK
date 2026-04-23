@@ -57,11 +57,11 @@
 			 */
 			startFaceSearchDemo: function () {
 
-			                const threshold = 0.85;    // 阈值[0.8.0.95],只有人脸库中匹配到的人脸相似度大于此才有结果返回
+			                const threshold = 0.85;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
 				            const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
 							const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
-			                const searchOne = true;   // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
+			                const searchOne = true;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
 						    startFaceSearch(
 			                    threshold,
 			                    oneTime,
@@ -79,6 +79,8 @@
 											
 											// 人脸搜索场景图，可作为日志备份
 											const base64 = root.getString("base64") ?? ""; 
+											
+											// 如果需要活体检测，加上相应的判断
 											const liveness = root.getNumber("liveness");
 											//console.log("静默活体:", "分数："+liveness);
 
@@ -197,6 +199,7 @@
 			
 		   /**
 			* 切换前后摄像头，一般0是前置， 1是后置 （但是部分定制Android设备不太标准）
+			* 插件目前仅仅支持系统RGB摄像头，UVC协议相机只有原生Android 代码支持
 			* 
 			*/
 			switchCameraDemo: function () {
