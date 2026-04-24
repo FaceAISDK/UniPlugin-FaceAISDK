@@ -203,7 +203,7 @@
 			* 
 			*/
 			switchCameraDemo: function () {
-				switchCamera(1)
+				switchCamera(0)
 			},		
 			
 			

@@ -21,14 +21,13 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;  
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageProxy;
-
 import com.ai.face.base.view.camera.CameraXBuilder;
 import com.ai.face.core.utils.FaceAICameraType;
 import com.ai.face.faceSearch.search.FaceSearchEngine;
@@ -39,9 +38,10 @@ import com.faceAI.demo.R;
 import com.faceAI.demo.SysCamera.camera.FaceCameraXFragment;
 import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
+ import com.faceAI.demo.base.utils.BitmapUtils; 
 import com.faceAI.demo.databinding.ActivityFaceSearchBinding;
 import com.google.gson.Gson;
-
+import java.util.Iterator;  
 import java.util.List;
 
 /**
@@ -55,22 +55,23 @@ public class FaceSearchActivity extends AbsBaseActivity {
     public static final String THRESHOLD_KEY = "THRESHOLD_KEY";    //人脸搜索阈值
     public static final String NEED_FACE_LIVE = "NEED_FACE_LIVE";   //是否开启活体检测
     public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";   //是否仅搜索一次就关闭搜索页
-    public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";   //高分辨率远距离也可以工作，但是性能速度会下降
-	
-	private float searchThreshold = 0.85f;  //搜索阈值
-	private boolean searchOneTime = false;   //是否仅搜索一次就关闭搜索页
-	private boolean searchOne= true;   //是否仅搜索镜头前最大的人脸
-	private int searchTimeOut = 5 ; //搜索超时时间
-	private boolean isCameraSizeHigh = false; //是否高分辨率
-	private int cameraLensFacing;  //摄像头前置，后置，外接
+    public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";   //高分辨率远距离也可以工作，但是性能速度会下降    
+    public static final String SEARCH_ONE = "SEARCH_ONE";
+    public static final String SEARCH_TIME_OUT = "SEARCH_TIME_OUT";
+
+    private float searchThreshold = 0.85f;  //搜索阈值
+    private boolean searchOneTime = false;   //是否仅搜索一次就关闭搜索页
+    private boolean searchOne= true;   //是否仅搜索镜头前最大的人脸
+    private int searchTimeOut = 5 ; //搜索超时时间
+    private boolean isCameraSizeHigh = false; //是否高分辨率
+    private int cameraLensFacing;  //摄像头前置，后置，外接    
+    private boolean needFaceLive = false;
 
     //如果设备在弱光环境没有补光灯，UI界面背景多一点白色的区域，利用屏幕的光作为补光
     private ActivityFaceSearchBinding binding;
     private FaceCameraXFragment cameraXFragment; //摄像头请自行管理，源码全部开放
     private boolean pauseSearch = false; //控制是否送数据到SDK进行搜索
-	
-	private long searchStartTime =0; //开始搜索时间
-	
+    private long searchStartTime = 0; //开始搜索时间
 
     /**
      * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
@@ -84,16 +85,19 @@ public class FaceSearchActivity extends AbsBaseActivity {
             if (intent.hasExtra(SEARCH_ONE_TIME)) {
                 searchOneTime = intent.getBooleanExtra(SEARCH_ONE_TIME, false);
             }
-			if (intent.hasExtra(SEARCH_ONE)) {
-			    searchOne = intent.getBooleanExtra(SEARCH_ONE, true);
-				if(!searchOne){
-					binding.faceCover.setVisibility(View.GONE);
-					Toast.makeText(this, "Beta Test", Toast.LENGTH_LONG).show();
-				}
-			}
-			if (intent.hasExtra(SEARCH_TIME_OUT)) {
-			    searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 5);
-			}
+            if (intent.hasExtra(NEED_FACE_LIVE)) {
+                needFaceLive = intent.getBooleanExtra(NEED_FACE_LIVE, false);
+            }
+            if (intent.hasExtra(SEARCH_ONE)) {
+                searchOne = intent.getBooleanExtra(SEARCH_ONE, true);
+                if(!searchOne){
+                    binding.faceCover.setVisibility(View.GONE);
+                    Toast.makeText(this, "Beta Test", Toast.LENGTH_LONG).show();
+                }
+            }
+            if (intent.hasExtra(SEARCH_TIME_OUT)) {
+                searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 5);
+            }
             if (intent.hasExtra(IS_CAMERA_SIZE_HIGH)) {
                 isCameraSizeHigh = intent.getBooleanExtra(IS_CAMERA_SIZE_HIGH, false);
             }
@@ -159,7 +163,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
                     @Override
                     public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float liveness) {
                         //1:N 已经按照降序排列 
-						Iterator<FaceSearchResult> iterator = matchedResults.iterator();
+                        Iterator<FaceSearchResult> iterator = matchedResults.iterator();
                         while (iterator.hasNext()) {
                             FaceSearchResult item = iterator.next();
                             if (TextUtils.isEmpty(item.getFaceName()) && item.getFaceScore() == 0.0f) {
@@ -167,20 +171,20 @@ public class FaceSearchActivity extends AbsBaseActivity {
                             }
                         }
                        String json = new Gson().toJson(matchedResults);
-					   String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
-					   runOnUiThread(new Runnable() {
-						        @Override
-						        public void run() {
-								   if(!searchOne){
-									   binding.graphicOverlay.drawRect(matchedResults);
-								   }
-									
-								   FaceResultManager.INSTANCE.sendResult(json,liveness,base64);
+                       String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
+                       runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                   if(!searchOne){
+                                       binding.graphicOverlay.drawRect(matchedResults);
+                                   }
+                                    
+                                   FaceResultManager.INSTANCE.sendResult(json,liveness,base64);
                                    if(searchOneTime){
                                        FaceSearchActivity.this.finish();
                                    }
-						        }
-						});
+                                }
+                        });
                     }
 
                     /**
@@ -254,12 +258,12 @@ public class FaceSearchActivity extends AbsBaseActivity {
             case NO_MATCHED:
                 //本次没有搜索匹配到结果.没有结果会持续尝试1秒之内没有结果会返回NO_MATCHED code
                 setSecondTips(R.string.no_matched_face);
-				
-				if(searchOneTime&&System.currentTimeMillis()/1000-searchStartTime>5){
-					//超时没有返回结果
-					FaceResultManager.INSTANCE.sendResult("[]",0.0f,""); //没有搜索结果
-				    FaceSearchActivity.this.finish();
-				}
+                
+                if(searchOneTime&&System.currentTimeMillis()/1000-searchStartTime>searchTimeOut){ // Fixed hardcoded '5' to use searchTimeOut
+                    //超时没有返回结果
+                    FaceResultManager.INSTANCE.sendResult("[]",0.0f,""); //没有搜索结果
+                    FaceSearchActivity.this.finish();
+                }
                 break;
 
             case FACE_DIR_EMPTY:
@@ -290,14 +294,11 @@ public class FaceSearchActivity extends AbsBaseActivity {
             case FACE_TOO_SMALL:
                 setSecondTips(R.string.come_closer_tips);
                 break;
-
-            // 单独使用一个textview 提示，防止上一个提示被覆盖。
-            // 也可以自行记住上个状态，FACE_SIZE_FIT 中恢复上一个提示
+				
             case FACE_TOO_LARGE:
                 setSecondTips(R.string.far_away_tips);
                 break;
 
-            //检测到正常的人脸，尺寸大小OK
             case FACE_SIZE_FIT:
                 setSecondTips(0);
                 break;
@@ -326,7 +327,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
      * @param resId
      */
     private void setSecondTips(int resId) {
-//        binding.faceCover.setSecondTipsText(resId);
+       binding.faceCover.setSecondTipsText(resId);
     }
 
     /**
