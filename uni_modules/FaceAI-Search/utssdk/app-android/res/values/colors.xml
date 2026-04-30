@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="face_main_color">#0B4D46</color>
+    <color name="face_main_color">#FF9800</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue_sky">#AA0B4D46</color>
     <color name="half_blue_sky">#160B4D46</color>

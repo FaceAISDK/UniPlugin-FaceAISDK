@@ -2,11 +2,11 @@
 	"id": "FaceAI-Search",
 	"displayName": "人脸搜索识别FaceAISDK",
 	"version": "2026.04.22",
-	"description": "Android 1:N人脸搜索识别，可用于小区门禁多人身份验证等场景",
+	"description": "Android 1:N人脸搜索识别，可用于小区门禁多人身份验证等场景,离线不依赖三方服务",
 	"keywords": [
         "人脸搜索",
-        ",",
-        "离线搜索，活体检测"
+        "离线搜索",
+        "活体检测"
     ],
 	"repository": "https://github.com/FaceAISDK/FaceSearch_uniapp_plugin",
 	"engines": {
