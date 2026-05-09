@@ -93,7 +93,7 @@
 										        
 										        if (name != null&&searchOne) {
 										            toastMessage(base64,"最匹配:" + name + "," + score);
-													TTSPlayer(name)
+													TTSPlayer(name) //TTS语音播报
 										        }
 										    } else {
 												if (searchOne) {
