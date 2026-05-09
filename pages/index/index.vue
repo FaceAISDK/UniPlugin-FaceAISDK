@@ -28,6 +28,7 @@
 		addFaceSearchFeatureByImage,
 		deleteFaceSearchFeature,
 		queryFaceSearchFeature,
+		TTSPlayer,
 		toastMessage
 	} from "@/uni_modules/FaceAI-Search";
 	
@@ -86,6 +87,7 @@
 			                    
 			                    if (name != null&&searchOne) {
 			                            toastMessage(base64,"最匹配:" + name + "," + score);
+										TTSPlayer(name)
 			                        }
 			                    } else {
 			                    	if (searchOne) {

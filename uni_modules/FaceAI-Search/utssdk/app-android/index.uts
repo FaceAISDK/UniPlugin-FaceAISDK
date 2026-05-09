@@ -14,7 +14,7 @@ import Gson from 'com.google.gson.Gson'
 
 /**
  * 启动持续人脸搜索 Activity
- * 使用 export function 确保 @UTSJS.keepAlive 生效
+ * 
  */
 @UTSJS.keepAlive
 export function startFaceSearch(
@@ -25,8 +25,7 @@ export function startFaceSearch(
 	searchOne: boolean,    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
     callback: (jsonResult: string) => void
 ): void {
-    
-    // 1. 添加静默活体liveness
+
     FaceResultManager.setCallback((json: string, liveness: number, base64: string) => {
 		const finalJson = `{"data":${json},"liveness":${liveness},"base64":"${base64}"}`
         try {
@@ -57,6 +56,11 @@ export function toastMessage(base64Image: string, message: string): void {
 		const context = UTSAndroid.getUniActivity() as Activity
 		FaceAISDKNative.toastMessage(context, base64Image, message)
 	});
+}
+
+
+export function TTSPlayer( message: string): void {
+	FaceAISDKNative.TTSPlayer(message)
 }
 
 export function switchCamera(cameraID: number): void {

@@ -13,10 +13,6 @@
 </div>
 
 
-**插件Demo工程：**  
-[先跑通这个插件接入Demo工程](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)
-
-![demo](https://i.postimg.cc/q7wT2QkP/face-Search.png)
 
 
 ## 使用方法
@@ -36,14 +32,14 @@
    . 
    ![运行到手机](https://i.postimg.cc/QdwtZM60/2.png)
 	
-  **一定要先制作自定义调试基准，然后运行的时候使用自定义基准，看图片步骤引导**
+  **一定要先制作自定义调试基准，然后运行的时候使用自定义基准，看图片步骤引导**  
+	
+  Powered by FaceAISDK Copyright©2026. 商用联系FaceAISDK@gmail.com  
 	
 	
-  本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881
-  目前人脸搜索识别UTS插件还没有原生Android那么完善，更多功能和更好体验请参考原生Android实现https://github.com/FaceAISDK/FaceAISDK_Android
+  本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881  
+  目前人脸搜索识别UTS插件还没有原生Android那么完善，更多功能和更好体验请参考原生Android实现https://github.com/FaceAISDK/FaceAISDK_Android  
 	
-	
-  注：只支持真机调试，需要用到硬件摄像头  
-  Copyright © 2026 FaceAISDK
+
 
 

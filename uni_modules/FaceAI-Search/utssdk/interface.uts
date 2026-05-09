@@ -103,6 +103,7 @@ export type InsertManyFeatures = (
 	
 export type ToastMessage = (base64Image : string,message : string) => void	
 
+export type TTSPlayer = (message : string) => void	
 
 export type SwitchCameta = (cameraID : number) => void	
 

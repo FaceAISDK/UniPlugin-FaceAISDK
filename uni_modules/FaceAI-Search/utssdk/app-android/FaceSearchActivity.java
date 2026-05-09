@@ -19,11 +19,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.TextUtils;  
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraSelector;
@@ -31,6 +31,7 @@ import androidx.camera.core.ImageProxy;
 import com.ai.face.base.view.camera.CameraXBuilder;
 import com.ai.face.core.utils.FaceAICameraType;
 import com.ai.face.faceSearch.search.FaceSearchEngine;
+import com.ai.face.faceSearch.search.GraphicOverlay;
 import com.ai.face.faceSearch.search.SearchProcessBuilder;
 import com.ai.face.faceSearch.search.SearchProcessCallBack;
 import com.ai.face.faceSearch.utils.FaceSearchResult;
@@ -38,46 +39,44 @@ import com.faceAI.demo.R;
 import com.faceAI.demo.SysCamera.camera.FaceCameraXFragment;
 import com.faceAI.demo.base.AbsBaseActivity;
 import com.faceAI.demo.base.utils.VoicePlayer;
- import com.faceAI.demo.base.utils.BitmapUtils; 
-import com.faceAI.demo.databinding.ActivityFaceSearchBinding;
+import com.faceAI.demo.base.utils.BitmapUtils;
+import com.faceAI.demo.base.view.FaceCoverView;
 import com.google.gson.Gson;
-import java.util.Iterator;  
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * RGB摄像头动作活体检测+1:N 人脸搜索识别。
  * <p>
- * 摄像头管理源码开放在 {@link FaceCameraXFragment}
- *
- * @author FaceAISDK.Service@gmail.com
+ * 采用传统 findViewById 方式，适配 HBuilder 云打包环境。
  */
 public class FaceSearchActivity extends AbsBaseActivity {
-    public static final String THRESHOLD_KEY = "THRESHOLD_KEY";    //人脸搜索阈值
-    public static final String NEED_FACE_LIVE = "NEED_FACE_LIVE";   //是否开启活体检测
-    public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";   //是否仅搜索一次就关闭搜索页
-    public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";   //高分辨率远距离也可以工作，但是性能速度会下降    
+    public static final String THRESHOLD_KEY = "THRESHOLD_KEY";
+    public static final String NEED_FACE_LIVE = "NEED_FACE_LIVE";
+    public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";
+    public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";
     public static final String SEARCH_ONE = "SEARCH_ONE";
     public static final String SEARCH_TIME_OUT = "SEARCH_TIME_OUT";
 
-    private float searchThreshold = 0.85f;  //搜索阈值
-    private boolean searchOneTime = false;   //是否仅搜索一次就关闭搜索页
-    private boolean searchOne= true;   //是否仅搜索镜头前最大的人脸
-    private int searchTimeOut = 5 ; //搜索超时时间
-    private boolean isCameraSizeHigh = false; //是否高分辨率
-    private int cameraLensFacing;  //摄像头前置，后置，外接    
+    private float searchThreshold = 0.85f;
+    private boolean searchOneTime = false;
+    private boolean searchOne = true;
+    private int searchTimeOut = 5;
+    private boolean isCameraSizeHigh = false;
+    private int cameraLensFacing;
     private boolean needFaceLive = false;
 
-    //如果设备在弱光环境没有补光灯，UI界面背景多一点白色的区域，利用屏幕的光作为补光
-    private ActivityFaceSearchBinding binding;
-    private FaceCameraXFragment cameraXFragment; //摄像头请自行管理，源码全部开放
-    private boolean pauseSearch = false; //控制是否送数据到SDK进行搜索
-    private long searchStartTime = 0; //开始搜索时间
+    // UI 控件变量
+    private ImageView closeBtn;
+    private GraphicOverlay graphicOverlay;
+    private FaceCoverView faceCover;
 
-    /**
-     * 获取UNI,RN,Flutter三方插件传递的参数,以便在原生代码中生效
-     */
+    private FaceCameraXFragment cameraXFragment;
+    private boolean pauseSearch = false;
+    private long searchStartTime = 0;
+
     private void getIntentParams() {
-        Intent intent = getIntent(); // 获取发送过来的Intent对象
+        Intent intent = getIntent();
         if (intent != null) {
             if (intent.hasExtra(THRESHOLD_KEY)) {
                 searchThreshold = intent.getFloatExtra(THRESHOLD_KEY, 0.85f);
@@ -90,8 +89,9 @@ public class FaceSearchActivity extends AbsBaseActivity {
             }
             if (intent.hasExtra(SEARCH_ONE)) {
                 searchOne = intent.getBooleanExtra(SEARCH_ONE, true);
-                if(!searchOne){
-                    binding.faceCover.setVisibility(View.GONE);
+                if (!searchOne) {
+                    // 替换原来的 binding.faceCover
+                    if (faceCover != null) faceCover.setVisibility(View.GONE);
                     Toast.makeText(this, "Beta Test", Toast.LENGTH_LONG).show();
                 }
             }
@@ -104,31 +104,35 @@ public class FaceSearchActivity extends AbsBaseActivity {
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideSystemUI();
-        binding = ActivityFaceSearchBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        binding.close.setOnClickListener(v -> finish());
+        
+        // 1. 设置布局
+        setContentView(R.layout.activity_face_search);
 
-        getIntentParams(); //接收三方插件传递的参数，原生开发可以忽略裁剪掉
+        // 2. 初始化控件
+        closeBtn = findViewById(R.id.close);
+        graphicOverlay = findViewById(R.id.graphicOverlay);
+        faceCover = findViewById(R.id.face_cover);
+
+        // 3. 设置点击事件
+        closeBtn.setOnClickListener(v -> finish());
+
+        getIntentParams();
 
         SharedPreferences sharedPref = getSharedPreferences("FaceAISDK_SP", Context.MODE_PRIVATE);
-        cameraLensFacing = sharedPref.getInt(FRONT_BACK_CAMERA_FLAG, 0); //默认前置
+        cameraLensFacing = sharedPref.getInt(FRONT_BACK_CAMERA_FLAG, 0);
         int degree = sharedPref.getInt(SYSTEM_CAMERA_DEGREE, getWindowManager().getDefaultDisplay().getRotation());
 
-        //1. 摄像头相关参数配置
-        /**摄像头管理源码开放在 {@link FaceCameraXFragment} **/
         CameraXBuilder cameraXBuilder = new CameraXBuilder.Builder()
-                .setCameraLensFacing(cameraLensFacing) //前后摄像头
-                .setLinearZoom(0.01f)      //焦距范围[0f,1.0f]，根据应用场景自行适当调整焦距（摄像头需支持变焦）
-                .setRotation(degree)      //画面旋转方向
-                .setCameraSizeHigh(isCameraSizeHigh) //高分辨率远距离也可以工作，但是性能速度会下降
+                .setCameraLensFacing(cameraLensFacing)
+                .setLinearZoom(0.01f)
+                .setRotation(degree)
+                .setCameraSizeHigh(isCameraSizeHigh)
                 .create();
 
-        //可以不用SDK 内部相机管理，自定义摄像头参考MyCameraFragment，源码开放自由修改
         cameraXFragment = FaceCameraXFragment.newInstance(cameraXBuilder);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_camerax, cameraXFragment)
                 .commit();
@@ -136,33 +140,19 @@ public class FaceSearchActivity extends AbsBaseActivity {
         initFaceSearchParam();
     }
 
-
-    /**
-     * 初始化人脸搜索参数
-     */
     private void initFaceSearchParam() {
-        // 2.各种参数的初始化设置
         SearchProcessBuilder faceProcessBuilder = new SearchProcessBuilder.Builder(this)
                 .setLifecycleOwner(this)
                 .setCameraType(FaceAICameraType.SYSTEM_CAMERA)
-//                .setFaceGroup() //根据分组来搜索，比如小区不同楼栋可以设置从1A，1B，2C等分组不但能管理权限又能加快速度
-//                .setFaceTag()   //根据标记来搜索，比如有些场所只有VIP才能权限进入
-                .setNeedFaceLiveness(needFaceLive)//是否需要活体检测，只有1:N 搜索 有活体（选配，默认无）
-                .setSearchType(SearchProcessBuilder.SearchType.N_SEARCH_1) //1:N 搜索
-                .setThreshold(searchThreshold) //阈值范围限 [0.85 , 0.95] 识别可信度，阈值高摄像头成像品质宽动态值以及人脸底片质量也要高
-                .setCallBackAllMatch(true) //默认是false,是否返回所有的大于设置阈值的搜索结果
-                .setSearchIntervalTime(1700) //默认2000，范围[0,9000]毫秒。搜索成功后的继续下一次搜索的间隔时间，不然会一直搜索一直回调结果
-                .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT) //后面版本去除次参数
+                .setNeedFaceLiveness(true)
+                .setSearchType(SearchProcessBuilder.SearchType.N_SEARCH_1)
+                .setThreshold(searchThreshold)
+                .setCallBackAllMatch(true)
+                .setSearchIntervalTime(1700)
+                .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT)
                 .setProcessCallBack(new SearchProcessCallBack() {
-                    /**
-                     * 人脸搜索结果
-                     * @param matchedResults  所有大于设置阈值的结果
-                     * @param searchBitmap    场景图用于log分析
-                     * @param liveness   仅仅1:N（M：N 暂无活体检测）
-                     */
                     @Override
-                    public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap,float liveness) {
-                        //1:N 已经按照降序排列 
+                    public void onFaceMatched(List<FaceSearchResult> matchedResults, Bitmap searchBitmap, float liveness) {
                         Iterator<FaceSearchResult> iterator = matchedResults.iterator();
                         while (iterator.hasNext()) {
                             FaceSearchResult item = iterator.next();
@@ -170,46 +160,32 @@ public class FaceSearchActivity extends AbsBaseActivity {
                                 iterator.remove();
                             }
                         }
-                       String json = new Gson().toJson(matchedResults);
-                       String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
-                       runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                   if(!searchOne){
-                                       binding.graphicOverlay.drawRect(matchedResults);
-                                   }
-                                    
-                                   FaceResultManager.INSTANCE.sendResult(json,liveness,base64);
-                                   if(searchOneTime){
-                                       FaceSearchActivity.this.finish();
-                                   }
+                        String json = new Gson().toJson(matchedResults);
+                        String base64 = BitmapUtils.bitmapToBase64(searchBitmap);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!searchOne) {
+                                    // 替换 binding.graphicOverlay
+                                    graphicOverlay.drawRect(matchedResults);
                                 }
+                                FaceResultManager.INSTANCE.sendResult(json, liveness, base64);
+                                if (searchOneTime) {
+                                    FaceSearchActivity.this.finish();
+                                }
+                            }
                         });
                     }
 
-                    /**
-                     * 最相似的人脸搜索识别结果，得分最高
-                     * @param faceID  人脸ID
-                     * @param score   相似度值
-                     * @param bitmap  场景图，可以用来做使用记录log
-                     * @param livenessValue 静默活体分数
-                     */
                     @Override
                     public void onMostSimilar(String faceID, float score, Bitmap bitmap, float livenessValue) {
-                        if (livenessValue > 0.75) { //分数根据你的摄像头和安装场景自由定义
-                            VoicePlayer.getInstance().play(R.raw.ding_success);
-                        } else {
-                            VoicePlayer.getInstance().play(R.raw.ding_failed);
-                        }
+						
                     }
 
-                    /**
-                     * 检测到人脸的位置信息，画框用
-                     */
                     @Override
                     public void onFaceDetected(List<FaceSearchResult> result) {
-                        //画框UI代码完全开放，用户可以根据情况自行改造
-                        binding.graphicOverlay.drawRect(result);
+                        // 替换 binding.graphicOverlay
+                        graphicOverlay.drawRect(result);
                     }
 
                     @Override
@@ -218,121 +194,83 @@ public class FaceSearchActivity extends AbsBaseActivity {
                     }
 
                     @Override
-                    public void onLog(String log) {
-
-                    }
+                    public void onLog(String log) {}
 
                 }).create();
 
-
-        //3.根据参数初始化引擎
         FaceSearchEngine.Companion.getInstance().initSearchParams(faceProcessBuilder);
 
-        // 4.从标准默认的HAL CameraX 摄像头中取数据实时搜索
-        // 建议设备配置 CPU为八核64位2.4GHz以上,  摄像头RGB 宽动态(大于105Db)高清成像，光线不足设备加补光灯
         cameraXFragment.setOnAnalyzerListener(new FaceCameraXFragment.onAnalyzeData() {
             @Override
             public void analyze(@NonNull ImageProxy imageProxy) {
-                //设备硬件可以加个红外检测有人靠近再启动人脸搜索检索服务，不然机器一直工作发热性能下降老化快
                 if (!isDestroyed() && !isFinishing() && !pauseSearch) {
                     FaceSearchEngine.Companion.getInstance().runSearchWithImageProxy(imageProxy, 0);
                 }
             }
 
-            //后台用于人脸搜索分析的图片宽高，画人脸检测框需要
             @Override
             public void backImageSize(int imageWidth, int imageHeight) {
-                //如果发现人脸框坐标左右镜像了，第三个参数置反一下就可以了
-                binding.graphicOverlay.setCameraInfo(imageWidth, imageHeight, cameraXFragment.isFrontCamera());
+                // 替换 binding.graphicOverlay
+                graphicOverlay.setCameraInfo(imageWidth, imageHeight, cameraXFragment.isFrontCamera());
             }
         });
     }
 
-    /**
-     * 显示人脸搜索识别提示，根据Code码显示对应的提示,用户根据自己业务处理细节
-     *
-     * @param code 提示Code码
-     */
     private void showFaceSearchPrecessTips(int code) {
         switch (code) {
             case NO_MATCHED:
-                //本次没有搜索匹配到结果.没有结果会持续尝试1秒之内没有结果会返回NO_MATCHED code
                 setSecondTips(R.string.no_matched_face);
-                
-                if(searchOneTime&&System.currentTimeMillis()/1000-searchStartTime>searchTimeOut){ // Fixed hardcoded '5' to use searchTimeOut
-                    //超时没有返回结果
-                    FaceResultManager.INSTANCE.sendResult("[]",0.0f,""); //没有搜索结果
+                if (searchOneTime && System.currentTimeMillis() / 1000 - searchStartTime > searchTimeOut) {
+                    FaceResultManager.INSTANCE.sendResult("[]", 0.0f, "");
                     FaceSearchActivity.this.finish();
                 }
                 break;
-
             case FACE_DIR_EMPTY:
-                //人脸库没有人脸照片，使用SDK API插入人脸
                 setSearchTips(R.string.face_dir_empty);
                 Toast.makeText(this, R.string.no_base_face_image, Toast.LENGTH_LONG).show();
                 break;
-
             case EMGINE_INITING:
                 setSearchTips(R.string.sdk_init);
                 break;
-
             case SEARCH_PREPARED:
-                //initSearchParams 后引擎需要加载人脸库等初始化，完成会回调
                 setSearchTips(R.string.keep_face_tips);
                 break;
-
             case SEARCHING:
-                //后期将废除本状态
                 setSearchTips(R.string.keep_face_tips);
                 break;
-
             case NO_LIVE_FACE:
-                Log.d("NO_LIVE_FACE", "没有检测到人脸" );
                 setSearchTips(R.string.no_face_detected_tips);
                 break;
-
             case FACE_TOO_SMALL:
                 setSecondTips(R.string.come_closer_tips);
                 break;
-				
             case FACE_TOO_LARGE:
                 setSecondTips(R.string.far_away_tips);
                 break;
-
             case FACE_SIZE_FIT:
                 setSecondTips(0);
                 break;
-
             case THRESHOLD_ERROR:
                 setSearchTips(R.string.search_threshold_scope_tips);
                 break;
-
             case MASK_DETECTION:
                 setSearchTips(R.string.no_mask_please);
                 break;
-
             default:
-                binding.faceCover.setTipsText("Tips Code：" + code);
+                // 替换原来的 binding.faceCover
+                if (faceCover != null) faceCover.setTipsText("Tips Code：" + code);
                 break;
         }
     }
 
     private void setSearchTips(int resId) {
-        binding.faceCover.setTipsText(resId);
+        if (faceCover != null) faceCover.setTipsText(resId);
     }
 
-    /**
-     * 第二行的提示
-     *
-     * @param resId
-     */
     private void setSecondTips(int resId) {
-       binding.faceCover.setSecondTipsText(resId);
+        if (faceCover != null) faceCover.setSecondTipsText(resId);
     }
 
-    /**
-     * 停止人脸搜索，释放资源
-     */
     @Override
     protected void onDestroy() {
         super.onDestroy();

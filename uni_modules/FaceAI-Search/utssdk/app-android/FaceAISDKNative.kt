@@ -20,6 +20,7 @@ import com.faceAI.demo.SysCamera.search.ImageToast
 import com.faceAI.demo.base.utils.BitmapUtils
 import com.faceAI.demo.base.utils.VoicePlayer
 import com.tencent.mmkv.MMKV
+import com.faceAI.demo.base.utils.TTSPlayer
 
 // UTS/UniApp 引用
 import io.dcloud.uts.UTSAndroid
@@ -35,6 +36,16 @@ import org.json.JSONObject
  *
  */
 object FaceAISDKNative {
+	
+	/**
+	 * Toast 信息
+	 * 
+	 */
+	fun TTSPlayer(message: String){
+	    TTSPlayer.getInstance().playTTS(message); //语音播报faceID
+	}
+	
+	
 	/**
 	 * Toast 信息
 	 * 

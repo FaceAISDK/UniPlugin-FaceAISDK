@@ -13,10 +13,7 @@
 </div>
 
 
-**插件Demo工程：**  
-[先跑通这个插件接入Demo工程](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)
 
-![demo](https://i.postimg.cc/q7wT2QkP/face-Search.png)
 
 
 ## 使用方法

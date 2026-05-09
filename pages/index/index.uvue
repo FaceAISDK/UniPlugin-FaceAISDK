@@ -10,10 +10,10 @@
 		<button class="gray-button" @tap="switchCameraDemo">切换前后摄像头</button>
 		
 		<view class="result-box">
-		      <view> Email: FaceAISDK.Service@gmail.com</view>
-		       <scroll-view scroll-y="true" class="scroll-view-box">
-		       <text class="text-content">{{faceSearchResult}}</text>
-		       </scroll-view>
+		    <scroll-view scroll-y="true" class="scroll-view-box">
+		        <text class="text-content">{{faceSearchResult}}</text>
+		    </scroll-view>
+			<view> Email: FaceAISDK.Service@gmail.com</view>
 		</view>
 	</view>
 </template>
@@ -30,6 +30,7 @@
 			deleteFaceSearchFeature,
 			queryFaceSearchFeature,
 			toastMessage,
+			TTSPlayer,
 			ResultJSON} from "@/uni_modules/FaceAI-Search";
 	// 注意：vue应该使用 testData.uts 而不是 testData.js		
     import { JSON_FACE_FEATURES_DATA } from "./faceFeatureList.uts";  //模拟服务端测试数据批量插入
@@ -92,6 +93,7 @@
 										        
 										        if (name != null&&searchOne) {
 										            toastMessage(base64,"最匹配:" + name + "," + score);
+													TTSPlayer(name)
 										        }
 										    } else {
 												if (searchOne) {

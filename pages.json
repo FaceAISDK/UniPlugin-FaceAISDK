@@ -10,7 +10,7 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "人脸搜索识别",
-		"navigationBarBackgroundColor": "#fc0107",
+		"navigationBarBackgroundColor": "#136918",
 		"backgroundColor": "#F8F8F8"
 	},
 	"uniIdRouter": {}
