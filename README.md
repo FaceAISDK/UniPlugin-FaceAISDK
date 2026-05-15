@@ -13,9 +13,6 @@
 </div>
 
 
-
-
-
 ## 使用方法
   如果你是第一次运行UTS插件工程/引入UTS API插件，你应先安装官方说明配置好基础环境 [基础环境](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html) 
 
@@ -33,14 +30,12 @@
    . 
    ![运行到手机](https://i.postimg.cc/QdwtZM60/2.png)
 	
-  **一定要先制作自定义调试基准，然后运行的时候使用自定义基准，看图片步骤引导**
+  **按照步骤一定要先制作自定义调试基准，然后运行的时候使用自定义基准。偶尔打包服务器失败请重试**  
 	
 	
   本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881
   目前人脸搜索识别UTS插件还没有原生Android那么完善，更多功能和更好体验请参考原生Android实现https://github.com/FaceAISDK/FaceAISDK_Android
-	
-	
-  注：只支持真机调试，需要用到硬件摄像头  
-  Copyright © 2026 FaceAISDK 
+
+  Copyright © 2026 FaceAISDK 注：只支持真机调试，需要用到硬件摄像头  
 
 
