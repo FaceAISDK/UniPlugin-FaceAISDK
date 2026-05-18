@@ -47,7 +47,6 @@
 				faceFeature: 'faceFeature is a string with lenth 1024',
 				faceSearchResult: 'faceSearchResult',
 				base64FaceSearch: base64FaceSearch as string,
-				
 				base64FaceImage:base64FaceImage as string //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
 		},

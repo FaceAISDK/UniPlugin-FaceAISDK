@@ -1,5 +1,6 @@
 package uts.sdk.modules.uniFaceAISDK
 
+import androidx.lifecycle.LifecycleOwner
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
@@ -49,9 +50,9 @@ object FaceAISDKNative {
 	 * 「1:N人脸识别」从照片中提取人脸特征
 	 * 
 	 */
-	fun faceSearchByImageNative(context:Context,base64FaceSearch: String,searchThreshold:float,callback: (UTSJSONObject) -> Unit){
+	fun faceSearchByImageNative(context:Context,base64FaceSearch: String,searchThreshold:Float,callback: (UTSJSONObject) -> Unit){
 		
-	   //Bitmap为null提示msg: base64ToBitmap failed
+	   //Bitmap为null提示msg: base64ToBitmap failedF
 	   val bitmap = BitmapUtils.base64ToBitmap(base64FaceSearch)
 	   if (bitmap == null) {
 	       val errorResult = UTSJSONObject()
@@ -62,8 +63,8 @@ object FaceAISDKNative {
 	   }
 	   
 	   
-        val builder = SearchProcessBuilder.Builder(this)
-            .setLifecycleOwner(this)
+        val builder = SearchProcessBuilder.Builder(context)
+            .setLifecycleOwner(context as LifecycleOwner)
             .setSearchType(SearchProcessBuilder.SearchType.SINGLE_IMAGE)
             .setThreshold(searchThreshold)
             .setProcessCallBack(object : SearchProcessCallBack() {
@@ -78,8 +79,10 @@ object FaceAISDKNative {
 				   result["code"] = 1 // 1 代表成功
 				   result["msg"] = "onFaceMatched"  
 				   
-				   val dataArray = ArrayList<UTSJSONObject>()
-				   	               dataArray.add(results)
+				   val dataArray = ArrayList<Any>()
+				   if (results != null) {
+				   	    dataArray.addAll(results)
+				   	}
 				   	               
 				   result["result"] = dataArray				   
 				   callback(result)
@@ -96,52 +99,8 @@ object FaceAISDKNative {
             }).create()
 
         FaceSearchEngine.getInstance().initSearchParams(builder)	   
-	   
-	   
-		
-	   Image2FaceFeature.getInstance(context).getFaceFeatureByBitmap(bitmap,faceID,object : Image2FaceFeature.Callback{
-	       override fun onFailed(msg: String) {
-			   var result: UTSJSONObject = object : UTSJSONObject() {
-			   			var code = 0
-			   			var msg = msg
-			            var faceID = faceID
-						var faceFeature =" "
-			    }
-			   	callback(result)
-	       }
-	   
-	       override fun onSuccess(
-	           bitmap: Bitmap,
-	           faceID: String,
-	           faceFeature: String
-	       ) {
-	           // 修复 1 & 2: 使用 context 而不是 this，使用属性 maxSimilarity 和 faceID
-	           val featureSearchResult: FeatureSearchResult =
-	               FaceSearchEngine.getInstance().getFeatureSearcher(context).search(faceFeature)
-	               
-	           if (featureSearchResult.maxSimilarity > 0.8) {
-	               Log.e("录入人脸", "可能已经存在相似的人脸，请确认 " + featureSearchResult.faceID)
-	           }
-	       
-	           // 修复 3: 使用 context 而不是 this
-	           FaceSearchFeatureManger.getInstance(context)
-	               .insertFaceFeature(faceID, faceFeature, System.currentTimeMillis(), "tag", "group")
-	       
-	           // 修复 4: 使用 context 而不是 this
-	           FaceAISDKEngine.getInstance(context)
-	               .saveCroppedFaceImage(bitmap, FaceSDKConfig.CACHE_SEARCH_FACE_DIR, faceID)      
-	          
-	           var result: UTSJSONObject = object : UTSJSONObject() {
-	               var code = 1
-	               var msg = "Add FaceFeatureByImage success"
-	               var faceID = faceID
-	               var faceFeature = faceFeature
-	           }
-	           callback(result)
-	       }
-		   
-	   })
-	}
+	    FaceSearchEngine.getInstance().runSearchWithBitmap(bitmap)
+	 }
 	
 	
 	
