@@ -17,7 +17,7 @@ export type ResultJSON = {
  * @param cameraId 摄像头ID (前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）)
  * @param callback 接收搜索结果 JSON 字符串的回调
  */
-export type StartFaceSearch = (
+export type faceSearchByCamera = (
     searchThreshold: number,
     searchOneTime: boolean,
 	searchTimeOut:number,
@@ -25,6 +25,22 @@ export type StartFaceSearch = (
     cameraId: number,
     callback: (jsonResult: string) => void
 ) => void
+
+
+
+/**
+ * 开启持续人脸搜索 (Activity 常驻)
+ * @param searchThreshold 人脸搜索阈值 (只有人脸库中匹配到的人脸相似度大于此才有结果返回)
+ * @param searchOneTime 是否仅搜索一次 (搜索页持续搜索接收结果 还是仅仅搜索一次返回一次结果)
+ * @param callback 接收搜索结果 JSON 字符串的回调
+ */
+export type faceSearchByImage= (
+    base64FaceSearch: string,
+    searchThreshold: number,
+    isOnlyNativeDemo: boolean,
+    callback: (jsonResult: string) => void
+) => void
+
 
 
 /**

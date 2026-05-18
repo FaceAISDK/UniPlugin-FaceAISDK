@@ -5,6 +5,7 @@ import Intent from 'android.content.Intent';
 import FaceSDKConfig from "com.faceAI.demo.FaceSDKConfig";
 import FaceAISDKNative from "uts.sdk.modules.uniFaceAISDK.FaceAISDKNative";
 import FaceSearchActivity from "uts.sdk.modules.uniFaceAISDK.FaceSearchActivity";
+import FaceSearchByImageActivity from "com.faceAI.demo.SysCamera.search.FaceSearchByImageActivity";
 import FaceResultManager from "uts.sdk.modules.uniFaceAISDK.FaceResultManager";
 import System from 'java.lang.System';
 import AddFaceFeatureActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity";
@@ -17,7 +18,7 @@ import Gson from 'com.google.gson.Gson'
  * 
  */
 @UTSJS.keepAlive
-export function startFaceSearch(
+export function faceSearchByCamera(
     searchThreshold: number,
     searchOneTime: boolean,
     searchTimeOut: number,
@@ -49,6 +50,38 @@ export function startFaceSearch(
         context.startActivity(intent);
     });
 }
+
+
+
+@UTSJS.keepAlive
+export function faceSearchByImage(
+    base64FaceSearch:string,
+    searchThreshold: number,
+    isOnlyNativeDemo: boolean,
+    callback: (jsonResult: string) => void
+): void {
+
+   const context = UTSAndroid.getUniActivity() as Activity;
+   FaceSDKConfig.init(context);
+   
+   if(isOnlyNativeDemo){
+	   // 2. 启动 Activity
+	   UTSAndroid.getUniActivity()!.runOnUiThread(() => {
+	       const context = UTSAndroid.getUniActivity() as Activity
+	       FaceSDKConfig.init(context);
+	   
+	       const intent = new Intent(context, FaceSearchByImageActivity().javaClass);
+	       context.startActivity(intent);
+	   });
+   }else{
+	   FaceAISDKNative.faceSearchByImageNative(context, base64FaceSearch,searchThreshold, (result: UTSJSONObject) => {
+	    callback(JSON.stringify(result));
+	   });
+   }
+
+}
+
+
 
 // Toast 放到主线程
 export function toastMessage(base64Image: string, message: string): void {

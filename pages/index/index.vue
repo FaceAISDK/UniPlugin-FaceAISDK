@@ -1,6 +1,8 @@
 <template>
 	<view>
-		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸搜索</button>
+		<button class="gray-button" @tap="faceSearchByCameraDemo">1:N相机人脸搜索识别</button>
+		<button class="gray-button" @tap="faceSearchByImageDemo">图片人脸搜索识别(Beta)</button>
+	
 		<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
 		<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>	
 		<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
@@ -20,7 +22,8 @@
 <script> 
 	// 引入模块，注意保持路径一致
 	import {
-		startFaceSearch,
+		faceSearchByCamera,
+		faceSearchByImage,
 		switchCamera,
 		insertFaceSearchFeature,
 		insertManyFeatures,
@@ -34,7 +37,7 @@
 	
 	// 注意：vue应该使用 testData.uts 而不是 testData.js	
 	import { JSON_FACE_FEATURES_DATA } from "./faceFeatureList.js";
-	import { base64FaceImage } from './imageData.js';
+	import { base64FaceSearch,base64FaceImage } from './imageData.js';
 	
 	export default {
 		data() {
@@ -42,6 +45,7 @@
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
 				faceAIResult: 'faceAIResult',
+				base64FaceSearch: base64FaceSearch,
 				base64FaceImage:base64FaceImage  //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
 		},
@@ -51,9 +55,9 @@
 		
 		methods: {
 			/**
-			 * 人脸搜索识别
+			 * 1:N相机人脸搜索识别
 			 */
-			startFaceSearchDemo: function () {				
+			faceSearchByCameraDemo: function () {				
 				const threshold = 0.85;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
 				const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
 				const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
@@ -61,7 +65,7 @@
 				const camId = 0;           // 0，前置摄像头 1，后置摄像头。否则进入兼容模式（部分摄像头需适配）
 			    const searchOne = true;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
 			                
-			    startFaceSearch(
+			    faceSearchByCamera(
 			        threshold,
 			        oneTime,
 			        searchTimeOut,
@@ -100,6 +104,52 @@
 			        }
 			    );
 			},
+			
+			
+			/**
+			 * 图片人脸搜索识别，检测图片中出现的人脸的坐标以及检索是否有大于threshold的最佳匹配人员
+			 */
+			faceSearchByImageDemo: function () {				
+				const threshold = 0.82;       // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
+				const isOnlyNativeDemo = false;  //仅仅原生页面带UI效果演示，无数据返回
+			                
+			    faceSearchByImage(
+				    this.base64FaceSearch,
+			        threshold,
+			        isOnlyNativeDemo,
+			        (jsonStr) => { 
+			            try {
+			                const root = JSON.parse(jsonStr);
+			                const results = root.data;
+			                const base64 = root.base64; //注意base64可能为空
+							console.log("收到搜索结果:", results);
+			
+							// 如果需要活体检测，加上相应的判断
+							const liveness = root.liveness
+			            
+			                this.faceAIResult = "【人脸搜索回调】\nList: " + JSON.stringify(results);
+			                if (results && results.length > 0) {
+								//结果已经排好序，第一个就是相似度最高的
+			                    const firstFace = results[0];
+			                    const name = firstFace.faceName;
+			                    const score = firstFace.faceScore;
+			                    
+			                    if (name != null&&searchOne) {
+			                            toastMessage(base64,"最匹配:" + name + "," + score);
+										TTSPlayer(name)
+			                        }
+			                    } else {
+			                    	if (searchOne) {
+			                    		toastMessage("","无结果");
+			                    	}
+			                    }
+			            } catch (e) {
+			                console.error("解析数据失败:", e);
+			            }
+			        }
+			    );
+			},
+			
 			
 			/**
 			* 人脸搜索人脸特征录入

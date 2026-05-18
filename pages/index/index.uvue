@@ -1,6 +1,8 @@
 <template>
 	<view>
-		<button class="gray-button" @tap="startFaceSearchDemo">1:N人脸搜索识别</button>
+		<button class="gray-button" @tap="faceSearchByCameraDemo">1:N相机人脸搜索识别</button>
+		<button class="gray-button" @tap="faceSearchByImageDemo">图片人脸搜索识别(Beta)</button>
+	
 		<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
 		<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>	
 		<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
@@ -21,7 +23,8 @@
 //index.uvue: uniAppX  *  index.vue:uniapp
 
 <script> 
-	import {startFaceSearch,
+	import {faceSearchByCamera,
+	        faceSearchByImage,
 	        switchCamera,
 		    insertFaceSearchFeature,
 			insertManyFeatures,
@@ -34,7 +37,7 @@
 			ResultJSON} from "@/uni_modules/FaceAI-Search";
 	// 注意：vue应该使用 testData.uts 而不是 testData.js		
     import { JSON_FACE_FEATURES_DATA } from "./faceFeatureList.uts";  //模拟服务端测试数据批量插入
-	import { base64FaceImage } from './imageData.uts';
+	import { base64FaceSearch,base64FaceImage } from './imageData.uts';
 	
 	export default {
 		  
@@ -43,6 +46,8 @@
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
 				faceSearchResult: 'faceSearchResult',
+				base64FaceSearch: base64FaceSearch as string,
+				
 				base64FaceImage:base64FaceImage as string //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
 		},
@@ -53,17 +58,17 @@
 		methods: {
 			
 			/**
-			 * 人脸搜索识别，返回大于threshold的json List数组，1:N搜索相似度高的在最前面（M：N不排序）
+			 * 1:N相机人脸搜索识别，返回大于threshold的json List数组，1:N搜索相似度高的在最前面（M：N不排序）
 			 * 
 			 */
-			startFaceSearchDemo: function () {
+			faceSearchByCameraDemo: function () {
 
 			                const threshold = 0.85;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
 				            const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
 							const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
 			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
 			                const searchOne = true;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
-						    startFaceSearch(
+						    faceSearchByCamera(
 			                    threshold,
 			                    oneTime,
 								searchTimeOut,
@@ -106,7 +111,52 @@
 			                    }
 						    );  
 						},
+						
+						
+			/**
+			 * 「图片人脸搜索识别」检测图片中出现的人脸的坐标以及检索是否有大于threshold的最佳匹配人员
+			 * 
+			 */
+			faceSearchByImageDemo: function () {
 			
+			                const threshold = 0.82;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
+				            const isOnlyNativeDemo = false; //仅仅原生页面带UI效果演示，无数据返回
+
+						    faceSearchByImage(
+							    this.base64FaceSearch,
+			                    threshold,
+			                    isOnlyNativeDemo,
+			                    (jsonStr: string) => {
+									
+						                // 1. 將反饋的 JSON 字符串解析為 UTSJSONObject 對象
+										const root = JSON.parse(jsonStr) as UTSJSONObject;
+										
+										// 2. 讀取狀態碼與提示訊息
+										const code = root.getNumber("code") ?? 0;
+										const msg = root.getString("msg") ?? "";
+										
+										console.log("图片检索收到响应 -> code:", code, "msg:", msg);
+						
+										if (code == 1) {
+											const results = root.getArray<UTSJSONObject>("result");
+											
+											if (results != null && results.length > 0) {
+												
+											} else {
+												toastMessage("", "匹配无结果");
+											}
+										} else {
+											// code == 0 或者是其他錯誤
+											this.faceSearchResult = `【图片检索失败】\n` +
+																	`错误码(code): ${code}\n` +
+																	`错误原因(msg): ${msg}`;
+																	
+											toastMessage("", `检索失败: ${msg}`);
+										}			
+								
+								}	
+						    );  
+			},
 			
 			/**
 			* 人脸搜索人脸特征录入，通过相机
