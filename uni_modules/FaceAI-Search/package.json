@@ -1,7 +1,7 @@
 {
 	"id": "FaceAI-Search",
 	"displayName": "人脸搜索识别FaceAISDK",
-	"version": "2026.05.22",
+	"version": "2026.05.23",
 	"description": "Android 1:N人脸搜索识别，可用于小区门禁,验证登陆等身份认证;离线不依赖三方服务",
 	"keywords": [
         "人脸搜索",
@@ -28,7 +28,7 @@
 			"qq": ""
 		},
 		"declaration": {
-			"ads": "没",
+			"ads": "人脸识别技术安全管理办法：https://www.cac.gov.cn/2025-03/21/c_1744174262156096.htm",
 			"data": "离线运行，不采集数据",
 			"permissions": "相机"
 		},

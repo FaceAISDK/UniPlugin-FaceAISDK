@@ -60,6 +60,8 @@
 			/**
 			 * 1:N相机人脸搜索识别，返回大于threshold的json List数组，1:N搜索相似度高的在最前面（M：N不排序）
 			 * threshold默认0.85以上，否则可能误识别。
+			 * 摄像头需成像清晰，宽动态值大于105DB，室外120DB
+			 * 
 			 */
 			faceSearchByCameraDemo: function () {
 
@@ -189,7 +191,7 @@
 			
 			
 			/**
-			* 人脸搜索人脸特征录入，通过Base64图片
+			* 人脸搜索人脸特征录入，通过Base64图片（警告：图片方式录入人脸没有质量校验，会带来精度降低）
 			* 
 			* 建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			*/

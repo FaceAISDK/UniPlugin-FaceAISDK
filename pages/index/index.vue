@@ -57,6 +57,8 @@
 			/**
 			 * 1:N相机人脸搜索识别，建议使用SDK相机录入人脸，图片没有校验
 			 * threshold默认0.85以上，否则可能误识别
+			 * 摄像头需成像清晰，宽动态值大于105DB，室外120DB
+			 * 
 			 * */
 			faceSearchByCameraDemo: function () {				
 				const threshold = 0.85;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
@@ -179,8 +181,8 @@
 			},
 			
 			/**
-			* 人脸搜索人脸特征录入，通过Base64图片。建议使用SDK相机录入人脸，图片没有校验品质
-			* * 建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
+			* 人脸搜索人脸特征录入，通过Base64图片（警告：图片方式录入人脸没有质量校验，会带来精度降低）
+			* 建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			*/
 			addFaceSearchFeatureByImageDemo: function () {
 				addFaceSearchFeatureByImage(
