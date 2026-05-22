@@ -14,7 +14,8 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERRO
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
 import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
-
+import android.os.Handler;
+import android.os.Looper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -158,8 +159,9 @@ public class FaceSearchActivity extends AbsBaseActivity {
                             public void run() {
                                 FaceResultManager.INSTANCE.sendResult(json, liveness, base64);
                                 if (searchOneTime) {
-									//延迟1秒退出
-                                    FaceSearchActivity.this.finish();
+							            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+											FaceSearchActivity.this.finish();
+							            }, 1111);		
                                 }
                             }
                         });
@@ -187,6 +189,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 }).create();
 
         FaceSearchEngine.Companion.getInstance().initSearchParams(faceProcessBuilder);
+		searchStartTime=System.currentTimeMillis();
 
         cameraXFragment.setOnAnalyzerListener(new FaceCameraXFragment.onAnalyzeData() {
             @Override
