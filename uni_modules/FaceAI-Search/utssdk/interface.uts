@@ -21,8 +21,6 @@ export type faceSearchByCamera = (
     searchThreshold: number,
     searchOneTime: boolean,
 	searchTimeOut:number,
-    isCameraSizeHigh: boolean,
-    searchOne: boolean,
     callback: (jsonResult: string) => void
 ) => void
 

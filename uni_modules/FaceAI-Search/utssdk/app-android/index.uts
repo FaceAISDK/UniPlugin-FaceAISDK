@@ -39,9 +39,9 @@ export function faceSearchByCamera(
         FaceSDKConfig.init(context);
 
         const intent = new Intent(context, FaceSearchActivity().javaClass);
-        intent.putExtra("THRESHOLD_KEY", searchThreshold);
+        intent.putExtra("THRESHOLD_KEY", searchThreshold.toFloat()); // 转为 float
         intent.putExtra("SEARCH_ONE_TIME", searchOneTime);
-        intent.putExtra("SEARCH_TIME_OUT", searchTimeOut);
+        intent.putExtra("SEARCH_TIME_OUT", searchTimeOut.toInt());    // 转为 int
         context.startActivity(intent);
     });
 }

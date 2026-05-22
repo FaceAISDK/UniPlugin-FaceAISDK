@@ -55,12 +55,10 @@ public class FaceSearchActivity extends AbsBaseActivity {
     public static final String NEED_FACE_LIVE = "NEED_FACE_LIVE";
     public static final String SEARCH_ONE_TIME = "SEARCH_ONE_TIME";
     public static final String IS_CAMERA_SIZE_HIGH = "IS_CAMERA_SIZE_HIGH";
-    public static final String SEARCH_ONE = "SEARCH_ONE";
     public static final String SEARCH_TIME_OUT = "SEARCH_TIME_OUT";
 
     private float searchThreshold = 0.85f;
     private boolean searchOneTime = false;
-    private boolean searchOne = true;
     private int searchTimeOut = 5;
     private boolean isCameraSizeHigh = false;
     private int cameraLensFacing;
@@ -87,14 +85,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
             if (intent.hasExtra(NEED_FACE_LIVE)) {
                 needFaceLive = intent.getBooleanExtra(NEED_FACE_LIVE, false);
             }
-            if (intent.hasExtra(SEARCH_ONE)) {
-                searchOne = intent.getBooleanExtra(SEARCH_ONE, true);
-                if (!searchOne) {
-                    // 替换原来的 binding.faceCover
-                    if (faceCover != null) faceCover.setVisibility(View.GONE);
-                    Toast.makeText(this, "Beta Test", Toast.LENGTH_LONG).show();
-                }
-            }
+
             if (intent.hasExtra(SEARCH_TIME_OUT)) {
                 searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 5);
             }
@@ -165,12 +156,9 @@ public class FaceSearchActivity extends AbsBaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (!searchOne) {
-                                    // 替换 binding.graphicOverlay
-                                    graphicOverlay.drawRect(matchedResults);
-                                }
                                 FaceResultManager.INSTANCE.sendResult(json, liveness, base64);
                                 if (searchOneTime) {
+									//延迟1秒退出
                                     FaceSearchActivity.this.finish();
                                 }
                             }
@@ -257,7 +245,6 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 setSearchTips(R.string.no_mask_please);
                 break;
             default:
-                // 替换原来的 binding.faceCover
                 if (faceCover != null) faceCover.setTipsText("Tips Code：" + code);
                 break;
         }
