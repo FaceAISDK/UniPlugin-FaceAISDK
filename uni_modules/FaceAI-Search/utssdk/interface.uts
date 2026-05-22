@@ -22,7 +22,7 @@ export type faceSearchByCamera = (
     searchOneTime: boolean,
 	searchTimeOut:number,
     isCameraSizeHigh: boolean,
-    cameraId: number,
+    searchOne: boolean,
     callback: (jsonResult: string) => void
 ) => void
 
@@ -37,7 +37,6 @@ export type faceSearchByCamera = (
 export type faceSearchByImage= (
     base64FaceSearch: string,
     searchThreshold: number,
-    isOnlyNativeDemo: boolean,
     callback: (jsonResult: string) => void
 ) => void
 

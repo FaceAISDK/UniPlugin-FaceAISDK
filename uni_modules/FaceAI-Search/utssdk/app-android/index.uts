@@ -21,8 +21,6 @@ export function faceSearchByCamera(
     searchThreshold: number,
     searchOneTime: boolean,
     searchTimeOut: number,
-    isCameraSizeHigh: boolean,
-	searchOne: boolean,    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
     callback: (jsonResult: string) => void
 ): void {
 
@@ -44,8 +42,6 @@ export function faceSearchByCamera(
         intent.putExtra("THRESHOLD_KEY", searchThreshold);
         intent.putExtra("SEARCH_ONE_TIME", searchOneTime);
         intent.putExtra("SEARCH_TIME_OUT", searchTimeOut);
-        intent.putExtra("IS_CAMERA_SIZE_HIGH", isCameraSizeHigh);
-		intent.putExtra("SEARCH_ONE", searchOne);
         context.startActivity(intent);
     });
 }
@@ -56,14 +52,15 @@ export function faceSearchByCamera(
 export function faceSearchByImage(
     base64FaceSearch:string,
     searchThreshold: number,
-    isOnlyNativeDemo: boolean,
     callback: (jsonResult: string) => void
 ): void {
 
-   const context = UTSAndroid.getUniActivity() as Activity;
-   FaceSDKConfig.init(context);
-   FaceAISDKNative.faceSearchByImageNative(context, base64FaceSearch,searchThreshold.toFloat(), (result: UTSJSONObject) => {
-    callback(JSON.stringify(result));
+   UTSAndroid.getUniActivity()!.runOnUiThread(() => {
+      const context = UTSAndroid.getUniActivity() as Activity;
+      FaceSDKConfig.init(context);
+      FaceAISDKNative.faceSearchByImageNative(context, base64FaceSearch,searchThreshold.toFloat(), (result: UTSJSONObject) => {
+          callback(JSON.stringify(result));
+      });
    });
 
 }

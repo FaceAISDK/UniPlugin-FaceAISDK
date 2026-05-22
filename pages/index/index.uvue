@@ -35,7 +35,8 @@
 			toastMessage,
 			TTSPlayer,
 			ResultJSON} from "@/uni_modules/FaceAI-Search";
-	// 注意：vue应该使用 testData.uts 而不是 testData.js		
+			
+	// 注意：vue应该使用 testData.js 而不是 testData.uts	
     import { JSON_FACE_FEATURES_DATA } from "./faceFeatureList.uts";  //模拟服务端测试数据批量插入
 	import { base64FaceSearch,base64FaceImage } from './imageData.uts';
 	
@@ -46,7 +47,7 @@
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
 				faceSearchResult: 'faceSearchResult',
-				base64FaceSearch: base64FaceSearch as string,
+				base64FaceSearch: base64FaceSearch as string, //人脸像素宽高需要大于130，无遮挡的清晰正脸
 				base64FaceImage:base64FaceImage as string //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
 		},
@@ -58,21 +59,17 @@
 			
 			/**
 			 * 1:N相机人脸搜索识别，返回大于threshold的json List数组，1:N搜索相似度高的在最前面（M：N不排序）
-			 * 
+			 * threshold默认0.85以上，否则可能误识别。
 			 */
 			faceSearchByCameraDemo: function () {
 
 			                const threshold = 0.85;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
-				            const oneTime = false;     // 搜索页持续搜索返回结果 还是仅仅搜索一次返回结果后关闭
+				            const oneTime = false;     // 搜索页持续显示准备人脸搜索， 还是仅仅搜索一次返回结果后关闭搜索页面
 							const searchTimeOut = 5;   // 搜索超时时间[3,22],仅仅是oneTime=true才生效，超时没有大于threshold搜索结果自动关闭页面
-			                const highRes = false;     // true，高分辨率模式，远距离识别更佳，但会牺牲性能和速度以及定制设备不兼容黑屏
-			                const searchOne = true;    // true（1:N）：取镜头画面最大人脸进行搜索匹配 false（M：N）：镜头画面所有人脸都进行搜索
 						    faceSearchByCamera(
 			                    threshold,
 			                    oneTime,
 								searchTimeOut,
-			                    highRes,
-								searchOne,
 			                    (jsonStr: string) => {
 					
 									try {
@@ -95,14 +92,12 @@
 										        const name = firstFace.getString("faceName");
 										        const score = firstFace.getNumber("faceScore");
 										        
-										        if (name != null&&searchOne) {
+										        if (name != null) {
 										            toastMessage(base64,"最匹配:" + name + "," + score);
 													TTSPlayer(name) //TTS语音播报
 										        }
 										    } else {
-												if (searchOne) {
-													toastMessage("","无结果");
-												}
+												toastMessage("","无结果");
 										    }
 									}catch (e) {
 			                            console.error("解析数据失败:", e);
@@ -114,47 +109,66 @@
 						
 			/**
 			 * 「图片人脸搜索识别」检测图片中出现的人脸的坐标以及检索是否有大于threshold的最佳匹配人员
-			 * 
+			 *  人脸像素宽高需要大于130，无遮挡的清晰正脸
 			 */
 			faceSearchByImageDemo: function () {
 			
-			                const threshold = 0.82;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
-				            const isOnlyNativeDemo = false; //仅仅原生页面带UI效果演示，无数据返回
-
-						    faceSearchByImage(
-							    this.base64FaceSearch,
-			                    threshold,
-			                    isOnlyNativeDemo,
-			                    (jsonStr: string) => {
-									
-						                // 1. 將反饋的 JSON 字符串解析為 UTSJSONObject 對象
-										const root = JSON.parse(jsonStr) as UTSJSONObject;
-										
-										// 2. 讀取狀態碼與提示訊息
-										const code = root.getNumber("code") ?? 0;
-										const msg = root.getString("msg") ?? "";
-										
-										console.log("图片检索收到响应 -> code:", code, "msg:", msg);
-						
-										if (code == 1) {
-											const results = root.getArray<UTSJSONObject>("result");
-											
-											if (results != null && results.length > 0) {
-												
-											} else {
-												toastMessage("", "匹配无结果");
-											}
-										} else {
-											// code == 0 或者是其他錯誤
-											this.faceSearchResult = `【图片检索失败】\n` +
-																	`错误码(code): ${code}\n` +
-																	`错误原因(msg): ${msg}`;
-																	
-											toastMessage("", `检索失败: ${msg}`);
-										}			
-								
-								}	
-						    );  
+			    const threshold = 0.82;    // 阈值范围[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回			
+			    faceSearchByImage(
+			        this.base64FaceSearch,
+			        threshold,
+			        (jsonStr: string) => {
+			            
+			            const root = JSON.parse(jsonStr) as UTSJSONObject;
+			            const code = root.getNumber("code") ?? 0;
+			            const msg = root.getString("msg") ?? "";
+			            
+			            console.log("图片检索收到响应 -> code:", code, "msg:", msg);
+			            console.log("图片检索 -> jsonStr:", jsonStr);
+			            this.faceSearchResult = jsonStr;
+			
+			            if (code == 1) {
+			                const results = root.getArray<UTSJSONObject>("result");
+			                
+			                if (results != null && results.length > 0) {
+			                    // 1. 统计检测到的人脸总数
+			                    const totalFaces = results.length;
+			                    
+			                    // 2. 统计匹配成功（faceName 不为空）的人数
+			                    let matchedCount = 0;
+			                    for (let i = 0; i < totalFaces; i++) {
+			                        const faceData = results[i];
+			                        const faceName = faceData.getString("faceName") ?? "";
+			                        
+			                        // 如果 faceName 存在且不为空字符串，则认为匹配成功
+			                        if (faceName.trim() != "") {
+			                            matchedCount++;
+			                        }
+			                    }
+			                    
+			                    // 3. 更新 UI 显示结果
+			                    this.faceSearchResult = `图片检索完成\n` +
+			                                            `检测到人脸数: ${totalFaces}\n` +
+			                                            `匹配成功人数: ${matchedCount}\n` +
+			                                            `详细数据: ${jsonStr}`;
+			                                            
+			                    toastMessage("", `检测到${totalFaces}人脸，匹配成功${matchedCount}人`);
+			
+			                } else {
+			                    this.faceSearchResult = `图片检索完成\n未检测到人脸`;
+			                    toastMessage("", "未检测到人脸");
+			                }
+			            } else {
+			                // code == 0 或者是其他錯誤
+			                this.faceSearchResult = `【图片检索失败】\n` +
+			                                        `错误码(code): ${code}\n` +
+			                                        `错误原因(msg): ${msg}`;
+			                                        
+			                toastMessage("", `检索失败: ${msg}`);
+			            }           
+			    
+			        }   
+			    );  
 			},
 			
 			/**

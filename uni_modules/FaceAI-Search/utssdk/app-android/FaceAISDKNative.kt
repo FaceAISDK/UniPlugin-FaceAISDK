@@ -52,17 +52,17 @@ object FaceAISDKNative {
 	 */
 	fun faceSearchByImageNative(context:Context,base64FaceSearch: String,searchThreshold:Float,callback: (UTSJSONObject) -> Unit){
 		
-	   //Bitmap为null提示msg: base64ToBitmap failedF
-	   val bitmap = BitmapUtils.base64ToBitmap(base64FaceSearch)
-	   if (bitmap == null) {
-	       val errorResult = UTSJSONObject()
-	       errorResult["code"] = 0 // 0 代表失败
-	       errorResult["msg"] = "base64ToBitmap failed" // 明确提示转码失败
-	       callback(errorResult)
-	       return // 结束执行
-	   }
-	   
-	   
+		//Bitmap为null提示msg: base64ToBitmap failedF
+		val bitmap = BitmapUtils.base64ToBitmap(base64FaceSearch)
+		if (bitmap == null) {
+		    val errorResult = UTSJSONObject()
+		    errorResult["code"] = 0 // 0 代表失败
+		    errorResult["msg"] = "base64ToBitmap failed" // 明确提示转码失败
+		    callback(errorResult)
+		    return // 结束执行
+		}
+		
+		
         val builder = SearchProcessBuilder.Builder(context)
             .setLifecycleOwner(context as LifecycleOwner)
             .setSearchType(SearchProcessBuilder.SearchType.SINGLE_IMAGE)
@@ -72,17 +72,34 @@ object FaceAISDKNative {
                     results: MutableList<FaceSearchResult>?,
                     bitmap: Bitmap?,
                     liveness: Float
-                ) {
-                   //String json = new Gson().toJson(results); //仅用于log
-				   
+                ) {				   
 				   val result = UTSJSONObject()
-				   result["code"] = 1 // 1 代表成功
-				   result["msg"] = "onFaceMatched"  
+				   result["code"] = 1  // 1 代表成功
+				   result["msg"] = "onFaceMatched success"  
 				   
 				   val dataArray = ArrayList<Any>()
 				   if (results != null) {
-				   	    dataArray.addAll(results)
-				   	}
+				          for (item in results) {
+				              val itemObj = UTSJSONObject()
+							  
+							  itemObj["faceName"] = item.getFaceName()
+							  itemObj["faceScore"] = item.getFaceScore()
+				              
+				              val rect = item.getRect() 
+				              if (rect != null) {
+				                  val rectObj = UTSJSONObject()
+				                  rectObj["left"] = rect.left
+				                  rectObj["top"] = rect.top
+				                  rectObj["right"] = rect.right
+				                  rectObj["bottom"] = rect.bottom
+				                  itemObj["rect"] = rectObj
+				              } else {
+				                  itemObj["rect"] = null
+				              }
+
+				              dataArray.add(itemObj)
+				          }
+				    }
 				   	               
 				   result["result"] = dataArray				   
 				   callback(result)
@@ -92,14 +109,22 @@ object FaceAISDKNative {
                     if (i == SearchProcessTipsCode.NO_LIVE_FACE) {
                         val errorResult = UTSJSONObject()
                         errorResult["code"] = -1 // 0 代表失败
-                        errorResult["msg"] = "No face detected" // 明确提示转码失败
+                        errorResult["msg"] = "No face detected" // 图片中没有人脸
                         callback(errorResult)
+                    }else if(i == SearchProcessTipsCode.LOCAL_FACE_DATABASE_EMPTY) {
+                        val errorResult = UTSJSONObject()
+                        errorResult["code"] = -2 // 0 代表失败
+                        errorResult["msg"] = "Face db no exist data" //人脸库没有数据
+                        callback(errorResult)
+                    }else if(i == SearchProcessTipsCode.SEARCH_PREPARED) {
+		                FaceSearchEngine.getInstance().runSearchWithBitmap(bitmap)
                     }
                 }
             }).create()
 
-        FaceSearchEngine.getInstance().initSearchParams(builder)	   
-	    FaceSearchEngine.getInstance().runSearchWithBitmap(bitmap)
+        FaceSearchEngine.getInstance().initSearchParams(builder)	
+		   
+
 	 }
 	
 	

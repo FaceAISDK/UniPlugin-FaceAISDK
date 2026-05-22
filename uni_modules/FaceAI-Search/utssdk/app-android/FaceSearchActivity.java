@@ -226,8 +226,8 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 }
                 break;
             case FACE_DIR_EMPTY:
-                setSearchTips(R.string.face_dir_empty);
-                Toast.makeText(this, R.string.no_base_face_image, Toast.LENGTH_LONG).show();
+                setSearchTips(R.string.local_face_database_empty);
+                Toast.makeText(this, R.string.no_face_data_tips, Toast.LENGTH_LONG).show();
                 break;
             case EMGINE_INITING:
                 setSearchTips(R.string.sdk_init);
