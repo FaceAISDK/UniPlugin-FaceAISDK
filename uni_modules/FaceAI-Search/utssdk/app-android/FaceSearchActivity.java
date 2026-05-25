@@ -1,5 +1,6 @@
 package uts.sdk.modules.uniFaceAISDK;
 
+import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_ANGLE_NOT_FIT;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.EMGINE_INITING;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_DIR_EMPTY;
 import static com.ai.face.faceSearch.search.SearchProcessTipsCode.FACE_SIZE_FIT;
@@ -59,7 +60,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 
     private float searchThreshold = 0.85f;
     private boolean searchOneTime = false;
-    private int searchTimeOut = 5;
+    private int searchTimeOut = 4000;
     private boolean isCameraSizeHigh = false;
     private int cameraLensFacing;
     private boolean needFaceLive = false;
@@ -87,7 +88,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
             }
 
             if (intent.hasExtra(SEARCH_TIME_OUT)) {
-                searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 5);
+                searchTimeOut = intent.getIntExtra(SEARCH_TIME_OUT, 4000);
             }
             if (intent.hasExtra(IS_CAMERA_SIZE_HIGH)) {
                 isCameraSizeHigh = intent.getBooleanExtra(IS_CAMERA_SIZE_HIGH, false);
@@ -140,6 +141,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 .setThreshold(searchThreshold)
                 .setCallBackAllMatch(true)
                 .setSearchIntervalTime(1700)
+				.setSearchTimeOut(4000)    //搜索超时时间，超时后会提示无结果,默认3000，范围[3000,6000]毫秒
                 .setMirror(cameraLensFacing == CameraSelector.LENS_FACING_FRONT)
                 .setProcessCallBack(new SearchProcessCallBack() {
                     @Override
@@ -208,10 +210,17 @@ public class FaceSearchActivity extends AbsBaseActivity {
         switch (code) {
             case NO_MATCHED:
                 setSecondTips(R.string.no_matched_face);
-                if (searchOneTime && System.currentTimeMillis() / 1000 - searchStartTime > searchTimeOut) {
-                    FaceResultManager.INSTANCE.sendResult("[]", 0.0f, "");
-                    FaceSearchActivity.this.finish();
-                }
+                if (searchOneTime) {
+					if((System.currentTimeMillis() / 1000 - searchStartTime) > searchTimeOut){
+		            	FaceResultManager.INSTANCE.sendResult("[]", 0.0f, "");
+		             	FaceSearchActivity.this.finish();			
+					}
+                }else{
+					
+					Toast.makeText(this, R.string.no_matched_face, Toast.LENGTH_SHORT).show();
+				}
+			case FACE_ANGLE_NOT_FIT:
+			    setSecondTips(R.string.face_angle_not_fit);
                 break;
             case FACE_DIR_EMPTY:
                 setSearchTips(R.string.local_face_database_empty);
