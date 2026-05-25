@@ -15,7 +15,8 @@ import static com.ai.face.faceSearch.search.SearchProcessTipsCode.THRESHOLD_ERRO
 import static com.faceAI.demo.FaceAISettingsActivity.FRONT_BACK_CAMERA_FLAG;
 import static com.faceAI.demo.FaceAISettingsActivity.SYSTEM_CAMERA_DEGREE;
 import static com.faceAI.demo.FaceSDKConfig.CACHE_SEARCH_FACE_DIR;
-
+import android.os.Handler;
+import android.os.Looper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -160,8 +161,9 @@ public class FaceSearchActivity extends AbsBaseActivity {
                             public void run() {
                                 FaceResultManager.INSTANCE.sendResult(json, liveness, base64);
                                 if (searchOneTime) {
-									//延迟1秒退出
-                                    FaceSearchActivity.this.finish();
+							            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+											FaceSearchActivity.this.finish();
+							            }, 1111);		
                                 }
                             }
                         });
@@ -189,6 +191,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 }).create();
 
         FaceSearchEngine.Companion.getInstance().initSearchParams(faceProcessBuilder);
+		searchStartTime=System.currentTimeMillis();
 
         cameraXFragment.setOnAnalyzerListener(new FaceCameraXFragment.onAnalyzeData() {
             @Override
@@ -211,13 +214,12 @@ public class FaceSearchActivity extends AbsBaseActivity {
             case NO_MATCHED:
                 setSecondTips(R.string.no_matched_face);
                 if (searchOneTime) {
-					if((System.currentTimeMillis() / 1000 - searchStartTime) > searchTimeOut){
+					if((System.currentTimeMillis() - searchStartTime) > searchTimeOut){
 		            	FaceResultManager.INSTANCE.sendResult("[]", 0.0f, "");
 		             	FaceSearchActivity.this.finish();			
 					}
                 }else{
-					
-					Toast.makeText(this, R.string.no_matched_face, Toast.LENGTH_SHORT).show();
+					FaceResultManager.INSTANCE.sendResult("[]", 0.0f, "");
 				}
 			case FACE_ANGLE_NOT_FIT:
 			    setSecondTips(R.string.face_angle_not_fit);

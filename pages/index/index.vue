@@ -56,13 +56,13 @@
 		methods: {
 			/**
 			 * 1:N相机人脸搜索识别，建议使用SDK相机录入人脸，图片没有校验
-			 * threshold默认0.85以上，否则可能误识别
+			 * threshold默认0.85以上，否则可能误识别 以及强烈建议使用SDK 相机录入人脸
 			 * 摄像头需成像清晰，宽动态值大于105DB，室外120DB
 			 * 
 			 * */
 			faceSearchByCameraDemo: function () {				
 				const threshold = 0.85;    // 阈值[0.8.0.9],只有人脸库中匹配到的人脸相似度大于此才有结果返回
-				const oneTime = false;     // 搜索页持续存准备人脸搜索， 还是仅仅搜索一次返回结果后关闭搜索页面
+				const oneTime = true;     // 搜索页持续存准备人脸搜索， 还是仅仅搜索一次返回结果后关闭搜索页面
 				const searchTimeOut = 4000; // 搜索超时时间，超时后会提示无结果,默认3000，范围[3000,6000]毫秒
 				
 			    faceSearchByCamera(
@@ -91,7 +91,7 @@
 										TTSPlayer(name)
 			                    }
 			                } else {
-			                    toastMessage("","无结果");
+			                    toastMessage("","暂无搜索匹配人脸");
 			                }
 			            } catch (e) {
 			                console.error("解析数据失败:", e);
