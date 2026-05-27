@@ -182,6 +182,7 @@
 			
 			/**
 			* 人脸搜索人脸特征录入，通过Base64图片（警告：图片方式录入人脸没有质量校验，会带来精度降低）
+			* 规范人脸原始图片收集 https://mp.weixin.qq.com/s/aGPwYUYxnr6ZDRxwAQd8vg
 			* 建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			*/
 			addFaceSearchFeatureByImageDemo: function () {

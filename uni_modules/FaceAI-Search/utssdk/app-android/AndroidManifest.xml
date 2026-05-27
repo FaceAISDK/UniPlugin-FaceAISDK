@@ -9,9 +9,7 @@
 		
 		<activity
 		    android:name=".FaceSearchActivity"
-		    android:exported="false"
-			android:launchMode="singleTop"
-		    android:theme="@style/Theme.FaceAISDK.Fullscreen"/>
+		    android:exported="false"/>
 			
     </application>
 

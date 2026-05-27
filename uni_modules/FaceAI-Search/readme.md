@@ -1,6 +1,6 @@
 ## 插件简介
 
-人脸搜索识别Android端侧可离线UTS API插件，支持uniappX和uniapp，支持图片搜索；不需后端部署完全可离线运行 
+人脸搜索识别Android端侧可离线UTS API插件，支持uniappX和uniapp，支持图片搜索；不需后端部署完全可离线运行   
 插件不适合金融支付以及14周岁以下群体（没有针对模型优化训练）,摄像头需成像清晰，宽动态值大于105DB(室外120DB) 
 
 **感谢大家收藏与点赞**，如有问题可描述你的使用场景和问题提issues到：https://github.com/FaceAISDK/FaceSearch_uniapp_plugin/issues
