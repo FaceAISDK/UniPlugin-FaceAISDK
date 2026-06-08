@@ -36,7 +36,7 @@
   本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881
   目前人脸搜索识别UTS插件还没有原生Android那么完善，更多功能和更好体验请参考原生Android实现https://github.com/FaceAISDK/FaceAISDK_Android
 
-  Powered by FaceAISDK Copyright©2026. **高精度版本联系 FaceAISDK@gmail.com**
+  Powered by FaceAISDK Copyright©2026. **高精度版本联系 FaceAISDK.Service@gmail.com**
   
 
 

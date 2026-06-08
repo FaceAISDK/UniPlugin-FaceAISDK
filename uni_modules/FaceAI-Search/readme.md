@@ -34,7 +34,7 @@
 	
   **按照步骤一定要先制作自定义调试基准，然后运行的时候使用自定义基准。偶尔打包服务器失败请重试**  
 	
-  Powered by FaceAISDK Copyright©2026. **高精度版本联系 FaceAISDK@gmail.com**  
+  Powered by FaceAISDK Copyright©2026. **高精度版本联系 FaceAISDK.Service@gmail.com**  
 	
 	
   本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881  
