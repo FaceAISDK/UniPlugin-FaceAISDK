@@ -5,13 +5,12 @@
 
 **感谢大家收藏与点赞**，如有问题可描述你的使用场景和问题提issues到：https://github.com/FaceAISDK/FaceSearch_uniapp_plugin/issues
 或发送邮件到 FaceAISDK.Service@gmial.com  
-**反馈问题请说明使用场景，Vue2/Vue3/uvue,ios/Android,哪个功能，什么设备什么场景尽可能提供详细信息**
+**反馈问题请说明使用场景，Vue2/Vue3/uvue,哪个功能，什么设备什么场景尽可能提供详细信息**
 
 快速体验完整人脸识别功能可以下载Demo App：
 <div align=center>
-<img src="https://www.pgyer.com/app/qrcode/faceVerify" width = 19%   alt="扫一扫下载Demo"/>
+<img src="https://www.pgyer.com/app/qrcode/hiface" width = 19%   alt="扫一扫下载Demo"/>
 </div>
-
 
 
 

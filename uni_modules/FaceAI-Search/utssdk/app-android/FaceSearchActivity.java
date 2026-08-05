@@ -98,7 +98,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideSystemUI();
         
@@ -270,19 +270,19 @@ public class FaceSearchActivity extends AbsBaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         FaceSearchEngine.Companion.getInstance().stopSearchProcess();
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         pauseSearch = false;
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         pauseSearch = true;
     }
