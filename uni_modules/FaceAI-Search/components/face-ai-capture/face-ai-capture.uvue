@@ -1,0 +1,95 @@
+<template>
+  <native-view class="face-ai-capture-native" @init="onNativeViewInit" />
+</template>
+
+<script setup lang="uts">
+import {
+  CaptureFaceViewContext,
+  CaptureFaceResult,
+  CaptureFaceTips,
+  CaptureFaceError
+} from "@/uni_modules/FaceAI-Search"
+
+type CaptureFaceProps = {
+  performanceMode: number
+  needLivenessCheck: boolean
+  cameraId: number
+  linearZoom: number
+  rotationDegrees: number
+  cameraSizeHigh: boolean
+  autoStart: boolean
+}
+
+const props = withDefaults(defineProps<CaptureFaceProps>(), {
+  performanceMode: 1,
+  needLivenessCheck: true,
+  cameraId: 0,
+  linearZoom: 0.12,
+  rotationDegrees: 0,
+  cameraSizeHigh: false,
+  autoStart: true
+})
+
+const emit = defineEmits<{
+  (e: "ready"): void
+  (e: "result", result: CaptureFaceResult): void
+  (e: "tips", tips: CaptureFaceTips): void
+  (e: "error", error: CaptureFaceError): void
+}>()
+
+let captureContext: CaptureFaceViewContext | null = null
+
+function onNativeViewInit(event: UniNativeViewInitEvent) {
+  captureContext = new CaptureFaceViewContext(event.detail.element)
+  captureContext?.setResultCallback((result: CaptureFaceResult) => {
+    emit("result", result)
+  })
+  captureContext?.setTipsCallback((tips: CaptureFaceTips) => {
+    emit("tips", tips)
+  })
+  captureContext?.setErrorCallback((error: CaptureFaceError) => {
+    emit("error", error)
+  })
+  emit("ready")
+  if (props.autoStart) {
+    start()
+  }
+}
+
+function start() {
+  captureContext?.start(
+    props.performanceMode,
+    props.needLivenessCheck,
+    props.cameraId,
+    props.linearZoom,
+    props.rotationDegrees,
+    props.cameraSizeHigh
+  )
+}
+
+function stop() {
+  captureContext?.stop()
+}
+
+function retry() {
+  captureContext?.retry()
+}
+
+function switchCamera(cameraId: number) {
+  captureContext?.switchCamera(cameraId)
+}
+
+onUnmounted(() => {
+  captureContext?.destroy()
+  captureContext = null
+})
+
+defineExpose({ start, stop, retry, switchCamera })
+</script>
+
+<style>
+.face-ai-capture-native {
+  width: 100%;
+  height: 100%;
+}
+</style>

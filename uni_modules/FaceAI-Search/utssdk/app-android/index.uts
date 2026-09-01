@@ -1,4 +1,4 @@
-import { ResultJSON } from '../interface.uts'
+import { ResultJSON, CaptureFaceResult, CaptureFaceTips, CaptureFaceError } from '../interface.uts'
 import Application from 'android.app.Application';
 import Activity from 'android.app.Activity';
 import Intent from 'android.content.Intent';
@@ -6,11 +6,131 @@ import FaceSDKConfig from "com.faceAI.demo.FaceSDKConfig";
 import FaceAISDKNative from "uts.sdk.modules.uniFaceAISDK.FaceAISDKNative";
 import FaceSearchActivity from "uts.sdk.modules.uniFaceAISDK.FaceSearchActivity";
 import FaceResultManager from "uts.sdk.modules.uniFaceAISDK.FaceResultManager";
+import CaptureFaceActivity from "uts.sdk.modules.uniFaceAISDK.CaptureFaceActivity";
+import CaptureFaceNativeView from "uts.sdk.modules.uniFaceAISDK.CaptureFaceNativeView";
+import CaptureFaceResultManager from "uts.sdk.modules.uniFaceAISDK.CaptureFaceResultManager";
 import System from 'java.lang.System';
 import AddFaceFeatureActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity";
 import BitmapUtils from "com.faceAI.demo.base.utils.BitmapUtils";
 import FaceSearchFeatureManger from 'com.ai.face.faceSearch.search.FaceSearchFeatureManger';
 import Gson from 'com.google.gson.Gson'
+
+/**
+ * 打开全屏相机，持续返回裁剪人脸、静默活体分数和相机原图。
+ */
+@UTSJS.keepAlive
+export function captureFaceByCamera(
+    performanceMode: number,
+    needLivenessCheck: boolean,
+    cameraId: number,
+    linearZoom: number,
+    rotationDegrees: number,
+    cameraSizeHigh: boolean,
+    callback: (result: CaptureFaceResult) => void,
+    errorCallback: (error: CaptureFaceError) => void
+): void {
+    CaptureFaceResultManager.setResultCallback((
+        croppedBase64: string,
+        silentScore: number,
+        originBase64: string
+    ) => {
+        callback({
+            croppedBase64: croppedBase64,
+            silentScore: silentScore,
+            originBase64: originBase64
+        } as CaptureFaceResult)
+    })
+    CaptureFaceResultManager.setErrorCallback((code: string, message: string) => {
+        errorCallback({ code: code, message: message } as CaptureFaceError)
+    })
+
+    UTSAndroid.getUniActivity()!.runOnUiThread(() => {
+        const context = UTSAndroid.getUniActivity() as Activity
+        FaceSDKConfig.init(context)
+        const intent = new Intent(context, CaptureFaceActivity().javaClass)
+        intent.putExtra("CAPTURE_FACE_PERFORMANCE_MODE", performanceMode.toInt())
+        intent.putExtra("CAPTURE_FACE_NEED_LIVENESS_CHECK", needLivenessCheck)
+        intent.putExtra("CAPTURE_FACE_CAMERA_ID", cameraId.toInt())
+        intent.putExtra("CAPTURE_FACE_LINEAR_ZOOM", linearZoom.toFloat())
+        intent.putExtra("CAPTURE_FACE_ROTATION_DEGREES", rotationDegrees.toInt())
+        intent.putExtra("CAPTURE_FACE_CAMERA_SIZE_HIGH", cameraSizeHigh)
+        context.startActivity(intent)
+    })
+}
+
+/**
+ * 标准模式组件对 CaptureFaceNativeView 的实例封装。
+ */
+export class CaptureFaceViewContext {
+    private element: UniNativeViewElement
+    private nativeView: CaptureFaceNativeView
+
+    constructor(element: UniNativeViewElement) {
+        this.element = element
+        this.nativeView = new CaptureFaceNativeView(element.getAndroidActivity()!)
+        this.element.bindAndroidView(this.nativeView)
+    }
+
+    setResultCallback(callback: (result: CaptureFaceResult) => void): void {
+        this.nativeView.setResultCallback((
+            croppedBase64: string,
+            silentScore: number,
+            originBase64: string
+        ) => {
+            callback({
+                croppedBase64: croppedBase64,
+                silentScore: silentScore,
+                originBase64: originBase64
+            } as CaptureFaceResult)
+        })
+    }
+
+    setTipsCallback(callback: (tips: CaptureFaceTips) => void): void {
+        this.nativeView.setTipsCallback((code: number, message: string) => {
+            callback({ code: code, message: message } as CaptureFaceTips)
+        })
+    }
+
+    setErrorCallback(callback: (error: CaptureFaceError) => void): void {
+        this.nativeView.setErrorCallback((code: string, message: string) => {
+            callback({ code: code, message: message } as CaptureFaceError)
+        })
+    }
+
+    start(
+        performanceMode: number,
+        needLivenessCheck: boolean,
+        cameraId: number,
+        linearZoom: number,
+        rotationDegrees: number,
+        cameraSizeHigh: boolean
+    ): void {
+        this.nativeView.start(
+            performanceMode.toInt(),
+            needLivenessCheck,
+            cameraId.toInt(),
+            linearZoom.toFloat(),
+            rotationDegrees.toInt(),
+            cameraSizeHigh
+        )
+    }
+
+    stop(): void {
+        this.nativeView.stop()
+    }
+
+    retry(): void {
+        this.nativeView.retry()
+    }
+
+    switchCamera(cameraId: number): void {
+        this.nativeView.switchCamera(cameraId.toInt())
+    }
+
+    destroy(): void {
+        this.nativeView.release()
+    }
+}
 
 /**
  * 启动持续人脸搜索 Activity

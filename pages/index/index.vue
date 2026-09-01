@@ -9,6 +9,7 @@
 		<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
 		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
+		<button class="gray-button" @tap="captureFaceByCameraDemo">UTS API 全屏持续抓拍</button>
 		
 		<view class="result-box">
 		      <view> Email: FaceAISDK.Service@gmail.com</view>
@@ -31,6 +32,7 @@
 		addFaceSearchFeatureByImage,
 		deleteFaceSearchFeature,
 		queryFaceSearchFeature,
+		captureFaceByCamera,
 		TTSPlayer,
 		toastMessage
 	} from "@/uni_modules/FaceAI-Search";
@@ -44,7 +46,8 @@
 			return {
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
-				faceAIResult: 'faceAIResult',
+			faceAIResult: 'faceAIResult',
+			captureFaceCount: 0,
 				base64FaceSearch: base64FaceSearch,
 				base64FaceImage: base64FaceImage  //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
@@ -54,6 +57,27 @@
 		},
 		
 		methods: {
+			captureFaceByCameraDemo: function () {
+				captureFaceByCamera(
+					1,
+					true,
+					0,
+					0.12,
+					0,
+					false,
+					(result) => {
+						this.captureFaceCount++
+						this.faceAIResult = `持续抓拍 #${this.captureFaceCount}\n` +
+							`silentScore: ${result.silentScore}\n` +
+							`croppedBase64 length: ${result.croppedBase64.length}\n` +
+							`originBase64 length: ${result.originBase64.length}`
+					},
+					(error) => {
+						this.faceAIResult = `持续抓拍错误 ${error.code}: ${error.message}`
+					}
+				)
+			},
+
 			/**
 			 * 1:N相机人脸搜索识别，建议使用SDK相机录入人脸，图片没有校验
 			 * threshold默认0.85以上，否则可能误识别 以及强烈建议使用SDK 相机录入人脸

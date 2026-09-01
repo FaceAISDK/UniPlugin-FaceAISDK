@@ -40,5 +40,93 @@
   目前人脸搜索识别UTS插件还没有原生Android那么完善，更多功能和更好体验请参考原生Android实现https://github.com/FaceAISDK/FaceAISDK_Android  
 	
 
+## 持续人脸抓拍
+
+持续抓拍能力对应 Android `AddFaceCallBack.onCompleted(cropped, silentScore, origin)`，每次检测到符合角度和尺寸要求的人脸后返回：
+
+- `croppedBase64`：SDK 矫正、裁剪后的 224×224 人脸 JPEG Data URL。
+- `silentScore`：静默活体分数；仅在 `needLivenessCheck=true` 时有效。
+- `originBase64`：本次检测对应的相机原图 JPEG Data URL。
+
+结果完成 Base64 编码和业务回调后，插件会自动 `retry()`，因此可以持续接收；内部只允许一个结果进行编码，避免相机帧持续堆积导致内存上涨。
+
+### UTS API：全屏持续抓拍
+
+支持 uni-app 的 Vue 页面和 uni-app x 的 uvue 页面：
+
+```ts
+import {
+  captureFaceByCamera,
+  CaptureFaceResult,
+  CaptureFaceError
+} from "@/uni_modules/FaceAI-Search"
+
+captureFaceByCamera(
+  1,      // performanceMode: -1/0/1/2
+  true,   // needLivenessCheck
+  0,      // cameraId: 0 前置、1 后置
+  0.12,   // linearZoom: 0~1
+  0,      // rotationDegrees: 0/90/180/270
+  false,  // cameraSizeHigh
+  (result: CaptureFaceResult) => {
+    console.log(result.croppedBase64)
+    console.log(result.silentScore)
+    console.log(result.originBase64)
+  },
+  (error: CaptureFaceError) => {
+    console.error(error.code, error.message)
+  }
+)
+```
+
+调用后打开全屏 `CaptureFaceActivity`，点击左上角返回按钮结束。
+
+### 标准模式组件：uni-app x
+
+HBuilderX 4.31+ 可在 uvue 页面直接使用 easycom 组件：
+
+```vue
+<template>
+  <face-ai-capture
+    style="width: 100%; height: 600px;"
+    :performance-mode="1"
+    :need-liveness-check="true"
+    :camera-id="0"
+    :auto-start="true"
+    @result="onResult"
+    @tips="onTips"
+    @error="onError"
+  />
+</template>
+
+<script setup lang="uts">
+import { CaptureFaceResult } from "@/uni_modules/FaceAI-Search"
+
+function onResult(result: CaptureFaceResult) {
+  console.log(result.silentScore)
+}
+</script>
+```
+
+组件对外暴露 `start()`、`stop()`、`retry()`、`switchCamera(cameraId)`。组件挂载前应确保相机权限已经授予。
+
+### uni-app 兼容模式组件
+
+兼容模式标签为 `face-ai-capture-compat`，仅用于 uni-app 的 app-nvue 或 uni-app x 的 VDOM app-uvue，不支持普通 Vue 页面、鸿蒙和 uni-app x 蒸汽模式：
+
+```vue
+<face-ai-capture-compat
+  style="width: 750rpx; height: 900rpx;"
+  :performanceMode="1"
+  :needLivenessCheck="true"
+  :cameraId="0"
+  @result="onResult"
+/>
+```
+
+Android uvue 接收到的兼容模式事件参数是 `Map<string, any>`，可通过 `result.get("croppedBase64")`、`result.get("silentScore")`、`result.get("originBase64")` 读取；uni-app nvue 中按普通事件对象读取。
+
+> 两张图片均进行 Base64 编码，单次结果数据量较大。持续场景中请及时消费结果，不要长期把所有 Base64 字符串保存在响应式数组里。
+
 
 

@@ -37,6 +37,14 @@
   目前人脸搜索识别UTS插件还没有原生Android那么完善，更多功能和更好体验请参考原生Android实现https://github.com/FaceAISDK/FaceAISDK_Android
 
   Powered by FaceAISDK Copyright©2026. **高精度版本联系 FaceAISDK.Service@gmail.com**
-  
 
+## 持续抓拍能力
+
+当前工程在原有人脸搜索 UTS API 基础上新增了三种持续抓拍入口：
+
+- `captureFaceByCamera`：全屏 UTS API，兼容 uni-app Vue 与 uni-app x uvue。
+- `<face-ai-capture>`：使用 `native-view` 的标准模式组件，面向 uni-app x。
+- `<face-ai-capture-compat>`：兼容模式组件，面向 app-nvue 和 uni-app x VDOM。
+
+三种入口都会持续返回 `croppedBase64`、`silentScore`、`originBase64`。完整参数和示例见 `uni_modules/FaceAI-Search/readme.md`。
 

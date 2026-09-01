@@ -10,7 +10,7 @@
     ],
 	"repository": "https://github.com/FaceAISDK/FaceSearch_uniapp_plugin",
 	"engines": {
-		"HBuilderX": "^3.6.8",
+		"HBuilderX": "^4.31",
 		"uni-app": "^4.52",
 		"uni-app-x": "^4.62"
 	},

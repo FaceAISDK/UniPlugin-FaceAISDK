@@ -1,3 +1,10 @@
+## 2026.09.01
+
+- 新增全屏 UTS API `captureFaceByCamera`，持续返回裁剪人脸、静默活体分数和相机原图。
+- 新增标准模式组件 `face-ai-capture`。
+- 新增 uni-app 兼容模式组件 `face-ai-capture-compat`。
+- 三种入口共用 `CaptureFaceNativeView`，统一 CameraX、连续重试和资源释放行为。
+
 ## 2026.08.15（2026-08-16）
 升级SDK，缩减SDK体积，美化UI
 ## 2026.06.08（2026-06-08）
