@@ -1,7 +1,7 @@
 {
 	"id": "FaceAI-Search",
 	"displayName": "1：N 人脸搜索识别UTS API插件",
-	"version": "2026.08.11",
+	"version": "2026.08.15",
 	"description": "Android 1:N人脸搜索识别，可用于小区门禁,验证登陆等身份认证;离线不依赖三方服务",
 	"keywords": [
         "人脸搜索",
