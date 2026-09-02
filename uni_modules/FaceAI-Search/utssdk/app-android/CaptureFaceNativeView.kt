@@ -19,7 +19,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.ai.face.base.addFace.AddFaceCallBack
-import com.ai.face.base.addFace.AddFaceDispose
+import com.ai.face.base.addFace.CaptureFaceDispose
 import com.ai.face.base.utils.DataConvertUtils
 import com.ai.face.faceVerify.verify.VerifyStatus
 import com.faceAI.demo.FaceSDKConfig
@@ -46,12 +46,12 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     private val encodingResult = AtomicBoolean(false)
 
     private var cameraProvider: ProcessCameraProvider? = null
-    private var faceDispose: AddFaceDispose? = null
+    private var faceDispose: CaptureFaceDispose? = null
     private var resultCallback: ((String, Float, String) -> Unit)? = null
     private var tipsCallback: ((Int, String) -> Unit)? = null
     private var errorCallback: ((String, String) -> Unit)? = null
 
-    private var performanceMode = AddFaceDispose.PERFORMANCE_MODE_FAST
+    private var performanceMode = CaptureFaceDispose.PERFORMANCE_MODE_FAST
     private var needLivenessCheck = true
     private var cameraId = CameraSelector.LENS_FACING_FRONT
     private var linearZoom = 0.12f
@@ -93,7 +93,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
      */
     @JvmOverloads
     fun start(
-        performanceMode: Int = AddFaceDispose.PERFORMANCE_MODE_FAST,
+        performanceMode: Int = CaptureFaceDispose.PERFORMANCE_MODE_FAST,
         needLivenessCheck: Boolean = true,
         cameraId: Int = CameraSelector.LENS_FACING_FRONT,
         linearZoom: Float = 0.12f,
@@ -120,8 +120,8 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
 
         stopInternal()
         this.performanceMode = performanceMode.coerceIn(
-            AddFaceDispose.PERFORMANCE_MODE_NO_LIMIT,
-            AddFaceDispose.PERFORMANCE_MODE_ACCURATE
+            CaptureFaceDispose.PERFORMANCE_MODE_NO_LIMIT,
+            CaptureFaceDispose.PERFORMANCE_MODE_ACCURATE
         )
         this.needLivenessCheck = needLivenessCheck
         this.cameraId = cameraId
@@ -133,7 +133,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
 
         // API、标准组件、兼容组件都可以独立作为第一个插件入口使用。
         FaceSDKConfig.init(context)
-        faceDispose = AddFaceDispose(
+        faceDispose = CaptureFaceDispose(
             context,
             this.performanceMode,
             this.needLivenessCheck,

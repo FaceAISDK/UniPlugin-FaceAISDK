@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.ai.face.base.addFace.AddFaceDispose;
+import com.ai.face.base.addFace.CaptureFaceDispose;
 import com.faceAI.demo.R;
 import com.faceAI.demo.base.AbsBaseActivity;
 
@@ -24,7 +24,7 @@ public class CaptureFaceActivity extends AbsBaseActivity {
     public static final String CAMERA_SIZE_HIGH = "CAPTURE_FACE_CAMERA_SIZE_HIGH";
 
     private CaptureFaceNativeView captureFaceView;
-    private int performanceMode = AddFaceDispose.PERFORMANCE_MODE_FAST;
+    private int performanceMode = CaptureFaceDispose.PERFORMANCE_MODE_FAST;
     private boolean needLivenessCheck = true;
     private int cameraId = 0;
     private float linearZoom = 0.12f;

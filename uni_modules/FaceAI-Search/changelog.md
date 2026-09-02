@@ -4,6 +4,7 @@
 - 新增标准模式组件 `face-ai-capture`。
 - 新增 uni-app 兼容模式组件 `face-ai-capture-compat`。
 - 三种入口共用 `CaptureFaceNativeView`，统一 CameraX、连续重试和资源释放行为。
+- Android SDK 升级到 `2026.08.31.capture02`，持续抓拍改用 `CaptureFaceDispose`。
 
 ## 2026.08.15（2026-08-16）
 升级SDK，缩减SDK体积，美化UI
