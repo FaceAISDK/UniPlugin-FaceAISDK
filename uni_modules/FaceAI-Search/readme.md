@@ -79,7 +79,7 @@ captureFaceByCamera(
 )
 ```
 
-调用后打开全屏 `CaptureFaceActivity`，点击左上角返回按钮结束。
+调用后打开全屏 `CaptureFaceActivity`，点击左上角返回按钮结束，点击右上角按钮切换前/后摄像头。
 
 ### 标准模式组件：uni-app x
 
@@ -168,5 +168,4 @@ Android uvue 接收到的兼容模式事件参数是 `Map<string, any>`，可通
 兼容模式的 `tips`、`error`、`camera-change` 也使用 `Map<string, any>`，字段名与上表一致；标准模式事件直接返回对应的 UTS 类型对象。
 
 > 两张图片均进行 Base64 编码，单次结果数据量较大。持续场景中请及时消费结果，不要长期把所有 Base64 字符串保存在响应式数组里。
-
 

@@ -77,7 +77,7 @@ public class CaptureFaceActivity extends AbsBaseActivity {
         switchButton.setImageResource(R.drawable.switch_camera);
         switchButton.setBackgroundResource(R.drawable.bg_switch_camera_button);
         switchButton.setPadding(dp(7), dp(7), dp(7), dp(7));
-        switchButton.setContentDescription("Switch camera");
+        switchButton.setContentDescription(getString(R.string.switch_camera));
         switchButton.setOnClickListener((View view) -> captureFaceView.toggleCamera());
         FrameLayout.LayoutParams switchParams = new FrameLayout.LayoutParams(dp(34), dp(34));
         switchParams.gravity = Gravity.END | Gravity.TOP;

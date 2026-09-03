@@ -1,5 +1,5 @@
 <template>
-  <view></view>
+  <view class="face-ai-capture-compat-fallback"></view>
 </template>
 
 <script lang="uts">
@@ -114,4 +114,9 @@ export default {
 </script>
 
 <style>
+.face-ai-capture-compat-fallback {
+  width: 100%;
+  height: 100%;
+  background-color: #f2f2f2;
+}
 </style>

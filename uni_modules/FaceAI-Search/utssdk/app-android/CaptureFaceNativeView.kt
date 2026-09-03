@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.graphics.Matrix
 import android.graphics.Color
+import android.os.Looper
 import android.util.Log
 import android.util.Size
 import android.view.Surface
@@ -265,15 +266,15 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
             return
         }
 
-        post {
-            if (released) return@post
-            if (newCameraId == cameraId && cameraControl != null) return@post
+        runOnMainThread {
+            if (released) return@runOnMainThread
+            if (newCameraId == cameraId && cameraControl != null) return@runOnMainThread
 
             // start() 可能正在等待 View 布局或 CameraProvider，此时先记住目标镜头。
             // Provider 就绪后会直接按最新 cameraId 绑定。
             if (!started || cameraProvider == null) {
                 cameraId = newCameraId
-                return@post
+                return@runOnMainThread
             }
 
             val lifecycleOwner = findActivity() as? LifecycleOwner
@@ -282,7 +283,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
                     "LIFECYCLE_OWNER_REQUIRED",
                     "The component host must implement LifecycleOwner"
                 )
-                return@post
+                return@runOnMainThread
             }
 
             previewStreaming = false
@@ -707,6 +708,14 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
 
     private fun isSupportedCameraId(value: Int): Boolean =
         value == CameraSelector.LENS_FACING_FRONT || value == CameraSelector.LENS_FACING_BACK
+
+    private fun runOnMainThread(action: () -> Unit) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            action()
+        } else {
+            post(action)
+        }
+    }
 
     private fun toSurfaceRotation(value: Int): Int {
         return when (value) {

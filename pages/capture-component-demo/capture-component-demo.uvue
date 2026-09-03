@@ -1,20 +1,25 @@
 <template>
   <view class="page">
-    <face-ai-capture
-      v-if="cameraPermissionGranted"
-      class="capture-view"
-      :performance-mode="1"
-      :need-liveness-check="true"
-      :camera-id="0"
-      :linear-zoom="0.12"
-      :rotation-degrees="0"
-      :camera-size-high="false"
-      :auto-start="true"
-      @ready="onCaptureReady"
-      @result="onCaptureResult"
-      @tips="onCaptureTips"
-      @error="onCaptureError"
-    />
+    <view v-if="cameraPermissionGranted" class="native-view-hint">
+      <text class="native-view-hint-text">下方为标准模式原生组件区域</text>
+    </view>
+
+    <view v-if="cameraPermissionGranted" class="native-view-frame">
+      <face-ai-capture
+        class="capture-view"
+        :performance-mode="1"
+        :need-liveness-check="true"
+        :camera-id="0"
+        :linear-zoom="0.12"
+        :rotation-degrees="0"
+        :camera-size-high="false"
+        :auto-start="true"
+        @ready="onCaptureReady"
+        @result="onCaptureResult"
+        @tips="onCaptureTips"
+        @error="onCaptureError"
+      />
+    </view>
 
     <view v-else class="permission-panel">
       <text class="permission-title">需要相机权限</text>
@@ -22,6 +27,8 @@
       <button v-if="permissionPermanentlyDenied" class="action-button" @tap="openPermissionSettings">打开权限设置</button>
       <button v-else class="action-button" @tap="requestCameraPermission">授权并开始</button>
     </view>
+
+    <view v-if="cameraPermissionGranted" class="non-native-spacer"></view>
 
     <view class="status-panel">
       <text class="status-text">{{ statusText }}</text>
@@ -134,13 +141,40 @@ onShow(() => {
 <style>
 .page {
   flex: 1;
-  background-color: #000000;
+  background-color: #1677ff;
+}
+
+.native-view-hint {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16rpx 24rpx;
+  background-color: #1677ff;
+}
+
+.native-view-hint-text {
+  color: #ffffff;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.native-view-frame {
+  height: 900rpx;
+  flex-shrink: 0;
+  margin-top: 16rpx;
+  margin-right: 40rpx;
+  margin-left: 40rpx;
+  overflow: hidden;
 }
 
 .capture-view {
   width: 100%;
-  flex: 1;
+  height: 100%;
   background-color: #000000;
+}
+
+.non-native-spacer {
+  flex: 1;
+  background-color: #1677ff;
 }
 
 .permission-panel {
@@ -148,7 +182,7 @@ onShow(() => {
   align-items: center;
   justify-content: center;
   padding: 48rpx;
-  background-color: #101010;
+  background-color: #1677ff;
 }
 
 .permission-title {
@@ -172,11 +206,11 @@ onShow(() => {
 
 .status-panel {
   padding: 20rpx 24rpx;
-  background-color: #ffffff;
+  background-color: #1677ff;
 }
 
 .status-text {
-  color: #333333;
+  color: #ffffff;
   font-size: 24rpx;
   line-height: 36rpx;
 }
