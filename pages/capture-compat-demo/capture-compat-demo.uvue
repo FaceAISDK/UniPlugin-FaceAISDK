@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view v-if="cameraPermissionGranted" class="native-view-hint">
-      <text class="native-view-hint-text">下方为兼容模式原生组件区域</text>
+      <text class="native-view-hint-text">{{ captureTipText }}</text>
     </view>
 
     <view v-if="cameraPermissionGranted" class="native-view-frame">
@@ -45,6 +45,7 @@ const permissionPermanentlyDenied = ref(false)
 const captureCount = ref(0)
 const silentScore = ref(0.0)
 const statusText = ref("正在检查相机权限…")
+const captureTipText = ref("请摆正头部并将人脸置于取景框内")
 
 function mapString(values: Map<string, any>, key: string): string {
   const value = values.get(key)
@@ -58,6 +59,7 @@ function mapNumber(values: Map<string, any>, key: string): number {
 
 function onCaptureReady() {
   statusText.value = "兼容模式组件已就绪"
+  captureTipText.value = "请摆正头部并将人脸置于取景框内"
 }
 
 function onCaptureResult(result: Map<string, any>) {
@@ -69,12 +71,16 @@ function onCaptureResult(result: Map<string, any>) {
 }
 
 function onCaptureTips(tips: Map<string, any>) {
-  statusText.value = `提示 ${mapNumber(tips, "code")}：${mapString(tips, "message")}`
+  const message = mapString(tips, "message")
+  captureTipText.value = message
+  statusText.value = `提示 ${mapNumber(tips, "code")}：${message}`
 }
 
 function onCaptureError(error: Map<string, any>) {
   const code = mapString(error, "code")
-  statusText.value = `错误 ${code}：${mapString(error, "message")}`
+  const message = mapString(error, "message")
+  captureTipText.value = message
+  statusText.value = `错误 ${code}：${message}`
   if (code == "CAMERA_PERMISSION_REQUIRED") {
     cameraPermissionGranted.value = false
   }
@@ -165,7 +171,7 @@ onShow(() => {
 }
 
 .native-view-frame {
-  height: 900rpx;
+  height: 1040rpx;
   flex-shrink: 0;
   margin-top: 16rpx;
   margin-right: 40rpx;
