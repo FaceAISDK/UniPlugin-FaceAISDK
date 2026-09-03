@@ -11,21 +11,8 @@
 		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
 		<button class="gray-button" @tap="switchCameraDemo">切换前后摄像头</button>
 		<button class="gray-button" @tap="captureFaceByCameraDemo">UTS API 全屏持续抓拍</button>
-		<button class="gray-button" @tap="toggleCaptureComponent">
-			{{showCaptureFace ? '关闭标准模式抓拍组件' : '打开标准模式抓拍组件'}}
-		</button>
-
-		<face-ai-capture
-			v-if="showCaptureFace"
-			class="capture-face-component"
-			:performance-mode="1"
-			:need-liveness-check="true"
-			:camera-id="0"
-			:auto-start="true"
-			@result="onCaptureFaceResult"
-			@tips="onCaptureFaceTips"
-			@error="onCaptureFaceError"
-		/>
+		<button class="gray-button" @tap="openCaptureComponentDemo">标准模式抓拍组件（独立页面）</button>
+		<button class="gray-button" @tap="openCaptureCompatDemo">兼容模式抓拍组件（独立页面）</button>
 		
 		<view class="result-box">
 		    <scroll-view scroll-y="true" class="scroll-view-box">
@@ -53,7 +40,6 @@
 			TTSPlayer,
 			ResultJSON,
 			CaptureFaceResult,
-			CaptureFaceTips,
 			CaptureFaceError} from "@/uni_modules/FaceAI-Search";
 			
 	// 注意：vue应该使用 testData.js 而不是 testData.uts	
@@ -67,7 +53,6 @@
 				faceID: 'Test',
 				faceFeature: 'faceFeature is a string with lenth 1024',
 				faceSearchResult: 'faceSearchResult',
-				showCaptureFace: false,
 				captureFaceCount: 0,
 				base64FaceSearch: base64FaceSearch as string, //人脸像素宽高需要大于130，无遮挡的清晰正脸
 				base64FaceImage:base64FaceImage as string //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
@@ -319,24 +304,16 @@
 				)
 			},
 
-			toggleCaptureComponent: function () {
-				this.showCaptureFace = !this.showCaptureFace
+			openCaptureComponentDemo: function () {
+				uni.navigateTo({
+					url: "/pages/capture-component-demo/capture-component-demo"
+				})
 			},
 
-			onCaptureFaceResult: function (result: CaptureFaceResult) {
-				this.captureFaceCount++
-				this.faceSearchResult = `【标准组件持续抓拍 #${this.captureFaceCount}】\n` +
-					`silentScore: ${result.silentScore}\n` +
-					`croppedBase64 length: ${result.croppedBase64.length}\n` +
-					`originBase64 length: ${result.originBase64.length}`
-			},
-
-			onCaptureFaceTips: function (tips: CaptureFaceTips) {
-				console.log(`Capture tips ${tips.code}: ${tips.message}`)
-			},
-
-			onCaptureFaceError: function (error: CaptureFaceError) {
-				this.faceSearchResult = `【抓拍组件错误】${error.code}: ${error.message}`
+			openCaptureCompatDemo: function () {
+				uni.navigateTo({
+					url: "/pages/capture-compat-demo/capture-compat-demo"
+				})
 			},
 			
 			
@@ -366,11 +343,6 @@
         white-space: pre-wrap; /* 保留格式并自动换行 */
     }
 
-	.capture-face-component {
-		width: 100%;
-		height: 900rpx;
-		background-color: #000000;
-	}
 </style>
 
 

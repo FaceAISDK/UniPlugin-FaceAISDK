@@ -7,7 +7,8 @@ import {
   CaptureFaceViewContext,
   CaptureFaceResult,
   CaptureFaceTips,
-  CaptureFaceError
+  CaptureFaceError,
+  CaptureFaceCameraChange
 } from "@/uni_modules/FaceAI-Search"
 
 type CaptureFaceProps = {
@@ -35,9 +36,21 @@ const emit = defineEmits<{
   (e: "result", result: CaptureFaceResult): void
   (e: "tips", tips: CaptureFaceTips): void
   (e: "error", error: CaptureFaceError): void
+  (e: "camera-change", result: CaptureFaceCameraChange): void
 }>()
 
 let captureContext: CaptureFaceViewContext | null = null
+
+function start() {
+  captureContext?.start(
+    props.performanceMode,
+    props.needLivenessCheck,
+    props.cameraId,
+    props.linearZoom,
+    props.rotationDegrees,
+    props.cameraSizeHigh
+  )
+}
 
 function onNativeViewInit(event: UniNativeViewInitEvent) {
   captureContext = new CaptureFaceViewContext(event.detail.element)
@@ -50,21 +63,13 @@ function onNativeViewInit(event: UniNativeViewInitEvent) {
   captureContext?.setErrorCallback((error: CaptureFaceError) => {
     emit("error", error)
   })
+  captureContext?.setCameraChangedCallback((result: CaptureFaceCameraChange) => {
+    emit("camera-change", result)
+  })
   emit("ready")
   if (props.autoStart) {
     start()
   }
-}
-
-function start() {
-  captureContext?.start(
-    props.performanceMode,
-    props.needLivenessCheck,
-    props.cameraId,
-    props.linearZoom,
-    props.rotationDegrees,
-    props.cameraSizeHigh
-  )
 }
 
 function stop() {
@@ -79,12 +84,20 @@ function switchCamera(cameraId: number) {
   captureContext?.switchCamera(cameraId)
 }
 
+function toggleCamera() {
+  captureContext?.toggleCamera()
+}
+
+function canSwitchCamera(): boolean {
+  return captureContext?.canSwitchCamera() ?? false
+}
+
 onUnmounted(() => {
   captureContext?.destroy()
   captureContext = null
 })
 
-defineExpose({ start, stop, retry, switchCamera })
+defineExpose({ start, stop, retry, switchCamera, toggleCamera, canSwitchCamera })
 </script>
 
 <style>

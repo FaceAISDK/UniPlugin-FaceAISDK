@@ -7,7 +7,7 @@ import CaptureFaceNativeView from "uts.sdk.modules.uniFaceAISDK.CaptureFaceNativ
 
 export default {
   name: "face-ai-capture-compat",
-  emits: ["ready", "result", "tips", "error"],
+  emits: ["ready", "result", "tips", "error", "camera-change"],
   props: {
     performanceMode: {
       type: Number,
@@ -63,6 +63,11 @@ export default {
       error.set("message", message)
       this.$emit("error", error)
     })
+    captureView.setCameraChangedCallback((cameraId: number) => {
+      const result = new Map<string, any>()
+      result.set("cameraId", cameraId)
+      this.$emit("camera-change", result)
+    })
     return captureView
   },
   NVLoaded() {
@@ -96,9 +101,15 @@ export default {
     },
     switchCamera(cameraId: number) {
       this.$el?.switchCamera(cameraId.toInt())
+    },
+    toggleCamera() {
+      this.$el?.toggleCamera()
+    },
+    canSwitchCamera(): boolean {
+      return this.$el?.canSwitchCamera() ?? false
     }
   },
-  expose: ["start", "stop", "retry", "switchCamera"]
+  expose: ["start", "stop", "retry", "switchCamera", "toggleCamera", "canSwitchCamera"]
 }
 </script>
 

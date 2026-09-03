@@ -68,6 +68,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 
     // UI 控件变量
     private ImageView closeBtn;
+    private ImageView switchButton;
     private GraphicOverlay graphicOverlay;
     private FaceCoverView faceCover;
 
@@ -107,6 +108,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
 
         // 2. 初始化控件
         closeBtn = findViewById(R.id.close);
+        switchButton = findViewById(R.id.switch_button);
         graphicOverlay = findViewById(R.id.graphicOverlay);
         faceCover = findViewById(R.id.face_cover);
 
@@ -127,6 +129,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
                 .create();
 
         cameraXFragment = FaceCameraXFragment.newInstance(cameraXBuilder);
+        switchButton.setOnClickListener(v -> cameraXFragment.switchCamera());
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_camerax, cameraXFragment)
                 .commit();
 

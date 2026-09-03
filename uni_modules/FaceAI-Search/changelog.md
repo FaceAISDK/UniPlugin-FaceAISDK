@@ -1,3 +1,13 @@
+## 2026.09.02
+
+- `FaceSearchActivity` 和全屏持续抓拍页新增运行时前/后摄像头切换。
+- 抓拍组件新增 `toggleCamera()`、`canSwitchCamera()` 和 `camera-change` 事件，指定镜头切换失败时保留原预览。
+- 新增标准模式、兼容模式组件的独立演示页面入口。
+- 修复组件在 `native-view` 尚未完成布局时提前绑定 CameraX 导致的预览黑屏。
+- CameraX 预览优先使用 `SurfaceView`，未进入流状态时自动回退 `TextureView` 重试。
+- 显式配置 Maven Central，修复阿里云镜像未同步新版 FaceAI SDK 时的云打包失败。
+- 修复 UTS/D8 环境下 CameraX `ImageAnalysis.Analyzer` Lambda 缺少默认方法导致的预览黑屏，并统一 CameraX 依赖版本。
+
 ## 2026.09.01
 
 - 新增全屏 UTS API `captureFaceByCamera`，持续返回裁剪人脸、静默活体分数和相机原图。

@@ -108,7 +108,46 @@ function onResult(result: CaptureFaceResult) {
 </script>
 ```
 
-组件对外暴露 `start()`、`stop()`、`retry()`、`switchCamera(cameraId)`。组件挂载前应确保相机权限已经授予。
+组件挂载前应确保相机权限已经授予。标准模式和兼容模式组件提供相同的参数、方法和事件。
+
+#### 组件 Props
+
+| 参数 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `performanceMode` | `number` | `1` | 抓拍性能模式：`-1` 无限制、`0` 简单、`1` 快速、`2` 精确 |
+| `needLivenessCheck` | `boolean` | `true` | 是否计算静默活体分数 |
+| `cameraId` | `number` | `0` | 初始镜头：`0` 前置、`1` 后置；初始化时目标不存在会降级到可用镜头 |
+| `linearZoom` | `number` | `0.12` | 线性变焦，范围 `0~1` |
+| `rotationDegrees` | `number` | `0` | 画面旋转角度，支持 `0/90/180/270` |
+| `cameraSizeHigh` | `boolean` | `false` | 是否使用 1280×720 高分辨率分析 |
+| `autoStart` | `boolean` | `true` | 原生 View 就绪后是否自动调用 `start()` |
+
+#### 组件方法
+
+| 方法 | 返回值 | 说明 |
+| --- | --- | --- |
+| `start()` | `void` | 使用当前 Props 开始抓拍；重复调用会重启采集会话 |
+| `stop()` | `void` | 停止相机和抓拍会话 |
+| `retry()` | `void` | 手动允许 SDK 继续检测；正常结果回调后组件已自动调用 |
+| `switchCamera(cameraId)` | `void` | 运行期间切换到指定镜头，`0` 前置、`1` 后置 |
+| `toggleCamera()` | `void` | 运行期间在当前实际镜头与另一颗前/后镜头之间切换 |
+| `canSwitchCamera()` | `boolean` | CameraProvider 就绪且另一颗前/后镜头存在时返回 `true` |
+
+切换时只重绑 CameraX 的预览和分析用例，抓拍引擎保持运行。目标镜头不存在时保留当前预览并触发 `error`；绑定失败时会尝试恢复原镜头。
+
+#### 组件事件与返回字段
+
+| 事件 | 字段 | 类型 | 说明 |
+| --- | --- | --- | --- |
+| `ready` | 无 | - | 原生 View 已创建；不代表 CameraProvider 已完成初始化 |
+| `result` | `croppedBase64` | `string` | SDK 矫正、裁剪后的 224×224 人脸 JPEG Data URL |
+| `result` | `silentScore` | `number` | 静默活体分数；仅在 `needLivenessCheck=true` 时有效 |
+| `result` | `originBase64` | `string` | 本次检测对应的相机原图 JPEG Data URL |
+| `tips` | `code` | `number` | SDK 采集过程提示码 |
+| `tips` | `message` | `string` | 提示码对应的可展示文案 |
+| `error` | `code` | `string` | 错误码，包括权限、初始化、预览、帧处理和摄像头切换错误 |
+| `error` | `message` | `string` | 错误详情 |
+| `camera-change` | `cameraId` | `number` | 切换成功后的实际镜头：`0` 前置、`1` 后置；初始化降级到另一镜头时也会触发 |
 
 ### uni-app 兼容模式组件
 
@@ -126,7 +165,8 @@ function onResult(result: CaptureFaceResult) {
 
 Android uvue 接收到的兼容模式事件参数是 `Map<string, any>`，可通过 `result.get("croppedBase64")`、`result.get("silentScore")`、`result.get("originBase64")` 读取；uni-app nvue 中按普通事件对象读取。
 
-> 两张图片均进行 Base64 编码，单次结果数据量较大。持续场景中请及时消费结果，不要长期把所有 Base64 字符串保存在响应式数组里。
+兼容模式的 `tips`、`error`、`camera-change` 也使用 `Map<string, any>`，字段名与上表一致；标准模式事件直接返回对应的 UTS 类型对象。
 
+> 两张图片均进行 Base64 编码，单次结果数据量较大。持续场景中请及时消费结果，不要长期把所有 Base64 字符串保存在响应式数组里。
 
 

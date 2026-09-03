@@ -51,6 +51,10 @@ public class CaptureFaceActivity extends AbsBaseActivity {
             CaptureFaceResultManager.INSTANCE.sendError(code, message);
             return kotlin.Unit.INSTANCE;
         });
+        captureFaceView.setCameraChangedCallback((newCameraId) -> {
+            cameraId = newCameraId;
+            return kotlin.Unit.INSTANCE;
+        });
         root.addView(
                 captureFaceView,
                 new FrameLayout.LayoutParams(
@@ -68,6 +72,17 @@ public class CaptureFaceActivity extends AbsBaseActivity {
         closeParams.gravity = Gravity.START | Gravity.TOP;
         closeParams.setMargins(dp(15), dp(15), 0, 0);
         root.addView(closeButton, closeParams);
+
+        ImageView switchButton = new ImageView(this);
+        switchButton.setImageResource(R.drawable.switch_camera);
+        switchButton.setBackgroundResource(R.drawable.bg_switch_camera_button);
+        switchButton.setPadding(dp(7), dp(7), dp(7), dp(7));
+        switchButton.setContentDescription("Switch camera");
+        switchButton.setOnClickListener((View view) -> captureFaceView.toggleCamera());
+        FrameLayout.LayoutParams switchParams = new FrameLayout.LayoutParams(dp(34), dp(34));
+        switchParams.gravity = Gravity.END | Gravity.TOP;
+        switchParams.setMargins(0, dp(22), dp(15), 0);
+        root.addView(switchButton, switchParams);
 
         setContentView(root);
     }

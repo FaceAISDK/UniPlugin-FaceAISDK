@@ -5,6 +5,18 @@
 			"style": {
 				"navigationBarTitleText": "人脸搜索识别"
 			}
+		},
+		{
+			"path": "pages/capture-component-demo/capture-component-demo",
+			"style": {
+				"navigationBarTitleText": "标准模式持续抓拍"
+			}
+		},
+		{
+			"path": "pages/capture-compat-demo/capture-compat-demo",
+			"style": {
+				"navigationBarTitleText": "兼容模式持续抓拍"
+			}
 		}
 	],
 	"globalStyle": {

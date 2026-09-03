@@ -1,4 +1,4 @@
-import { ResultJSON, CaptureFaceResult, CaptureFaceTips, CaptureFaceError } from '../interface.uts'
+import { ResultJSON, CaptureFaceResult, CaptureFaceTips, CaptureFaceError, CaptureFaceCameraChange } from '../interface.uts'
 import Application from 'android.app.Application';
 import Activity from 'android.app.Activity';
 import Intent from 'android.content.Intent';
@@ -97,6 +97,12 @@ export class CaptureFaceViewContext {
         })
     }
 
+    setCameraChangedCallback(callback: (result: CaptureFaceCameraChange) => void): void {
+        this.nativeView.setCameraChangedCallback((cameraId: number) => {
+            callback({ cameraId: cameraId } as CaptureFaceCameraChange)
+        })
+    }
+
     start(
         performanceMode: number,
         needLivenessCheck: boolean,
@@ -125,6 +131,14 @@ export class CaptureFaceViewContext {
 
     switchCamera(cameraId: number): void {
         this.nativeView.switchCamera(cameraId.toInt())
+    }
+
+    toggleCamera(): void {
+        this.nativeView.toggleCamera()
+    }
+
+    canSwitchCamera(): boolean {
+        return this.nativeView.canSwitchCamera()
     }
 
     destroy(): void {

@@ -29,6 +29,10 @@ export type CaptureFaceError = {
   message: string
 }
 
+export type CaptureFaceCameraChange = {
+  cameraId: number
+}
+
 /**
  * 打开全屏相机并持续返回符合要求的人脸。
  * @param performanceMode -1 无限制、0 简单、1 快速、2 精确
@@ -160,5 +164,4 @@ export type ToastMessage = (base64Image : string,message : string) => void
 export type TTSPlayer = (message : string) => void	
 
 export type SwitchCameta = (cameraID : number) => void	
-
 

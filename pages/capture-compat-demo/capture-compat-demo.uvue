@@ -1,0 +1,190 @@
+<template>
+  <view class="page">
+    <face-ai-capture-compat
+      v-if="cameraPermissionGranted"
+      class="capture-view"
+      :performanceMode="1"
+      :needLivenessCheck="true"
+      :cameraId="0"
+      :linearZoom="0.12"
+      :rotationDegrees="0"
+      :cameraSizeHigh="false"
+      :autoStart="true"
+      @ready="onCaptureReady"
+      @result="onCaptureResult"
+      @tips="onCaptureTips"
+      @error="onCaptureError"
+    />
+
+    <view v-else class="permission-panel">
+      <text class="permission-title">需要相机权限</text>
+      <text class="permission-description">授权后会在当前页面启动兼容模式人脸持续抓拍组件。</text>
+      <button v-if="permissionPermanentlyDenied" class="action-button" @tap="openPermissionSettings">打开权限设置</button>
+      <button v-else class="action-button" @tap="requestCameraPermission">授权并开始</button>
+    </view>
+
+    <view class="status-panel">
+      <text class="status-text">{{ statusText }}</text>
+      <text class="status-text">抓拍次数：{{ captureCount }}</text>
+      <text class="status-text">静默活体分数：{{ silentScore }}</text>
+    </view>
+  </view>
+</template>
+
+<script setup lang="uts">
+const CAMERA_PERMISSIONS: Array<string> = ["android.permission.CAMERA"]
+const cameraPermissionGranted = ref(false)
+const permissionPermanentlyDenied = ref(false)
+const captureCount = ref(0)
+const silentScore = ref(0.0)
+const statusText = ref("正在检查相机权限…")
+
+function mapString(values: Map<string, any>, key: string): string {
+  const value = values.get(key)
+  return value == null ? "" : (value as string)
+}
+
+function mapNumber(values: Map<string, any>, key: string): number {
+  const value = values.get(key)
+  return value == null ? 0 : (value as number)
+}
+
+function onCaptureReady() {
+  statusText.value = "兼容模式组件已就绪"
+}
+
+function onCaptureResult(result: Map<string, any>) {
+  const croppedBase64 = mapString(result, "croppedBase64")
+  const originBase64 = mapString(result, "originBase64")
+  captureCount.value++
+  silentScore.value = mapNumber(result, "silentScore")
+  statusText.value = `持续抓拍成功，裁剪图 ${croppedBase64.length} 字符，原图 ${originBase64.length} 字符`
+}
+
+function onCaptureTips(tips: Map<string, any>) {
+  statusText.value = `提示 ${mapNumber(tips, "code")}：${mapString(tips, "message")}`
+}
+
+function onCaptureError(error: Map<string, any>) {
+  const code = mapString(error, "code")
+  statusText.value = `错误 ${code}：${mapString(error, "message")}`
+  if (code == "CAMERA_PERMISSION_REQUIRED") {
+    cameraPermissionGranted.value = false
+  }
+}
+
+function refreshCameraPermission() {
+  const activity = UTSAndroid.getUniActivity()
+  if (activity == null) {
+    statusText.value = "无法获取当前 Android Activity"
+    return
+  }
+
+  cameraPermissionGranted.value = UTSAndroid.checkSystemPermissionGranted(
+    activity,
+    CAMERA_PERMISSIONS
+  )
+  if (cameraPermissionGranted.value) {
+    permissionPermanentlyDenied.value = false
+    statusText.value = "相机权限已授予，正在启动组件…"
+  }
+}
+
+function requestCameraPermission() {
+  const activity = UTSAndroid.getUniActivity()
+  if (activity == null) {
+    statusText.value = "无法获取当前 Android Activity"
+    return
+  }
+
+  UTSAndroid.requestSystemPermission(
+    activity,
+    CAMERA_PERMISSIONS,
+    (allRight: boolean, _grantedList: Array<string>) => {
+      cameraPermissionGranted.value = allRight
+      if (allRight) {
+        permissionPermanentlyDenied.value = false
+        statusText.value = "相机权限已授予，正在启动组件…"
+      } else {
+        statusText.value = "相机权限未完全授予"
+      }
+    },
+    (doNotAskAgain: boolean, _grantedList: Array<string>) => {
+      cameraPermissionGranted.value = false
+      permissionPermanentlyDenied.value = doNotAskAgain
+      statusText.value = doNotAskAgain
+        ? "相机权限已被永久拒绝，请前往系统设置开启"
+        : "相机权限被拒绝"
+    }
+  )
+}
+
+function openPermissionSettings() {
+  const activity = UTSAndroid.getUniActivity()
+  if (activity != null) {
+    UTSAndroid.gotoSystemPermissionActivity(activity, CAMERA_PERMISSIONS)
+  }
+}
+
+onReady(() => {
+  refreshCameraPermission()
+  if (!cameraPermissionGranted.value) {
+    requestCameraPermission()
+  }
+})
+
+onShow(() => {
+  refreshCameraPermission()
+})
+</script>
+
+<style>
+.page {
+  flex: 1;
+  background-color: #000000;
+}
+
+.capture-view {
+  width: 100%;
+  flex: 1;
+  background-color: #000000;
+}
+
+.permission-panel {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  background-color: #101010;
+}
+
+.permission-title {
+  color: #ffffff;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.permission-description {
+  margin-top: 24rpx;
+  color: #cccccc;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.action-button {
+  margin-top: 40rpx;
+  color: #ffffff;
+  background-color: #136918;
+}
+
+.status-panel {
+  padding: 20rpx 24rpx;
+  background-color: #ffffff;
+}
+
+.status-text {
+  color: #333333;
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+</style>
