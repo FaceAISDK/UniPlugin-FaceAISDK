@@ -122,7 +122,9 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
         // native-view 中 TextureView 可能因为宿主合成层级而只显示黑色。
         // PERFORMANCE 优先使用 SurfaceView，更适合 CameraX 原生预览嵌入场景。
         previewView.implementationMode = PreviewView.ImplementationMode.PERFORMANCE
-        previewView.scaleType = PreviewView.ScaleType.FIT_CENTER
+        // 居中裁剪相机画面以铺满组件，避免宽高比不一致时出现上下黑边。
+        previewView.scaleType = PreviewView.ScaleType.FILL_CENTER
+        faceCoverView.visibility = View.GONE
         addView(
             previewView,
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -147,6 +149,14 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
 
     fun setCameraChangedCallback(callback: ((Int) -> Unit)?) {
         cameraChangedCallback = callback
+    }
+
+    fun setFaceCoverVisible(visible: Boolean) {
+        runOnMainThread {
+            if (!released) {
+                faceCoverView.visibility = if (visible) View.VISIBLE else View.GONE
+            }
+        }
     }
 
     /**

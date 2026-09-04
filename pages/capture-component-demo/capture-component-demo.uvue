@@ -20,6 +20,7 @@
             :linear-zoom="0.12"
             :rotation-degrees="-1"
             :camera-size-high="false"
+            :show-face-cover="false"
             :auto-start="false"
             @ready="onCaptureReady"
             @result="onCaptureResult"

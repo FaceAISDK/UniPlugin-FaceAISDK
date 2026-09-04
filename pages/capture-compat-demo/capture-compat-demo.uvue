@@ -20,6 +20,7 @@
             :linearZoom="0.12"
             :rotationDegrees="-1"
             :cameraSizeHigh="false"
+            :showFaceCover="false"
             :autoStart="false"
             @ready="onCaptureReady"
             @result="onCaptureResult"
@@ -64,8 +65,10 @@
 </template>
 
 <script setup lang="uts">
+import { FaceAiCaptureCompatElement } from "uts.sdk.modules.FaceAISearch"
+
 const CAMERA_PERMISSIONS: Array<string> = ["android.permission.CAMERA"]
-const captureCompatRef = ref<ComponentPublicInstance | null>(null)
+const captureCompatRef = ref<FaceAiCaptureCompatElement | null>(null)
 const cameraPermissionGranted = ref(false)
 const permissionPermanentlyDenied = ref(false)
 const captureCount = ref(0)
@@ -152,10 +155,10 @@ function startOrRetryCapture() {
   if (component == null || !captureReady.value || captureInProgress.value) return
 
   if (captureStarted.value) {
-    component.$callMethod("retry")
+    component.retry()
     statusText.value = "已调用 retry()，正在等待下一帧…"
   } else {
-    component.$callMethod("start")
+    component.start()
     captureStarted.value = true
     statusText.value = "已调用 start()，正在等待第一帧…"
   }
@@ -167,7 +170,7 @@ function startOrRetryCapture() {
 function toggleCamera() {
   const component = captureCompatRef.value
   if (component == null || !captureReady.value || !captureStarted.value) return
-  component.$callMethod("toggleCamera")
+  component.toggleCamera()
   statusText.value = "正在切换前后相机…"
 }
 

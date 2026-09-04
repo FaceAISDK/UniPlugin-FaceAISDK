@@ -103,6 +103,10 @@ export class CaptureFaceViewContext {
         })
     }
 
+    setFaceCoverVisible(visible: boolean): void {
+        this.nativeView.setFaceCoverVisible(visible)
+    }
+
     start(
         performanceMode: number,
         needLivenessCheck: boolean,

@@ -47,6 +47,7 @@ public class CaptureFaceActivity extends AbsBaseActivity {
 
         FrameLayout root = new FrameLayout(this);
         captureFaceView = new CaptureFaceNativeView(this);
+        captureFaceView.setFaceCoverVisible(true);
         captureFaceView.setResultCallback((croppedBase64, silentScore, originBase64) -> {
             try {
                 CaptureFaceResultManager.INSTANCE.sendResult(

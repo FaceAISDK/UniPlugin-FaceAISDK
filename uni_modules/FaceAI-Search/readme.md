@@ -95,6 +95,7 @@ HBuilderX 4.31+ 可在 uvue 页面直接使用 easycom 组件：
       :need-liveness-check="true"
       :camera-id="0"
       :rotation-degrees="-1"
+      :show-face-cover="false"
       :auto-start="false"
       @result="onResult"
       @tips="onTips"
@@ -138,6 +139,7 @@ function toggleCamera() {
 | `linearZoom` | `number` | `0.12` | 线性变焦，范围 `0~1` |
 | `rotationDegrees` | `number` | `-1` | `-1` 自动跟随当前显示方向；也可固定为 `0/90/180/270` |
 | `cameraSizeHigh` | `boolean` | `false` | 是否使用 1280×720 高分辨率分析 |
+| `showFaceCover` | `boolean` | `false` | 是否显示 Android 原生 `FaceCoverView`（圆形遮罩和原生提示）；关闭不影响 `tips` 事件 |
 | `autoStart` | `boolean` | `true` | 原生 View 就绪后是否自动调用 `start()` |
 
 #### 组件方法
@@ -175,14 +177,36 @@ function toggleCamera() {
 
 ```vue
 <face-ai-capture-compat
+  ref="captureCompatRef"
   style="width: 100%; height: 100%;"
   :performanceMode="1"
   :needLivenessCheck="true"
   :cameraId="0"
   :rotationDegrees="-1"
+  :showFaceCover="false"
   @result="onResult"
 />
 ```
+
+uni-app x 调用兼容模式组件方法时，需要使用组件生成的原生 Element 类型，不能使用普通 Vue 组件的 `$callMethod`：
+
+```ts
+import { FaceAiCaptureCompatElement } from "uts.sdk.modules.FaceAISearch"
+
+const captureCompatRef = ref<FaceAiCaptureCompatElement | null>(null)
+
+function retryCapture() {
+  captureCompatRef.value?.retry()
+}
+
+function toggleCamera() {
+  captureCompatRef.value?.toggleCamera()
+}
+```
+
+相机预览使用居中裁剪方式铺满组件；当相机画面和组件宽高比不一致时，两侧画面可能被裁掉，但不会再出现上下黑边。
+
+需要显示圆形遮罩和原生提示时，将 `showFaceCover` 设为 `true`。标准模式模板中可写为 `:show-face-cover="true"`，兼容模式可写为 `:showFaceCover="true"`。
 
 ### 横竖屏与平板适配
 

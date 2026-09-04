@@ -33,6 +33,10 @@ export default {
       type: Boolean,
       default: false
     },
+    showFaceCover: {
+      type: Boolean,
+      default: false
+    },
     autoStart: {
       type: Boolean,
       default: true
@@ -40,6 +44,7 @@ export default {
   },
   NVLoad(): CaptureFaceNativeView {
     const captureView = new CaptureFaceNativeView(this.$androidContext!)
+    captureView.setFaceCoverVisible(this.showFaceCover)
     captureView.setResultCallback((
       croppedBase64: string,
       silentScore: number,
@@ -84,6 +89,7 @@ export default {
   },
   methods: {
     start() {
+      this.$el?.setFaceCoverVisible(this.showFaceCover)
       this.$el?.start(
         this.performanceMode.toInt(),
         this.needLivenessCheck,
