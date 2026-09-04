@@ -165,7 +165,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
      */
     @JvmOverloads
     fun start(
-        performanceMode: Int = CaptureFaceDispose.PERFORMANCE_MODE_EASY,
+        performanceMode: Int = CaptureFaceDispose.PERFORMANCE_MODE_FAST,
         needLivenessCheck: Boolean = true,
         cameraId: Int = CameraSelector.LENS_FACING_FRONT,
         linearZoom: Float = 0.12f,
