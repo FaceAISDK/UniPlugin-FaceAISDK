@@ -3,39 +3,31 @@
 		class="page"
 		:class="useWideLayout ? 'page-landscape' : 'page-portrait'"
 	>
-		<scroll-view
-			scroll-y="true"
-			class="menu-panel"
-			:class="useWideLayout ? 'menu-panel-landscape' : 'menu-panel-portrait'"
-		>
-			<view class="menu-content">
-				<view class="menu-section">
-					<text class="section-title">搜索与录入</text>
-					<view class="menu-buttons">
-						<button class="gray-button" @tap="faceSearchByCameraDemo">1:N相机人脸搜索识别</button>
-						<button class="gray-button" @tap="faceSearchByImageDemo">图片人脸搜索识别(Beta)</button>
-						<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
-						<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>
-					</view>
+		<scroll-view scroll-y="true" class="menu-panel">
+			<view class="menu-group">
+				<text class="group-title">搜索与录入</text>
+				<view class="button-grid">
+					<button class="gray-button" @tap="faceSearchByCameraDemo">相机人脸搜索识别</button>
+					<button class="gray-button" @tap="faceSearchByImageDemo">图片人脸搜索识别(Beta)</button>
+					<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
+					<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>
 				</view>
-
-				<view class="menu-section">
-					<text class="section-title">特征管理</text>
-					<view class="menu-buttons">
-						<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
-						<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
-						<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
-						<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
-					</view>
+			</view>
+			<view class="menu-group">
+				<text class="group-title">特征管理</text>
+				<view class="button-grid">
+					<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
+					<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
+					<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
+					<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
 				</view>
-
-				<view class="menu-section">
-					<text class="section-title">抓拍能力</text>
-					<view class="menu-buttons">
-						<button class="gray-button" @tap="captureFaceByCameraDemo">UTS API 全屏持续抓拍</button>
-						<button class="gray-button" @tap="openCaptureComponentDemo">标准模式抓拍组件（独立页面）</button>
-						<button class="gray-button" @tap="openCaptureCompatDemo">兼容模式抓拍组件（独立页面）</button>
-					</view>
+			</view>
+			<view class="menu-group">
+				<text class="group-title">抓拍能力</text>
+				<view class="button-grid">
+					<button class="gray-button" @tap="captureFaceByCameraDemo">UTS API 全屏持续抓拍</button>
+					<button class="gray-button" @tap="openCaptureComponentDemo">标准模式抓拍组件（组合嵌入）</button>
+					<button class="gray-button" @tap="openCaptureCompatDemo">兼容模式抓拍组件（组合嵌入）</button>
 				</view>
 			</view>
 		</scroll-view>
@@ -44,13 +36,10 @@
 			class="result-box"
 			:class="useWideLayout ? 'result-box-landscape' : 'result-box-portrait'"
 		>
-			<view class="result-header">
-				<text class="result-title">运行结果</text>
-				<text class="result-email">FaceAISDK.Service@gmail.com</text>
-			</view>
 			<scroll-view scroll-y="true" class="scroll-view-box">
 				<text class="text-content">{{faceSearchResult}}</text>
 			</scroll-view>
+			<text class="email-text">Email: FaceAISDK.Service@gmail.com</text>
 		</view>
 	</view>
 </template>
@@ -377,59 +366,37 @@
 	}
 
 	.menu-panel {
+		flex: 1;
 		min-width: 0;
 		min-height: 0;
+		padding-right: 6px;
+		box-sizing: border-box;
 	}
 
-	.menu-panel-portrait {
-		height: 420px;
-		flex-shrink: 0;
-	}
-
-	.menu-panel-landscape {
-		width: 58%;
-		flex-shrink: 0;
-	}
-
-	.menu-content {
-		padding-right: 4px;
-		padding-bottom: 8px;
-		padding-left: 4px;
-	}
-
-	.menu-section {
+	.menu-group {
 		margin-bottom: 8px;
 	}
 
-	.section-title {
-		margin-top: 2px;
-		margin-right: 6px;
-		margin-bottom: 2px;
-		margin-left: 6px;
+	.group-title {
+		margin-left: 4px;
 		color: #6f6472;
 		font-size: 14px;
-		line-height: 22px;
 	}
 
-	.menu-buttons {
+	.button-grid {
 		flex-direction: row;
 		flex-wrap: wrap;
 	}
 
 	.gray-button {
 		flex: 1;
-		min-width: 320px;
-		height: 44px;
+		min-width: 280px;
 		margin: 4px;
-		padding: 0 12px;
-		border-width: 1px;
-		border-style: solid;
-		border-color: #eadfea;
-		border-radius: 8px;
 		background-color: #faf7fa;
 		color: #800080;
 		font-size: 18px;
-		line-height: 44px;
+		border: 1px solid #eadfea;
+		border-radius: 8px;
 	}
 
 	.result-box {
@@ -446,32 +413,15 @@
 	}
 
 	.result-box-portrait {
-		flex: 1;
-		min-height: 180px;
+		height: 240px;
 		margin-top: 12px;
+		flex-shrink: 0;
 	}
 
 	.result-box-landscape {
-		flex: 1;
+		width: 42%;
 		margin-left: 12px;
-	}
-
-	.result-header {
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 8px;
-	}
-
-	.result-title {
-		color: #333333;
-		font-size: 16px;
-		font-weight: bold;
-	}
-
-	.result-email {
-		color: #777777;
-		font-size: 12px;
+		flex-shrink: 0;
 	}
 
 	.scroll-view-box {
@@ -485,5 +435,11 @@
 		font-size: 18px;
 		line-height: 26px;
 		white-space: pre-wrap;
+	}
+
+	.email-text {
+		margin-top: 6px;
+		color: #777777;
+		font-size: 12px;
 	}
 </style>
