@@ -71,7 +71,8 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     private var cameraId = CameraSelector.LENS_FACING_FRONT
     private var linearZoom = 0.12f
     private var rotationDegrees = AUTO_ROTATION_DEGREES
-    private var cameraSizeHigh = false
+    @Volatile
+    private var faceCoverVisible = false
     private var started = false
     private var released = false
     private var sessionId = 0L
@@ -152,9 +153,10 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     }
 
     fun setFaceCoverVisible(visible: Boolean) {
+        faceCoverVisible = visible
         runOnMainThread {
             if (!released) {
-                faceCoverView.visibility = if (visible) View.VISIBLE else View.GONE
+                applyFaceCoverVisibility()
             }
         }
     }
@@ -169,8 +171,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
         needLivenessCheck: Boolean = true,
         cameraId: Int = CameraSelector.LENS_FACING_FRONT,
         linearZoom: Float = 0.12f,
-        rotationDegrees: Int = AUTO_ROTATION_DEGREES,
-        cameraSizeHigh: Boolean = false
+        rotationDegrees: Int = AUTO_ROTATION_DEGREES
     ) {
         if (released) {
             notifyError("VIEW_RELEASED", "CaptureFaceNativeView has been released")
@@ -205,7 +206,6 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
         this.cameraId = cameraId
         this.linearZoom = linearZoom.coerceIn(0f, 1f)
         this.rotationDegrees = rotationDegrees
-        this.cameraSizeHigh = cameraSizeHigh
 
         if (!isAttachedToWindow || width == 0 || height == 0) {
             scheduleStartAfterLayout()
@@ -425,12 +425,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
             .setTargetRotation(surfaceRotation)
-
-        if (cameraSizeHigh) {
-            analysisBuilder.setTargetResolution(android.util.Size(1280, 720))
-        } else {
-            analysisBuilder.setTargetAspectRatio(AspectRatio.RATIO_4_3)
-        }
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
 
         val newImageAnalysis = analysisBuilder.build()
         val previousBindingGeneration = cameraBindingGeneration
@@ -648,9 +643,11 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
         }
 
         val message = if (textRes != 0) context.getString(textRes) else "Tips Code: $actionCode"
-        if (textRes != 0) {
+        if (faceCoverVisible && textRes != 0) {
             faceCoverView.setTipsText(textRes)
         }
+        // FaceCoverView 的内部提示刷新可能修改自身 visibility；业务明确关闭时必须兜底隐藏。
+        applyFaceCoverVisibility()
         try {
             tipsCallback?.invoke(actionCode, message)
         } catch (e: Exception) {
@@ -785,6 +782,10 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
         } else {
             post(action)
         }
+    }
+
+    private fun applyFaceCoverVisibility() {
+        faceCoverView.visibility = if (faceCoverVisible) View.VISIBLE else View.GONE
     }
 
     private fun toSurfaceRotation(value: Int): Int {

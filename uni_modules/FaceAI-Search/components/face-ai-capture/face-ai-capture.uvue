@@ -17,7 +17,6 @@ type CaptureFaceProps = {
   cameraId: number
   linearZoom: number
   rotationDegrees: number
-  cameraSizeHigh: boolean
   showFaceCover: boolean
   autoStart: boolean
 }
@@ -28,7 +27,6 @@ const props = withDefaults(defineProps<CaptureFaceProps>(), {
   cameraId: 0,
   linearZoom: 0.12,
   rotationDegrees: -1,
-  cameraSizeHigh: false,
   showFaceCover: false,
   autoStart: true
 })
@@ -50,8 +48,7 @@ function start() {
     props.needLivenessCheck,
     props.cameraId,
     props.linearZoom,
-    props.rotationDegrees,
-    props.cameraSizeHigh
+    props.rotationDegrees
   )
 }
 

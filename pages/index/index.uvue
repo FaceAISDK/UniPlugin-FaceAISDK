@@ -290,7 +290,6 @@
 					0,
 					0.12,
 					-1,
-					false,
 					(result: CaptureFaceResult) => {
 						this.captureFaceCount++
 						this.faceSearchResult = `【API持续抓拍 #${this.captureFaceCount}】\n` +

@@ -67,7 +67,6 @@ captureFaceByCamera(
   0,      // cameraId: 0 前置、1 后置
   0.12,   // linearZoom: 0~1
   -1,     // rotationDegrees: -1 自动跟随屏幕，或固定为 0/90/180/270
-  false,  // cameraSizeHigh
   (result: CaptureFaceResult) => {
     console.log(result.croppedBase64)
     console.log(result.silentScore)
@@ -129,6 +128,8 @@ function toggleCamera() {
 
 组件挂载前应确保相机权限已经授予，并确保父容器具有可用高度。标准模式和兼容模式组件提供相同的参数、方法和事件。
 
+Demo 使用 `UTSAndroid.checkSystemPermissionGranted()` 先检查权限，再按需调用 `requestSystemPermission()`。申请期间会锁定按钮以避免重复请求；用户禁止再次询问时改为引导打开系统设置，从设置返回后自动重新校验。权限被撤销时会卸载抓拍组件并重置当前抓拍会话。
+
 #### 组件 Props
 
 | 参数 | 类型 | 默认值 | 说明 |
@@ -138,8 +139,7 @@ function toggleCamera() {
 | `cameraId` | `number` | `0` | 初始镜头：`0` 前置、`1` 后置；初始化时目标不存在会降级到可用镜头 |
 | `linearZoom` | `number` | `0.12` | 线性变焦，范围 `0~1` |
 | `rotationDegrees` | `number` | `-1` | `-1` 自动跟随当前显示方向；也可固定为 `0/90/180/270` |
-| `cameraSizeHigh` | `boolean` | `false` | 是否使用 1280×720 高分辨率分析 |
-| `showFaceCover` | `boolean` | `false` | 是否显示 Android 原生 `FaceCoverView`（圆形遮罩和原生提示）；关闭不影响 `tips` 事件 |
+| `showFaceCover` | `boolean` | `false` | 是否显示 Android 原生 `FaceCoverView`（圆形遮罩和原生提示）；关闭后内部提示刷新也不会将其重新显示，且不影响 `tips` 事件 |
 | `autoStart` | `boolean` | `true` | 原生 View 就绪后是否自动调用 `start()` |
 
 #### 组件方法
@@ -204,7 +204,7 @@ function toggleCamera() {
 }
 ```
 
-相机预览使用居中裁剪方式铺满组件；当相机画面和组件宽高比不一致时，两侧画面可能被裁掉，但不会再出现上下黑边。
+相机预览使用居中裁剪方式铺满组件；分析分辨率固定采用普通的 4:3 模式。当相机画面和组件宽高比不一致时，两侧画面可能被裁掉，但不会再出现上下黑边。
 
 需要显示圆形遮罩和原生提示时，将 `showFaceCover` 设为 `true`。标准模式模板中可写为 `:show-face-cover="true"`，兼容模式可写为 `:showFaceCover="true"`。
 

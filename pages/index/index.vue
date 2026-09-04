@@ -64,7 +64,6 @@
 					0,
 					0.12,
 					-1,
-					false,
 					(result) => {
 						this.captureFaceCount++
 						this.faceAIResult = `持续抓拍 #${this.captureFaceCount}\n` +

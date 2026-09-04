@@ -25,7 +25,6 @@ export function captureFaceByCamera(
     cameraId: number,
     linearZoom: number,
     rotationDegrees: number,
-    cameraSizeHigh: boolean,
     callback: (result: CaptureFaceResult) => void,
     errorCallback: (error: CaptureFaceError) => void
 ): void {
@@ -53,7 +52,6 @@ export function captureFaceByCamera(
         intent.putExtra("CAPTURE_FACE_CAMERA_ID", cameraId.toInt())
         intent.putExtra("CAPTURE_FACE_LINEAR_ZOOM", linearZoom.toFloat())
         intent.putExtra("CAPTURE_FACE_ROTATION_DEGREES", rotationDegrees.toInt())
-        intent.putExtra("CAPTURE_FACE_CAMERA_SIZE_HIGH", cameraSizeHigh)
         context.startActivity(intent)
     })
 }
@@ -112,16 +110,14 @@ export class CaptureFaceViewContext {
         needLivenessCheck: boolean,
         cameraId: number,
         linearZoom: number,
-        rotationDegrees: number,
-        cameraSizeHigh: boolean
+        rotationDegrees: number
     ): void {
         this.nativeView.start(
             performanceMode.toInt(),
             needLivenessCheck,
             cameraId.toInt(),
             linearZoom.toFloat(),
-            rotationDegrees.toInt(),
-            cameraSizeHigh
+            rotationDegrees.toInt()
         )
     }
 

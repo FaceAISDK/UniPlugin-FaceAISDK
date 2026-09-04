@@ -25,7 +25,6 @@ public class CaptureFaceActivity extends AbsBaseActivity {
     public static final String CAMERA_ID = "CAPTURE_FACE_CAMERA_ID";
     public static final String LINEAR_ZOOM = "CAPTURE_FACE_LINEAR_ZOOM";
     public static final String ROTATION_DEGREES = "CAPTURE_FACE_ROTATION_DEGREES";
-    public static final String CAMERA_SIZE_HIGH = "CAPTURE_FACE_CAMERA_SIZE_HIGH";
     private static final String STATE_CAMERA_ID = "capture_face_state_camera_id";
 
     private CaptureFaceNativeView captureFaceView;
@@ -34,7 +33,6 @@ public class CaptureFaceActivity extends AbsBaseActivity {
     private int cameraId = 0;
     private float linearZoom = 0.12f;
     private int rotationDegrees = -1;
-    private boolean cameraSizeHigh = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -135,8 +133,7 @@ public class CaptureFaceActivity extends AbsBaseActivity {
                     needLivenessCheck,
                     cameraId,
                     linearZoom,
-                    rotationDegrees,
-                    cameraSizeHigh
+                    rotationDegrees
             );
         }
     }
@@ -174,7 +171,6 @@ public class CaptureFaceActivity extends AbsBaseActivity {
         cameraId = intent.getIntExtra(CAMERA_ID, cameraId);
         linearZoom = intent.getFloatExtra(LINEAR_ZOOM, linearZoom);
         rotationDegrees = intent.getIntExtra(ROTATION_DEGREES, rotationDegrees);
-        cameraSizeHigh = intent.getBooleanExtra(CAMERA_SIZE_HIGH, cameraSizeHigh);
     }
 
     private int dp(int value) {

@@ -29,10 +29,6 @@ export default {
       type: Number,
       default: -1
     },
-    cameraSizeHigh: {
-      type: Boolean,
-      default: false
-    },
     showFaceCover: {
       type: Boolean,
       default: false
@@ -95,8 +91,7 @@ export default {
         this.needLivenessCheck,
         this.cameraId.toInt(),
         this.linearZoom.toFloat(),
-        this.rotationDegrees.toInt(),
-        this.cameraSizeHigh
+        this.rotationDegrees.toInt()
       )
     },
     stop() {

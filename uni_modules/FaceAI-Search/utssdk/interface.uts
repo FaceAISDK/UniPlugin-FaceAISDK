@@ -40,7 +40,6 @@ export type CaptureFaceCameraChange = {
  * @param cameraId 0 前置、1 后置；不存在时自动降级到可用摄像头
  * @param linearZoom 线性变焦，范围 0~1
  * @param rotationDegrees 画面旋转角度，-1 跟随当前显示方向，或固定为 0/90/180/270
- * @param cameraSizeHigh 是否启用 1280x720 高分辨率分析
  */
 export type CaptureFaceByCamera = (
   performanceMode: number,
@@ -48,7 +47,6 @@ export type CaptureFaceByCamera = (
   cameraId: number,
   linearZoom: number,
   rotationDegrees: number,
-  cameraSizeHigh: boolean,
   callback: (result: CaptureFaceResult) => void,
   errorCallback: (error: CaptureFaceError) => void
 ) => void
