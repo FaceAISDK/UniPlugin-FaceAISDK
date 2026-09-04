@@ -82,6 +82,17 @@ import {
   CaptureFaceCameraChange
 } from "@/uni_modules/FaceAI-Search"
 
+function readStoredBoolean(key: string): boolean {
+  const value = uni.getStorageSync(key)
+  if (typeof value == "boolean") {
+    return value as boolean
+  }
+  if (typeof value == "string") {
+    return (value as string) == "true"
+  }
+  return false
+}
+
 const CAMERA_PERMISSIONS: Array<string> = ["android.permission.CAMERA"]
 const CAMERA_PERMISSION_REQUESTED_KEY = "face_ai_camera_permission_requested"
 const CAMERA_PERMISSION_PERMANENTLY_DENIED_KEY = "face_ai_camera_permission_permanently_denied"
@@ -106,11 +117,6 @@ const currentCameraId = ref(0)
 let pageReady = false
 let pageActive = true
 let returningFromPermissionSettings = false
-
-function readStoredBoolean(key: string): boolean {
-  const value = uni.getStorageSync(key)
-  return value != null && (value as boolean)
-}
 
 function resetCaptureSessionState() {
   captureReady.value = false

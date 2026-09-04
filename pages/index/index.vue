@@ -1,21 +1,54 @@
 <template>
-	<view>
-		<button class="gray-button" @tap="faceSearchByCameraDemo">1:N相机人脸搜索识别</button>
-		<button class="gray-button" @tap="faceSearchByImageDemo">图片人脸搜索识别(Beta)</button>
-	
-		<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
-		<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>	
-		<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
-		<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
-		<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
-		<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
-		<button class="gray-button" @tap="captureFaceByCameraDemo">UTS API 全屏持续抓拍</button>
-		
-		<view class="result-box">
-		      <view> Email: FaceAISDK.Service@gmail.com</view>
-		       <scroll-view scroll-y="true" class="scroll-view-box">
-		       <text class="text-content">{{faceAIResult}}</text>
-		       </scroll-view>
+	<view
+		class="page"
+		:class="useWideLayout ? 'page-landscape' : 'page-portrait'"
+	>
+		<scroll-view
+			scroll-y="true"
+			class="menu-panel"
+			:class="useWideLayout ? 'menu-panel-landscape' : 'menu-panel-portrait'"
+		>
+			<view class="menu-content">
+				<view class="menu-section">
+					<text class="section-title">搜索与录入</text>
+					<view class="menu-buttons">
+						<button class="gray-button" @tap="faceSearchByCameraDemo">1:N相机人脸搜索识别</button>
+						<button class="gray-button" @tap="faceSearchByImageDemo">图片人脸搜索识别(Beta)</button>
+						<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
+						<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>
+					</view>
+				</view>
+
+				<view class="menu-section">
+					<text class="section-title">特征管理</text>
+					<view class="menu-buttons">
+						<button class="gray-button" @tap="deleteFaceSearchFeatureDemo">删除人脸搜索特征值</button>
+						<button class="gray-button" @tap="queryFaceSearchFeatureDemo">查询人脸搜索特征值</button>
+						<button class="gray-button" @tap="insertFaceSearchFeatureDemo">同步人脸搜索特征值</button>
+						<button class="gray-button" @tap="insertManyFaceFeatureSDemo">批量同步人脸搜索特征值</button>
+					</view>
+				</view>
+
+				<view class="menu-section">
+					<text class="section-title">抓拍能力</text>
+					<view class="menu-buttons">
+						<button class="gray-button" @tap="captureFaceByCameraDemo">UTS API 全屏持续抓拍</button>
+					</view>
+				</view>
+			</view>
+		</scroll-view>
+
+		<view
+			class="result-box"
+			:class="useWideLayout ? 'result-box-landscape' : 'result-box-portrait'"
+		>
+			<view class="result-header">
+				<text class="result-title">运行结果</text>
+				<text class="result-email">FaceAISDK.Service@gmail.com</text>
+			</view>
+			<scroll-view scroll-y="true" class="scroll-view-box">
+				<text class="text-content">{{faceAIResult}}</text>
+			</scroll-view>
 		</view>
 	</view>
 </template>
@@ -48,12 +81,17 @@
 				faceFeature: 'faceFeature is a string with lenth 1024',
 			faceAIResult: 'faceAIResult',
 			captureFaceCount: 0,
+				useWideLayout: false,
 				base64FaceSearch: base64FaceSearch,
 				base64FaceImage: base64FaceImage  //建议640*480 人脸图需要遵守规范：https://i.postimg.cc/RCwNy0kV/add-Face.jpg
 			}
 		},
 		onLoad() {
-
+			const windowInfo = uni.getWindowInfo()
+			this.useWideLayout = windowInfo.windowWidth > windowInfo.windowHeight && windowInfo.windowWidth >= 600
+		},
+		onResize(options) {
+			this.useWideLayout = options.size.windowWidth > options.size.windowHeight && options.size.windowWidth >= 600
 		},
 		
 		methods: {
@@ -284,31 +322,130 @@
 </script>
 
 <style>
-    /* 给滚动区域一个固定高度和边框 */
-    .result-box {
-        margin: 20rpx;
-    }
-    
-    .scroll-view-box {
-        height: 400rpx;
-        border: 1px solid #ccc;
-        border-radius: 10rpx;
-        background-color: #f8f8f8;
-        padding: 15rpx;
-        box-sizing: border-box;
-    }
+	.page {
+		display: flex;
+		min-width: 0;
+		min-height: 100vh;
+		padding: 12px;
+		box-sizing: border-box;
+		background-color: #ffffff;
+	}
 
-    .text-content {
-        font-size: 28rpx;
-        color: #333;
-        white-space: pre-wrap;
-    }
-</style>
+	.page-portrait {
+		flex-direction: column;
+	}
 
-<style>
-    .gray-button {
-    	background-color: #ffffff;
-    	color: #800080;
-    	border: none;
-    }
+	.page-landscape {
+		flex-direction: row;
+		height: 100vh;
+		min-height: 0;
+	}
+
+	.menu-panel {
+		min-width: 0;
+		min-height: 0;
+	}
+
+	.menu-panel-portrait {
+		height: 420px;
+		flex-shrink: 0;
+	}
+
+	.menu-panel-landscape {
+		width: 58%;
+		flex-shrink: 0;
+	}
+
+	.menu-content {
+		padding-right: 4px;
+		padding-bottom: 8px;
+		padding-left: 4px;
+	}
+
+	.menu-section {
+		margin-bottom: 8px;
+	}
+
+	.section-title {
+		display: block;
+		margin: 2px 6px;
+		color: #6f6472;
+		font-size: 14px;
+		line-height: 22px;
+	}
+
+	.menu-buttons {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.gray-button {
+		flex: 1;
+		min-width: 320px;
+		height: 44px;
+		margin: 4px;
+		padding: 0 12px;
+		border: 1px solid #eadfea;
+		border-radius: 8px;
+		background-color: #faf7fa;
+		color: #800080;
+		font-size: 18px;
+		line-height: 44px;
+	}
+
+	.result-box {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		min-height: 0;
+		padding: 12px;
+		border: 1px solid #d8d8d8;
+		border-radius: 10px;
+		box-sizing: border-box;
+		background-color: #f8f8f8;
+	}
+
+	.result-box-portrait {
+		flex: 1;
+		min-height: 180px;
+		margin-top: 12px;
+	}
+
+	.result-box-landscape {
+		flex: 1;
+		margin-left: 12px;
+	}
+
+	.result-header {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px;
+	}
+
+	.result-title {
+		color: #333333;
+		font-size: 16px;
+		font-weight: bold;
+	}
+
+	.result-email {
+		color: #777777;
+		font-size: 12px;
+	}
+
+	.scroll-view-box {
+		flex: 1;
+		min-height: 0;
+		width: 100%;
+	}
+
+	.text-content {
+		color: #333333;
+		font-size: 18px;
+		line-height: 26px;
+		white-space: pre-wrap;
+	}
 </style>
