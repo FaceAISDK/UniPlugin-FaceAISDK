@@ -1,39 +1,64 @@
 <template>
   <view class="page">
-    <view v-if="cameraPermissionGranted" class="native-view-hint">
-      <text class="native-view-hint-text">{{ captureTipText }}</text>
-    </view>
+    <view
+      v-if="cameraPermissionGranted"
+      class="capture-layout"
+      :class="useWideLayout ? 'capture-layout-landscape' : 'capture-layout-portrait'"
+    >
+      <view class="preview-panel">
+        <view class="native-view-hint">
+          <text class="native-view-hint-text">{{ captureTipText }}</text>
+        </view>
 
-    <view v-if="cameraPermissionGranted" class="native-view-frame">
-      <face-ai-capture
-        class="capture-view"
-        :performance-mode="1"
-        :need-liveness-check="true"
-        :camera-id="0"
-        :linear-zoom="0.12"
-        :rotation-degrees="0"
-        :camera-size-high="false"
-        :auto-start="true"
-        @ready="onCaptureReady"
-        @result="onCaptureResult"
-        @tips="onCaptureTips"
-        @error="onCaptureError"
-      />
+        <view class="native-view-frame">
+          <face-ai-capture
+            ref="captureComponentRef"
+            class="capture-view"
+            :performance-mode="1"
+            :need-liveness-check="true"
+            :camera-id="0"
+            :linear-zoom="0.12"
+            :rotation-degrees="-1"
+            :camera-size-high="false"
+            :auto-start="false"
+            @ready="onCaptureReady"
+            @result="onCaptureResult"
+            @tips="onCaptureTips"
+            @error="onCaptureError"
+            @camera-change="onCameraChange"
+          />
+        </view>
+      </view>
+
+      <view
+        class="status-panel"
+        :class="useWideLayout ? 'status-panel-landscape' : 'status-panel-portrait'"
+      >
+        <text class="status-text">{{ statusText }}</text>
+        <text class="status-text">抓拍次数：{{ captureCount }}</text>
+        <text class="status-text">静默活体分数：{{ silentScore }}</text>
+        <text class="status-text">当前相机：{{ currentCameraId == 0 ? '前置' : '后置' }}</text>
+        <view class="control-row">
+          <button
+            class="control-button control-button-primary"
+            :disabled="!captureReady || captureInProgress"
+            @tap="startOrRetryCapture"
+          >{{ captureButtonText }}</button>
+          <button
+            class="control-button control-button-secondary"
+            :disabled="!captureReady || !captureStarted"
+            @tap="toggleCamera"
+          >切换前后相机</button>
+        </view>
+      </view>
     </view>
 
     <view v-else class="permission-panel">
       <text class="permission-title">需要相机权限</text>
-      <text class="permission-description">授权后会在当前页面启动标准模式人脸持续抓拍组件。</text>
+      <text class="permission-description">授权后可在当前页面手动启动标准模式人脸抓拍组件。</text>
       <button v-if="permissionPermanentlyDenied" class="action-button" @tap="openPermissionSettings">打开权限设置</button>
       <button v-else class="action-button" @tap="requestCameraPermission">授权并开始</button>
-    </view>
-
-    <view v-if="cameraPermissionGranted" class="non-native-spacer"></view>
-
-    <view class="status-panel">
-      <text class="status-text">{{ statusText }}</text>
-      <text class="status-text">抓拍次数：{{ captureCount }}</text>
-      <text class="status-text">静默活体分数：{{ silentScore }}</text>
+      <text class="permission-status">{{ statusText }}</text>
     </view>
   </view>
 </template>
@@ -42,26 +67,46 @@
 import {
   CaptureFaceResult,
   CaptureFaceTips,
-  CaptureFaceError
+  CaptureFaceError,
+  CaptureFaceCameraChange
 } from "@/uni_modules/FaceAI-Search"
 
 const CAMERA_PERMISSIONS: Array<string> = ["android.permission.CAMERA"]
+const captureComponentRef = ref<ComponentPublicInstance | null>(null)
 const cameraPermissionGranted = ref(false)
 const permissionPermanentlyDenied = ref(false)
 const captureCount = ref(0)
 const silentScore = ref(0.0)
 const statusText = ref("正在检查相机权限…")
 const captureTipText = ref("请摆正头部并将人脸置于取景框内")
+const useWideLayout = ref(false)
+const captureReady = ref(false)
+const captureStarted = ref(false)
+const captureInProgress = ref(false)
+const captureButtonText = ref("开始抓拍")
+const currentCameraId = ref(0)
+
+function updateLayout(width: number, height: number) {
+  useWideLayout.value = width > height && width >= 600
+}
 
 function onCaptureReady() {
-  statusText.value = "标准模式组件已就绪"
-  captureTipText.value = "请摆正头部并将人脸置于取景框内"
+  captureReady.value = true
+  captureStarted.value = false
+  captureInProgress.value = false
+  captureButtonText.value = "开始抓拍"
+  currentCameraId.value = 0
+  statusText.value = "标准模式组件已就绪，点击“开始抓拍”"
+  captureTipText.value = "点击按钮后请摆正头部并将人脸置于取景框内"
 }
 
 function onCaptureResult(result: CaptureFaceResult) {
   captureCount.value++
   silentScore.value = result.silentScore
-  statusText.value = `持续抓拍成功，裁剪图 ${result.croppedBase64.length} 字符，原图 ${result.originBase64.length} 字符`
+  captureInProgress.value = false
+  captureButtonText.value = "再次抓拍"
+  captureTipText.value = "已暂停检测，点击“再次抓拍”调用 retry()"
+  statusText.value = `单次抓拍成功，裁剪图 ${result.croppedBase64.length} 字符，原图 ${result.originBase64.length} 字符`
 }
 
 function onCaptureTips(tips: CaptureFaceTips) {
@@ -72,9 +117,49 @@ function onCaptureTips(tips: CaptureFaceTips) {
 function onCaptureError(error: CaptureFaceError) {
   captureTipText.value = error.message
   statusText.value = `错误 ${error.code}：${error.message}`
+  if (error.code != "CAMERA_NOT_AVAILABLE" && error.code != "CAMERA_SWITCH_FAILED") {
+    captureInProgress.value = false
+    if (error.code == "BITMAP_ENCODE_FAILED") {
+      captureButtonText.value = "再次抓拍"
+    } else {
+      captureStarted.value = false
+      captureButtonText.value = "重新开始"
+    }
+  }
   if (error.code == "CAMERA_PERMISSION_REQUIRED") {
     cameraPermissionGranted.value = false
+    captureReady.value = false
+    captureStarted.value = false
   }
+}
+
+function onCameraChange(result: CaptureFaceCameraChange) {
+  currentCameraId.value = result.cameraId
+  statusText.value = `已切换到${result.cameraId == 0 ? '前置' : '后置'}相机`
+}
+
+function startOrRetryCapture() {
+  const component = captureComponentRef.value
+  if (component == null || !captureReady.value || captureInProgress.value) return
+
+  if (captureStarted.value) {
+    component.$callMethod("retry")
+    statusText.value = "已调用 retry()，正在等待下一帧…"
+  } else {
+    component.$callMethod("start")
+    captureStarted.value = true
+    statusText.value = "已调用 start()，正在等待第一帧…"
+  }
+  captureInProgress.value = true
+  captureButtonText.value = "抓拍中…"
+  captureTipText.value = "请摆正头部并将人脸置于取景框内"
+}
+
+function toggleCamera() {
+  const component = captureComponentRef.value
+  if (component == null || !captureReady.value || !captureStarted.value) return
+  component.$callMethod("toggleCamera")
+  statusText.value = "正在切换前后相机…"
 }
 
 function refreshCameraPermission() {
@@ -131,6 +216,8 @@ function openPermissionSettings() {
 }
 
 onReady(() => {
+  const windowInfo = uni.getWindowInfo()
+  updateLayout(windowInfo.windowWidth, windowInfo.windowHeight)
   refreshCameraPermission()
   if (!cameraPermissionGranted.value) {
     requestCameraPermission()
@@ -140,6 +227,10 @@ onReady(() => {
 onShow(() => {
   refreshCameraPermission()
 })
+
+onResize((options: OnResizeOptions) => {
+  updateLayout(options.size.windowWidth, options.size.windowHeight)
+})
 </script>
 
 <style>
@@ -148,25 +239,46 @@ onShow(() => {
   background-color: #1677ff;
 }
 
+.capture-layout {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.capture-layout-portrait {
+  flex-direction: column;
+}
+
+.capture-layout-landscape {
+  flex-direction: row;
+}
+
+.preview-panel {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
 .native-view-hint {
   width: 100%;
   box-sizing: border-box;
-  padding: 16rpx 24rpx;
+  padding: 8px 12px;
   background-color: #1677ff;
 }
 
 .native-view-hint-text {
   color: #ffffff;
-  font-size: 26rpx;
+  font-size: 13px;
   text-align: center;
 }
 
 .native-view-frame {
-  height: 1040rpx;
-  flex-shrink: 0;
-  margin-top: 16rpx;
-  margin-right: 40rpx;
-  margin-left: 40rpx;
+  flex: 1;
+  min-height: 0;
+  margin-top: 8px;
+  margin-right: 20px;
+  margin-bottom: 12px;
+  margin-left: 20px;
   overflow: hidden;
 }
 
@@ -176,46 +288,88 @@ onShow(() => {
   background-color: #000000;
 }
 
-.non-native-spacer {
-  flex: 1;
-  background-color: #1677ff;
-}
-
 .permission-panel {
   flex: 1;
   align-items: center;
   justify-content: center;
-  padding: 48rpx;
+  padding: 24px;
   background-color: #1677ff;
 }
 
 .permission-title {
   color: #ffffff;
-  font-size: 36rpx;
+  font-size: 18px;
   font-weight: bold;
 }
 
 .permission-description {
-  margin-top: 24rpx;
+  margin-top: 12px;
   color: #cccccc;
-  font-size: 28rpx;
+  font-size: 14px;
   text-align: center;
 }
 
 .action-button {
-  margin-top: 40rpx;
+  margin-top: 20px;
   color: #ffffff;
   background-color: #136918;
 }
 
+.permission-status {
+  margin-top: 12px;
+  color: #ffffff;
+  font-size: 12px;
+  text-align: center;
+}
+
 .status-panel {
-  padding: 20rpx 24rpx;
+  box-sizing: border-box;
+  padding: 10px 12px;
   background-color: #1677ff;
+}
+
+.status-panel-portrait {
+  flex-shrink: 0;
+}
+
+.status-panel-landscape {
+  width: 280px;
+  flex-shrink: 0;
+  justify-content: center;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: #4b95ff;
+  padding-right: 20px;
+  padding-left: 20px;
 }
 
 .status-text {
   color: #ffffff;
-  font-size: 24rpx;
-  line-height: 36rpx;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.control-row {
+  flex-direction: row;
+  margin-top: 12px;
+}
+
+.control-button {
+  flex: 1;
+  height: 40px;
+  margin: 0;
+  padding: 0 8px;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 40px;
+}
+
+.control-button-primary {
+  background-color: #136918;
+}
+
+.control-button-secondary {
+  margin-left: 8px;
+  background-color: #465362;
 }
 </style>

@@ -27,7 +27,7 @@ export default {
     },
     rotationDegrees: {
       type: Number,
-      default: 0
+      default: -1
     },
     cameraSizeHigh: {
       type: Boolean,

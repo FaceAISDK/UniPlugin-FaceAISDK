@@ -7,6 +7,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 import com.ai.face.base.addFace.CaptureFaceDispose;
 import com.faceAI.demo.R;
 import com.faceAI.demo.base.AbsBaseActivity;
@@ -22,13 +26,14 @@ public class CaptureFaceActivity extends AbsBaseActivity {
     public static final String LINEAR_ZOOM = "CAPTURE_FACE_LINEAR_ZOOM";
     public static final String ROTATION_DEGREES = "CAPTURE_FACE_ROTATION_DEGREES";
     public static final String CAMERA_SIZE_HIGH = "CAPTURE_FACE_CAMERA_SIZE_HIGH";
+    private static final String STATE_CAMERA_ID = "capture_face_state_camera_id";
 
     private CaptureFaceNativeView captureFaceView;
     private int performanceMode = CaptureFaceDispose.PERFORMANCE_MODE_FAST;
     private boolean needLivenessCheck = true;
     private int cameraId = 0;
     private float linearZoom = 0.12f;
-    private int rotationDegrees = 0;
+    private int rotationDegrees = -1;
     private boolean cameraSizeHigh = false;
 
     @Override
@@ -36,15 +41,25 @@ public class CaptureFaceActivity extends AbsBaseActivity {
         super.onCreate(savedInstanceState);
         hideSystemUI();
         readOptions(getIntent());
+        if (savedInstanceState != null) {
+            cameraId = savedInstanceState.getInt(STATE_CAMERA_ID, cameraId);
+        }
 
         FrameLayout root = new FrameLayout(this);
         captureFaceView = new CaptureFaceNativeView(this);
         captureFaceView.setResultCallback((croppedBase64, silentScore, originBase64) -> {
-            CaptureFaceResultManager.INSTANCE.sendResult(
-                    croppedBase64,
-                    silentScore,
-                    originBase64
-            );
+            try {
+                CaptureFaceResultManager.INSTANCE.sendResult(
+                        croppedBase64,
+                        silentScore,
+                        originBase64
+                );
+            } finally {
+                // 全屏 API 仍保持持续结果流；嵌入组件由业务端显式调用 retry()。
+                if (captureFaceView != null) {
+                    captureFaceView.retry();
+                }
+            }
             return kotlin.Unit.INSTANCE;
         });
         captureFaceView.setErrorCallback((code, message) -> {
@@ -84,7 +99,30 @@ public class CaptureFaceActivity extends AbsBaseActivity {
         switchParams.setMargins(0, dp(22), dp(15), 0);
         root.addView(switchButton, switchParams);
 
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+            closeParams.setMargins(
+                    dp(15) + safeInsets.left,
+                    dp(15) + safeInsets.top,
+                    0,
+                    0
+            );
+            closeButton.setLayoutParams(closeParams);
+            switchParams.setMargins(
+                    0,
+                    dp(22) + safeInsets.top,
+                    dp(15) + safeInsets.right,
+                    0
+            );
+            switchButton.setLayoutParams(switchParams);
+            return windowInsets;
+        });
+
         setContentView(root);
+        ViewCompat.requestApplyInsets(root);
     }
 
     @Override
@@ -111,12 +149,20 @@ public class CaptureFaceActivity extends AbsBaseActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(STATE_CAMERA_ID, cameraId);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onDestroy() {
         if (captureFaceView != null) {
             captureFaceView.release();
             captureFaceView = null;
         }
-        CaptureFaceResultManager.INSTANCE.clear();
+        if (!isChangingConfigurations()) {
+            CaptureFaceResultManager.INSTANCE.clear();
+        }
         super.onDestroy();
     }
 

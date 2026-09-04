@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.graphics.Matrix
 import android.graphics.Color
+import android.hardware.display.DisplayManager
 import android.os.Looper
 import android.util.Log
 import android.util.Size
@@ -50,6 +51,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     private val analysisExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val resultExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val encodingResult = AtomicBoolean(false)
+    private val waitingForRetry = AtomicBoolean(false)
 
     @Volatile
     private var cameraProvider: ProcessCameraProvider? = null
@@ -68,7 +70,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     @Volatile
     private var cameraId = CameraSelector.LENS_FACING_FRONT
     private var linearZoom = 0.12f
-    private var rotationDegrees = 0
+    private var rotationDegrees = AUTO_ROTATION_DEGREES
     private var cameraSizeHigh = false
     private var started = false
     private var released = false
@@ -77,6 +79,22 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     private var previewStreaming = false
     private var previewFallbackTried = false
     private var cameraBindingGeneration = 0L
+    private val displayManager =
+        context.getSystemService(Context.DISPLAY_SERVICE) as? DisplayManager
+    private var displayListenerRegistered = false
+
+    private val displayListener = object : DisplayManager.DisplayListener {
+        override fun onDisplayAdded(displayId: Int) = Unit
+
+        override fun onDisplayRemoved(displayId: Int) = Unit
+
+        override fun onDisplayChanged(displayId: Int) {
+            val currentDisplay = previewView.display ?: return
+            if (currentDisplay.displayId == displayId) {
+                runOnMainThread { updateUseCaseTargetRotation() }
+            }
+        }
+    }
 
     private val startOnLayoutListener = object : View.OnLayoutChangeListener {
         override fun onLayoutChange(
@@ -132,15 +150,16 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     }
 
     /**
-     * 开始持续抓拍。重复调用会先结束上一轮，再使用新参数重新绑定相机。
+     * 开始一次抓拍会话。成功后会暂停检测，调用 retry() 才会进入下一轮。
+     * 重复调用会先结束上一轮，再使用新参数重新绑定相机。
      */
     @JvmOverloads
     fun start(
-        performanceMode: Int = CaptureFaceDispose.PERFORMANCE_MODE_FAST,
+        performanceMode: Int = CaptureFaceDispose.PERFORMANCE_MODE_EASY,
         needLivenessCheck: Boolean = true,
         cameraId: Int = CameraSelector.LENS_FACING_FRONT,
         linearZoom: Float = 0.12f,
-        rotationDegrees: Int = 0,
+        rotationDegrees: Int = AUTO_ROTATION_DEGREES,
         cameraSizeHigh: Boolean = false
     ) {
         if (released) {
@@ -157,6 +176,14 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
 
         if (!isSupportedCameraId(cameraId)) {
             notifyError("INVALID_CAMERA_ID", "cameraId must be 0 (front) or 1 (back)")
+            return
+        }
+
+        if (!isSupportedRotationDegrees(rotationDegrees)) {
+            notifyError(
+                "INVALID_ROTATION_DEGREES",
+                "rotationDegrees must be -1 (auto), 0, 90, 180 or 270"
+            )
             return
         }
 
@@ -193,10 +220,12 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
 
         stopInternal()
         this.started = true
+        registerDisplayListener()
         previewStreaming = false
         previewFallbackTried = false
         previewView.implementationMode = PreviewView.ImplementationMode.PERFORMANCE
         val currentSession = ++sessionId
+        waitingForRetry.set(false)
 
         // API、标准组件、兼容组件都可以独立作为第一个插件入口使用。
         FaceSDKConfig.init(context)
@@ -210,6 +239,8 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
                     silentScore: Float,
                     origin: android.graphics.Bitmap
                 ) {
+                    if (!started || released || currentSession != sessionId) return
+                    if (!waitingForRetry.compareAndSet(false, true)) return
                     encodeAndDispatch(currentSession, cropped, silentScore, origin)
                 }
 
@@ -244,8 +275,13 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     }
 
     fun retry() {
-        if (started && !released) {
-            faceDispose?.retry()
+        runOnMainThread {
+            if (
+                started && !released &&
+                waitingForRetry.compareAndSet(true, false)
+            ) {
+                faceDispose?.retry()
+            }
         }
     }
 
@@ -368,7 +404,7 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
             return false
         }
 
-        val surfaceRotation = toSurfaceRotation(rotationDegrees)
+        val surfaceRotation = resolveSurfaceRotation()
 
         val newPreview = Preview.Builder()
             .setTargetRotation(surfaceRotation)
@@ -549,19 +585,11 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
                             resultCallback?.invoke(croppedBase64, silentScore, originBase64)
                         } catch (e: Exception) {
                             Log.e(TAG, "Result callback failed", e)
-                        } finally {
-                            // 即使业务回调抛出异常，也要重新开放检测，保持持续结果流。
-                            faceDispose?.retry()
                         }
                     }
                 }
             } catch (e: Exception) {
                 notifyError("BITMAP_ENCODE_FAILED", e.message ?: "Bitmap Base64 encode failed")
-                post {
-                    if (started && !released && currentSession == sessionId) {
-                        faceDispose?.retry()
-                    }
-                }
             } finally {
                 encodingResult.set(false)
             }
@@ -570,11 +598,13 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
 
     private fun stopInternal() {
         started = false
+        unregisterDisplayListener()
         sessionId++
         cameraBindingGeneration++
         previewStreaming = false
         previewFallbackTried = false
         encodingResult.set(false)
+        waitingForRetry.set(false)
         try {
             (findActivity() as? LifecycleOwner)?.let { lifecycleOwner ->
                 previewView.previewStreamState.removeObservers(lifecycleOwner)
@@ -709,6 +739,36 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     private fun isSupportedCameraId(value: Int): Boolean =
         value == CameraSelector.LENS_FACING_FRONT || value == CameraSelector.LENS_FACING_BACK
 
+    private fun isSupportedRotationDegrees(value: Int): Boolean =
+        value == AUTO_ROTATION_DEGREES || value == 0 || value == 90 ||
+            value == 180 || value == 270
+
+    private fun registerDisplayListener() {
+        if (rotationDegrees != AUTO_ROTATION_DEGREES || displayListenerRegistered) return
+        displayManager?.registerDisplayListener(displayListener, null)
+        displayListenerRegistered = displayManager != null
+    }
+
+    private fun unregisterDisplayListener() {
+        if (!displayListenerRegistered) return
+        displayManager?.unregisterDisplayListener(displayListener)
+        displayListenerRegistered = false
+    }
+
+    private fun resolveSurfaceRotation(): Int {
+        if (rotationDegrees != AUTO_ROTATION_DEGREES) {
+            return toSurfaceRotation(rotationDegrees)
+        }
+        return previewView.display?.rotation ?: Surface.ROTATION_0
+    }
+
+    private fun updateUseCaseTargetRotation() {
+        if (!started || released || rotationDegrees != AUTO_ROTATION_DEGREES) return
+        val surfaceRotation = resolveSurfaceRotation()
+        boundPreview?.targetRotation = surfaceRotation
+        boundImageAnalysis?.targetRotation = surfaceRotation
+    }
+
     private fun runOnMainThread(action: () -> Unit) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             action()
@@ -753,5 +813,6 @@ class CaptureFaceNativeView(context: Context) : FrameLayout(context) {
     private companion object {
         const val TAG = "CaptureFaceNativeView"
         const val PREVIEW_START_TIMEOUT_MS = 2500L
+        const val AUTO_ROTATION_DEGREES = -1
     }
 }

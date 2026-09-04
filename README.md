@@ -38,13 +38,14 @@
 
   Powered by FaceAISDK Copyright©2026. **高精度版本联系 FaceAISDK.Service@gmail.com**
 
-## 持续抓拍能力
+## 人脸抓拍能力
 
-当前工程在原有人脸搜索 UTS API 基础上新增了三种持续抓拍入口：
+当前工程在原有人脸搜索 UTS API 基础上新增了三种抓拍入口：
 
 - `captureFaceByCamera`：全屏 UTS API，兼容 uni-app Vue 与 uni-app x uvue。
 - `<face-ai-capture>`：使用 `native-view` 的标准模式组件，面向 uni-app x。
 - `<face-ai-capture-compat>`：兼容模式组件，面向 app-nvue 和 uni-app x VDOM。
 
-三种入口都会持续返回 `croppedBase64`、`silentScore`、`originBase64`。完整参数和示例见 `uni_modules/FaceAI-Search/readme.md`。
+三种入口都会返回 `croppedBase64`、`silentScore`、`originBase64`。全屏 UTS API 保持连续回调；两种嵌入组件每次成功后会暂停，只有业务端显式调用 `retry()` 才会进入下一轮。完整参数和示例见 `uni_modules/FaceAI-Search/readme.md`。
 
+抓拍推荐使用 `rotationDegrees=-1` 自动跟随当前显示方向，两个组件也以此为默认值；Demo 已开启横竖屏自动旋转，并为手机、Android 平板和可调整大小窗口提供自适应抓拍布局。两个组件验收页均提供“开始/再次抓拍”和“切换前后相机”按钮。

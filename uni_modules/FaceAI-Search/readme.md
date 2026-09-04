@@ -48,7 +48,7 @@
 - `silentScore`：静默活体分数；仅在 `needLivenessCheck=true` 时有效。
 - `originBase64`：本次检测对应的相机原图 JPEG Data URL。
 
-结果完成 Base64 编码和业务回调后，插件会自动 `retry()`，因此可以持续接收；内部只允许一个结果进行编码，避免相机帧持续堆积导致内存上涨。
+标准模式和兼容模式组件在每次成功后会暂停检测，不会自动续拍；只有业务端显式调用 `retry()` 才会进入下一轮。全屏 UTS API 为保持原有连续抓拍语义，会由全屏 Activity 在每次结果回调后调用 `retry()`。内部只允许一个结果进行编码，避免相机帧堆积导致内存上涨。
 
 ### UTS API：全屏持续抓拍
 
@@ -66,7 +66,7 @@ captureFaceByCamera(
   true,   // needLivenessCheck
   0,      // cameraId: 0 前置、1 后置
   0.12,   // linearZoom: 0~1
-  0,      // rotationDegrees: 0/90/180/270
+  -1,     // rotationDegrees: -1 自动跟随屏幕，或固定为 0/90/180/270
   false,  // cameraSizeHigh
   (result: CaptureFaceResult) => {
     console.log(result.croppedBase64)
@@ -87,28 +87,46 @@ HBuilderX 4.31+ 可在 uvue 页面直接使用 easycom 组件：
 
 ```vue
 <template>
-  <face-ai-capture
-    style="width: 100%; height: 600px;"
-    :performance-mode="1"
-    :need-liveness-check="true"
-    :camera-id="0"
-    :auto-start="true"
-    @result="onResult"
-    @tips="onTips"
-    @error="onError"
-  />
+  <view style="flex: 1;">
+    <face-ai-capture
+      ref="captureRef"
+      style="width: 100%; flex: 1;"
+      :performance-mode="1"
+      :need-liveness-check="true"
+      :camera-id="0"
+      :rotation-degrees="-1"
+      :auto-start="false"
+      @result="onResult"
+      @tips="onTips"
+      @error="onError"
+    />
+    <button @tap="captureOnce">{{ started ? '再次抓拍' : '开始抓拍' }}</button>
+    <button @tap="toggleCamera">切换前后相机</button>
+  </view>
 </template>
 
 <script setup lang="uts">
 import { CaptureFaceResult } from "@/uni_modules/FaceAI-Search"
 
+const captureRef = ref<ComponentPublicInstance | null>(null)
+const started = ref(false)
+
 function onResult(result: CaptureFaceResult) {
   console.log(result.silentScore)
+}
+
+function captureOnce() {
+  captureRef.value?.$callMethod(started.value ? "retry" : "start")
+  started.value = true
+}
+
+function toggleCamera() {
+  captureRef.value?.$callMethod("toggleCamera")
 }
 </script>
 ```
 
-组件挂载前应确保相机权限已经授予。标准模式和兼容模式组件提供相同的参数、方法和事件。
+组件挂载前应确保相机权限已经授予，并确保父容器具有可用高度。标准模式和兼容模式组件提供相同的参数、方法和事件。
 
 #### 组件 Props
 
@@ -118,7 +136,7 @@ function onResult(result: CaptureFaceResult) {
 | `needLivenessCheck` | `boolean` | `true` | 是否计算静默活体分数 |
 | `cameraId` | `number` | `0` | 初始镜头：`0` 前置、`1` 后置；初始化时目标不存在会降级到可用镜头 |
 | `linearZoom` | `number` | `0.12` | 线性变焦，范围 `0~1` |
-| `rotationDegrees` | `number` | `0` | 画面旋转角度，支持 `0/90/180/270` |
+| `rotationDegrees` | `number` | `-1` | `-1` 自动跟随当前显示方向；也可固定为 `0/90/180/270` |
 | `cameraSizeHigh` | `boolean` | `false` | 是否使用 1280×720 高分辨率分析 |
 | `autoStart` | `boolean` | `true` | 原生 View 就绪后是否自动调用 `start()` |
 
@@ -128,12 +146,14 @@ function onResult(result: CaptureFaceResult) {
 | --- | --- | --- |
 | `start()` | `void` | 使用当前 Props 开始抓拍；重复调用会重启采集会话 |
 | `stop()` | `void` | 停止相机和抓拍会话 |
-| `retry()` | `void` | 手动允许 SDK 继续检测；正常结果回调后组件已自动调用 |
+| `retry()` | `void` | 每次成功后手动允许 SDK 进入下一轮；成功回调后组件不会自动调用 |
 | `switchCamera(cameraId)` | `void` | 运行期间切换到指定镜头，`0` 前置、`1` 后置 |
 | `toggleCamera()` | `void` | 运行期间在当前实际镜头与另一颗前/后镜头之间切换 |
 | `canSwitchCamera()` | `boolean` | CameraProvider 就绪且另一颗前/后镜头存在时返回 `true` |
 
 切换时只重绑 CameraX 的预览和分析用例，抓拍引擎保持运行。目标镜头不存在时保留当前预览并触发 `error`；绑定失败时会尝试恢复原镜头。
+
+`retry()` 只在上一次抓拍已经完成时生效；在正在检测时重复调用不会并发开启多轮抓拍。
 
 #### 组件事件与返回字段
 
@@ -155,17 +175,48 @@ function onResult(result: CaptureFaceResult) {
 
 ```vue
 <face-ai-capture-compat
-  style="width: 750rpx; height: 900rpx;"
+  style="width: 100%; height: 100%;"
   :performanceMode="1"
   :needLivenessCheck="true"
   :cameraId="0"
+  :rotationDegrees="-1"
   @result="onResult"
 />
 ```
+
+### 横竖屏与平板适配
+
+持续抓拍 API 传入 `rotationDegrees=-1` 时，CameraX 会跟随当前显示方向动态更新预览与分析帧；标准组件和兼容组件默认使用该模式。只有定制设备的摄像头方向与系统报告不一致时，才建议显式传入 `0/90/180/270`。
+
+uni-app x 项目需要在 `pages.json` 的 `globalStyle` 或相机所在页面的 `style` 中允许自动旋转：
+
+```json
+{
+  "globalStyle": {
+    "pageOrientation": "auto"
+  }
+}
+```
+
+传统 uni-app 项目还需要在 `manifest.json` 中声明 App 支持的方向：
+
+```json
+{
+  "app-plus": {
+    "screenOrientation": [
+      "portrait-primary",
+      "portrait-secondary",
+      "landscape-primary",
+      "landscape-secondary"
+    ]
+  }
+}
+```
+
+页面布局应根据可用窗口宽高自适应，不要为相机组件使用按屏幕宽度放大的固定 `rpx` 高度。Android 平板还应测试运行中旋转、分屏调整大小以及横屏正反方向。
 
 Android uvue 接收到的兼容模式事件参数是 `Map<string, any>`，可通过 `result.get("croppedBase64")`、`result.get("silentScore")`、`result.get("originBase64")` 读取；uni-app nvue 中按普通事件对象读取。
 
 兼容模式的 `tips`、`error`、`camera-change` 也使用 `Map<string, any>`，字段名与上表一致；标准模式事件直接返回对应的 UTS 类型对象。
 
 > 两张图片均进行 Base64 编码，单次结果数据量较大。持续场景中请及时消费结果，不要长期把所有 Base64 字符串保存在响应式数组里。
-

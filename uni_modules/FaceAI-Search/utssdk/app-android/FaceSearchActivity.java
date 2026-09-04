@@ -25,11 +25,15 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageProxy;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.ai.face.base.view.camera.CameraXBuilder;
 import com.ai.face.core.utils.FaceAICameraType;
 import com.ai.face.faceSearch.search.FaceSearchEngine;
@@ -111,6 +115,7 @@ public class FaceSearchActivity extends AbsBaseActivity {
         switchButton = findViewById(R.id.switch_button);
         graphicOverlay = findViewById(R.id.graphicOverlay);
         faceCover = findViewById(R.id.face_cover);
+        applySafeAreaInsets();
 
         // 3. 设置点击事件
         closeBtn.setOnClickListener(v -> finish());
@@ -270,6 +275,38 @@ public class FaceSearchActivity extends AbsBaseActivity {
 
     private void setSecondTips(int resId) {
         if (faceCover != null) faceCover.setSecondTipsText(resId);
+    }
+
+    private void applySafeAreaInsets() {
+        View root = findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+            boolean isRtl = ViewCompat.getLayoutDirection(view)
+                    == ViewCompat.LAYOUT_DIRECTION_RTL;
+            int startInset = isRtl ? safeInsets.right : safeInsets.left;
+            int endInset = isRtl ? safeInsets.left : safeInsets.right;
+
+            ViewGroup.MarginLayoutParams closeParams =
+                    (ViewGroup.MarginLayoutParams) closeBtn.getLayoutParams();
+            closeParams.setMarginStart(dp(7) + startInset);
+            closeParams.topMargin = dp(15) + safeInsets.top;
+            closeBtn.setLayoutParams(closeParams);
+
+            ViewGroup.MarginLayoutParams switchParams =
+                    (ViewGroup.MarginLayoutParams) switchButton.getLayoutParams();
+            switchParams.setMarginEnd(dp(15) + endInset);
+            switchParams.topMargin = dp(22) + safeInsets.top;
+            switchButton.setLayoutParams(switchParams);
+            return windowInsets;
+        });
+        ViewCompat.requestApplyInsets(root);
+    }
+
+    private int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 
     @Override
