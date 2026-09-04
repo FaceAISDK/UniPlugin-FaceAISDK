@@ -280,7 +280,8 @@ onResize((options: OnResizeOptions) => {
 
 .native-view-hint-text {
   color: #ffffff;
-  font-size: 13px;
+  font-size: 17px;
+  line-height: 22px;
   text-align: center;
 }
 
@@ -292,6 +293,7 @@ onResize((options: OnResizeOptions) => {
   margin-bottom: 12px;
   margin-left: 20px;
   overflow: hidden;
+  transform: scale(0.8);
 }
 
 .capture-view {
@@ -357,8 +359,8 @@ onResize((options: OnResizeOptions) => {
 
 .status-text {
   color: #ffffff;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 14.4px;
+  line-height: 21.6px;
 }
 
 .control-row {
