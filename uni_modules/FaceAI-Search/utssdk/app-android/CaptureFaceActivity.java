@@ -18,6 +18,7 @@ import com.faceAI.demo.base.AbsBaseActivity;
 /**
  * UTS API 使用的全屏持续人脸抓拍页面。
  * 具体相机和抓拍能力由 CaptureFaceNativeView 提供，保证与两种组件入口行为一致。
+ * @author FaceAISDK.Service@gmail.com
  */
 public class CaptureFaceActivity extends AbsBaseActivity {
     public static final String PERFORMANCE_MODE = "CAPTURE_FACE_PERFORMANCE_MODE";

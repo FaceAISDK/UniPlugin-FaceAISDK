@@ -44,7 +44,8 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * 可嵌入页面的 1:N 相机人脸搜索 View，供标准模式和兼容模式组件共用。
+ * 可嵌入页面的 1:N 相机人脸搜索 View，供标准模式和兼容模式组件共用
+ * @author FaceAISDK.Service@gmail.com
  */
 @Keep
 class FaceSearchNativeView(context: Context) : FrameLayout(context) {

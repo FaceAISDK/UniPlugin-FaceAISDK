@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * View 自己持有 CameraX 预览、帧分析和人脸抓拍生命周期，避免组件入口依赖
  * FragmentContainerView 或宿主页面的 FragmentManager。
+ * @author FaceAISDK.Service@gmail.com
  */
 @Keep
 class CaptureFaceNativeView(context: Context) : FrameLayout(context) {

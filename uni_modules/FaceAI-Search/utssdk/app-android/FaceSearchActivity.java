@@ -55,6 +55,7 @@ import java.util.List;
  * RGB摄像头动作活体检测+1:N 人脸搜索识别。
  * <p>
  * 采用传统 findViewById 方式，适配 HBuilder 云打包环境。
+ * @author FaceAISDK.Service@gmail.com
  */
 public class FaceSearchActivity extends AbsBaseActivity {
     public static final String THRESHOLD_KEY = "THRESHOLD_KEY";
