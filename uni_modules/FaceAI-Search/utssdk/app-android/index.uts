@@ -1,4 +1,14 @@
-import { ResultJSON, CaptureFaceResult, CaptureFaceTips, CaptureFaceError, CaptureFaceCameraChange } from '../interface.uts'
+import {
+    ResultJSON,
+    CaptureFaceResult,
+    CaptureFaceTips,
+    CaptureFaceError,
+    CaptureFaceCameraChange,
+    FaceSearchResult,
+    FaceSearchTips,
+    FaceSearchError,
+    FaceSearchCameraChange
+} from '../interface.uts'
 import Application from 'android.app.Application';
 import Activity from 'android.app.Activity';
 import Intent from 'android.content.Intent';
@@ -8,6 +18,7 @@ import FaceSearchActivity from "uts.sdk.modules.uniFaceAISDK.FaceSearchActivity"
 import FaceResultManager from "uts.sdk.modules.uniFaceAISDK.FaceResultManager";
 import CaptureFaceActivity from "uts.sdk.modules.uniFaceAISDK.CaptureFaceActivity";
 import CaptureFaceNativeView from "uts.sdk.modules.uniFaceAISDK.CaptureFaceNativeView";
+import FaceSearchNativeView from "uts.sdk.modules.uniFaceAISDK.FaceSearchNativeView";
 import CaptureFaceResultManager from "uts.sdk.modules.uniFaceAISDK.CaptureFaceResultManager";
 import System from 'java.lang.System';
 import AddFaceFeatureActivity from "com.faceAI.demo.SysCamera.addFace.AddFaceFeatureActivity";
@@ -127,6 +138,94 @@ export class CaptureFaceViewContext {
 
     retry(): void {
         this.nativeView.retry()
+    }
+
+    switchCamera(cameraId: number): void {
+        this.nativeView.switchCamera(cameraId.toInt())
+    }
+
+    toggleCamera(): void {
+        this.nativeView.toggleCamera()
+    }
+
+    canSwitchCamera(): boolean {
+        return this.nativeView.canSwitchCamera()
+    }
+
+    destroy(): void {
+        this.nativeView.release()
+    }
+}
+
+/** 标准模式组件对 FaceSearchNativeView 的实例封装。 */
+export class FaceSearchViewContext {
+    private element: UniNativeViewElement
+    private nativeView: FaceSearchNativeView
+
+    constructor(element: UniNativeViewElement) {
+        this.element = element
+        this.nativeView = new FaceSearchNativeView(element.getAndroidActivity()!)
+        this.element.bindAndroidView(this.nativeView)
+    }
+
+    setResultCallback(callback: (result: FaceSearchResult) => void): void {
+        this.nativeView.setResultCallback((
+            matchesJson: string,
+            liveness: number,
+            base64: string
+        ) => {
+            callback({
+                matchesJson: matchesJson,
+                liveness: liveness,
+                base64: base64
+            } as FaceSearchResult)
+        })
+    }
+
+    setTipsCallback(callback: (tips: FaceSearchTips) => void): void {
+        this.nativeView.setTipsCallback((code: number, message: string) => {
+            callback({ code: code, message: message } as FaceSearchTips)
+        })
+    }
+
+    setErrorCallback(callback: (error: FaceSearchError) => void): void {
+        this.nativeView.setErrorCallback((code: string, message: string) => {
+            callback({ code: code, message: message } as FaceSearchError)
+        })
+    }
+
+    setCameraChangedCallback(callback: (result: FaceSearchCameraChange) => void): void {
+        this.nativeView.setCameraChangedCallback((cameraId: number) => {
+            callback({ cameraId: cameraId } as FaceSearchCameraChange)
+        })
+    }
+
+    setFaceCoverVisible(visible: boolean): void {
+        this.nativeView.setFaceCoverVisible(visible)
+    }
+
+    start(
+        searchThreshold: number,
+        searchOneTime: boolean,
+        searchTimeOut: number,
+        needLivenessCheck: boolean,
+        cameraId: number,
+        linearZoom: number,
+        rotationDegrees: number
+    ): void {
+        this.nativeView.start(
+            searchThreshold.toFloat(),
+            searchOneTime,
+            searchTimeOut.toInt(),
+            needLivenessCheck,
+            cameraId.toInt(),
+            linearZoom.toFloat(),
+            rotationDegrees.toInt()
+        )
+    }
+
+    stop(): void {
+        this.nativeView.stop()
     }
 
     switchCamera(cameraId: number): void {

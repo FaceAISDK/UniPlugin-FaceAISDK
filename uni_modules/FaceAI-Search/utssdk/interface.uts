@@ -33,6 +33,27 @@ export type CaptureFaceCameraChange = {
   cameraId: number
 }
 
+/** 可嵌入相机搜索组件的单次回调结果。 */
+export type FaceSearchResult = {
+  matchesJson: string,
+  liveness: number,
+  base64: string
+}
+
+export type FaceSearchTips = {
+  code: number,
+  message: string
+}
+
+export type FaceSearchError = {
+  code: string,
+  message: string
+}
+
+export type FaceSearchCameraChange = {
+  cameraId: number
+}
+
 /**
  * 打开全屏相机并持续返回符合要求的人脸。
  * @param performanceMode -1 无限制、0 简单、1 快速、2 精确

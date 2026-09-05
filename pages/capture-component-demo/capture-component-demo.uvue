@@ -38,6 +38,16 @@
         <text class="status-text">抓拍次数：{{ captureCount }}</text>
         <text class="status-text">静默活体分数：{{ silentScore }}</text>
         <text class="status-text">当前相机：{{ currentCameraId == 0 ? '前置' : '后置' }}</text>
+        <view v-if="croppedImageSrc.length > 0" class="result-image-row">
+          <view class="result-image-item">
+            <text class="result-image-title">裁剪图</text>
+            <image class="result-image" mode="aspectFit" :src="croppedImageSrc" />
+          </view>
+          <view class="result-image-item result-image-item-last">
+            <text class="result-image-title">相机原图</text>
+            <image class="result-image" mode="aspectFit" :src="originImageSrc" />
+          </view>
+        </view>
         <view class="control-row">
           <button
             class="control-button control-button-primary"
@@ -93,6 +103,10 @@ function readStoredBoolean(key: string): boolean {
   return false
 }
 
+function toImageSource(base64: string): string {
+  return base64.length == 0 ? "" : `data:image/jpeg;base64,${base64}`
+}
+
 const CAMERA_PERMISSIONS: Array<string> = ["android.permission.CAMERA"]
 const CAMERA_PERMISSION_REQUESTED_KEY = "face_ai_camera_permission_requested"
 const CAMERA_PERMISSION_PERMANENTLY_DENIED_KEY = "face_ai_camera_permission_permanently_denied"
@@ -106,6 +120,8 @@ const permissionDescriptionText = ref("相机仅用于本地人脸抓拍，图�
 const permissionActionText = ref("授权相机")
 const captureCount = ref(0)
 const silentScore = ref(0.0)
+const croppedImageSrc = ref("")
+const originImageSrc = ref("")
 const statusText = ref("正在检查相机权限…")
 const captureTipText = ref("请摆正头部并将人脸置于取景框内")
 const useWideLayout = ref(false)
@@ -124,6 +140,8 @@ function resetCaptureSessionState() {
   captureInProgress.value = false
   captureButtonText.value = "开始抓拍"
   currentCameraId.value = 0
+  croppedImageSrc.value = ""
+  originImageSrc.value = ""
 }
 
 function applyCameraPermissionGranted() {
@@ -187,6 +205,8 @@ function onCaptureReady() {
 function onCaptureResult(result: CaptureFaceResult) {
   captureCount.value++
   silentScore.value = result.silentScore
+  croppedImageSrc.value = toImageSource(result.croppedBase64)
+  originImageSrc.value = toImageSource(result.originBase64)
   captureInProgress.value = false
   captureButtonText.value = "再次抓拍"
   captureTipText.value = "已暂停检测，点击“再次抓拍”调用 retry()"
@@ -489,6 +509,33 @@ onResize((options: OnResizeOptions) => {
   color: #ffffff;
   font-size: 14.4px;
   line-height: 21.6px;
+}
+
+.result-image-row {
+  flex-direction: row;
+  margin-top: 8px;
+}
+
+.result-image-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-image-item-last {
+  margin-left: 8px;
+}
+
+.result-image-title {
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.result-image {
+  width: 100%;
+  height: 96px;
+  background-color: #0b3d7a;
 }
 
 .control-row {

@@ -17,6 +17,18 @@
 			"style": {
 				"navigationBarTitleText": "兼容模式抓拍验收"
 			}
+		},
+		{
+			"path": "pages/search-component-demo/search-component-demo",
+			"style": {
+				"navigationBarTitleText": "标准模式相机搜索"
+			}
+		},
+		{
+			"path": "pages/search-compat-demo/search-compat-demo",
+			"style": {
+				"navigationBarTitleText": "兼容模式相机搜索"
+			}
 		}
 	],
 	"globalStyle": {

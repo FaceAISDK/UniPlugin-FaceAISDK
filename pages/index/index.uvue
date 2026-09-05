@@ -7,7 +7,9 @@
 			<view class="menu-group">
 				<text class="group-title">搜索与录入</text>
 				<view class="button-grid">
-					<button class="gray-button" @tap="faceSearchByCameraDemo">相机人脸搜索识别</button>
+					<button class="gray-button" @tap="faceSearchByCameraDemo">UTS API 全屏相机搜索</button>
+					<button class="gray-button" @tap="openSearchComponentDemo">标准模式相机搜索（组合嵌入）</button>
+					<button class="gray-button" @tap="openSearchCompatDemo">兼容模式相机搜索（组合嵌入）</button>
 					<button class="gray-button" @tap="faceSearchByImageDemo">图片人脸搜索识别(Beta)</button>
 					<button class="gray-button" @tap="addFaceSearchFeatureByCameraDemo">SDK相机录入人脸信息</button>
 					<button class="gray-button" @tap="addFaceSearchFeatureByImageDemo">通过图片录入人脸信息</button>
@@ -338,6 +340,18 @@
 			openCaptureCompatDemo: function () {
 				uni.navigateTo({
 					url: "/pages/capture-compat-demo/capture-compat-demo"
+				})
+			},
+
+			openSearchComponentDemo: function () {
+				uni.navigateTo({
+					url: "/pages/search-component-demo/search-component-demo"
+				})
+			},
+
+			openSearchCompatDemo: function () {
+				uni.navigateTo({
+					url: "/pages/search-compat-demo/search-compat-demo"
 				})
 			},
 			

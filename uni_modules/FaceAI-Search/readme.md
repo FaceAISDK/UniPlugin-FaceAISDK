@@ -1,246 +1,118 @@
-## 插件简介
-
-人脸搜索识别Android端侧可离线UTS API插件，支持uniappX和uniapp，支持图片搜索；不需后端部署完全可离线运行   
-插件不适合金融支付以及14周岁以下群体（没有针对模型优化训练）,摄像头需成像清晰，宽动态值大于105DB(室外120DB) 
-
-**感谢大家收藏与点赞**，如有问题可描述你的使用场景和问题提issues到：https://github.com/FaceAISDK/FaceSearch_uniapp_plugin/issues
-或发送邮件到 FaceAISDK.Service@gmial.com  
-**反馈问题请说明使用场景，Vue2/Vue3/uvue,哪个功能，什么设备什么场景尽可能提供详细信息**
-
-快速体验完整人脸识别功能可以下载Demo App：
-<div align=center>
-<img src="https://www.pgyer.com/app/qrcode/hiface" width = 19%   alt="扫一扫下载Demo"/>
+<div align="center">
+  <h2>FaceAI Search</h2>
+  <p>Android 端侧离线 1:N 人脸搜索识别</p>
+  <p><strong>本地运行 · 无需后端 · 不上传人脸数据</strong></p>
 </div>
 
+---
 
+## 功能概览
 
-## 使用方法
-  如果你是第一次运行UTS插件工程/引入UTS API插件，你应先安装官方说明配置好基础环境 [基础环境](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html) 
+| 功能分组 | 功能说明 |
+| --- | --- |
+| **人脸搜索** | 1:N 相机搜索、图片搜索（Beta） |
+| **人脸录入** | 相机录入、图片录入 |
+| **特征管理** | 删除、查询、单条同步、批量同步 |
+| **人脸抓拍** | 全屏持续抓拍、标准模式组件、兼容模式组件 |
+| **活体检测** | 相机搜索和抓拍支持静默活体检测 |
 
-  **开发调试阶段请开启调试模式**，Android-manifest.json distribute配置 "debuggable" : true,
+### 相机搜索
 
-  ### 1.下载Demo工程[](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin)先跑通。熟悉后参考文档集成到主项目
+- 提供全屏、标准模式组件和兼容模式组件三种演示形态。
+- 搜索组件默认显示原生人脸圆形引导框和状态提示。
+- 支持前后摄像头切换及无匹配提示。
 
-  ### 2.按照文档 -》把插件引入项目（即 import {需要的方法} from "@/uni_modules/FaceAI-Search";）
+### 人脸抓拍
 
-  ### 3.运行 -》运行到手机或模拟器 -》**制作自定义调试基座** -》打包 等基座制作完成
-   . 
-   ![制作自定义调试基座](https://i.postimg.cc/QVZFgycd/1.png)
+- 提供全屏持续抓拍、标准模式组件和兼容模式组件。
+- 支持连续抓拍和手动开始下一轮抓拍。
+- 支持静默活体检测。
 
-  ### 4.运行 -》运行到iOS/Android基座-》**使用自定义基座运行**-》选择手机-》运行
-   . 
-   ![运行到手机](https://i.postimg.cc/QdwtZM60/2.png)
-	
-  **按照步骤一定要先制作自定义调试基准，然后运行的时候使用自定义基准。偶尔打包服务器失败请重试**  
-	
-  Powered by FaceAISDK Copyright©2026. **高精度版本联系 FaceAISDK.Service@gmail.com**  
-	
-	
-  本插件为人脸搜索（1:N）如果 你需要1:1人脸验证（支持iOS，Android）请移步：https://ext.dcloud.net.cn/plugin?id=23881  
-  目前人脸搜索识别UTS插件还没有原生Android那么完善，更多功能和更好体验请参考原生Android实现https://github.com/FaceAISDK/FaceAISDK_Android  
-	
+### 设备适配
 
-## 持续人脸抓拍
+- 支持 Android 5–16。
+- 支持 uni-app 和 uni-app x。
+- 支持手机、平板及横竖屏切换。
+- 相机预览自动铺满组件区域。
+- 部分设备预览异常时自动尝试兼容模式。
+- Demo 提供相机权限申请、拒绝提示和系统设置引导。
 
-持续抓拍能力对应 Android `AddFaceCallBack.onCompleted(cropped, silentScore, origin)`，每次检测到符合角度和尺寸要求的人脸后返回：
+## 能力矩阵
 
-- `croppedBase64`：SDK 矫正、裁剪后的 224×224 人脸 JPEG Data URL。
-- `silentScore`：静默活体分数；仅在 `needLivenessCheck=true` 时有效。
-- `originBase64`：本次检测对应的相机原图 JPEG Data URL。
+| 能力 | 全屏体验 | 标准模式组件 | 兼容模式组件 |
+| --- | :---: | :---: | :---: |
+| 相机人脸搜索 | ✓ | ✓ | ✓ |
+| 持续人脸抓拍 | ✓ | ✓ | ✓ |
 
-标准模式和兼容模式组件在每次成功后会暂停检测，不会自动续拍；只有业务端显式调用 `retry()` 才会进入下一轮。全屏 UTS API 为保持原有连续抓拍语义，会由全屏 Activity 在每次结果回调后调用 `retry()`。内部只允许一个结果进行编码，避免相机帧堆积导致内存上涨。
+## Demo 工程
 
-### UTS API：全屏持续抓拍
+> 页面示例均已放入 Demo。README 仅介绍插件能力，实际效果请直接运行对应页面。
 
-支持 uni-app 的 Vue 页面和 uni-app x 的 uvue 页面：
+Demo 首页包含三个清晰分组：
 
-```ts
-import {
-  captureFaceByCamera,
-  CaptureFaceResult,
-  CaptureFaceError
-} from "@/uni_modules/FaceAI-Search"
+1. **搜索与录入**：相机搜索、图片搜索、人脸录入及两种搜索组件。
+2. **特征管理**：删除、查询、同步和批量同步。
+3. **抓拍能力**：全屏抓拍及两种抓拍组件。
 
-captureFaceByCamera(
-  1,      // performanceMode: -1/0/1/2
-  true,   // needLivenessCheck
-  0,      // cameraId: 0 前置、1 后置
-  0.12,   // linearZoom: 0~1
-  -1,     // rotationDegrees: -1 自动跟随屏幕，或固定为 0/90/180/270
-  (result: CaptureFaceResult) => {
-    console.log(result.croppedBase64)
-    console.log(result.silentScore)
-    console.log(result.originBase64)
-  },
-  (error: CaptureFaceError) => {
-    console.error(error.code, error.message)
-  }
-)
-```
+本插件包含第三方 Android SDK 和原生资源，不能使用标准基座直接体验。运行 Demo 前必须先制作自定义调试基座。流程可参考 [FaceAI 1:1 插件说明](https://ext.dcloud.net.cn/plugin?id=23881)和 [DCloud 自定义基座文档](https://uniapp.dcloud.net.cn/tutorial/run/run-app#customplayground)。
 
-调用后打开全屏 `CaptureFaceActivity`，点击左上角返回按钮结束，点击右上角按钮切换前/后摄像头。
+### 制作自定义调试基座
 
-### 标准模式组件：uni-app x
+1. 使用 HBuilderX 打开 Demo 工程，并完成 [Android UTS 运行环境](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html)配置。
+2. 在 HBuilderX 顶部选择 **运行 → 运行到手机或模拟器 → 制作自定义调试基座**。
+3. 选择 Android 平台，按窗口提示提交云端打包并等待完成。
+4. 打包后的 Android 调试基座通常保存在项目的 `unpackage/debug/android_debug.apk`。
 
-HBuilderX 4.31+ 可在 uvue 页面直接使用 easycom 组件：
+<div align="center">
+  <img src="https://i.postimg.cc/QVZFgycd/1.png" width="720" alt="制作自定义调试基座" />
+</div>
 
-```vue
-<template>
-  <view style="flex: 1;">
-    <face-ai-capture
-      ref="captureRef"
-      style="width: 100%; flex: 1;"
-      :performance-mode="1"
-      :need-liveness-check="true"
-      :camera-id="0"
-      :rotation-degrees="-1"
-      :show-face-cover="false"
-      :auto-start="false"
-      @result="onResult"
-      @tips="onTips"
-      @error="onError"
-    />
-    <button @tap="captureOnce">{{ started ? '再次抓拍' : '开始抓拍' }}</button>
-    <button @tap="toggleCamera">切换前后相机</button>
-  </view>
-</template>
+### 使用自定义基座运行
 
-<script setup lang="uts">
-import { CaptureFaceResult } from "@/uni_modules/FaceAI-Search"
+1. 连接已开启 USB 调试的 Android 手机，或启动 ARM 架构 Android 模拟器。
+2. 选择 **运行 → 运行到手机或模拟器 → 运行到 Android App 基座**。
+3. 在运行窗口中选择 **使用自定义基座运行**，并选择刚生成的本地基座和目标设备。
+4. 点击运行，等待 HBuilderX 完成安装、编译并启动 Demo。
 
-const captureRef = ref<ComponentPublicInstance | null>(null)
-const started = ref(false)
+<div align="center">
+  <img src="https://i.postimg.cc/QdwtZM60/2.png" width="720" alt="使用自定义基座运行" />
+</div>
 
-function onResult(result: CaptureFaceResult) {
-  console.log(result.silentScore)
-}
+> 制作完成后仍需在运行窗口中手动选择“使用自定义基座运行”。误选标准基座时，插件中的第三方依赖和原生资源不会生效。
 
-function captureOnce() {
-  captureRef.value?.$callMethod(started.value ? "retry" : "start")
-  started.value = true
-}
+### 重新制作基座的情况
 
-function toggleCamera() {
-  captureRef.value?.$callMethod("toggleCamera")
-}
-</script>
-```
+- 更新插件版本、第三方 SDK、原生资源或原生配置。
+- 修改 AndroidManifest 或其他需要打包生效的配置。
+- 控制台提示当前基座不包含插件。
+- HBuilderX 大版本升级后出现基座版本不一致。
 
-组件挂载前应确保相机权限已经授予，并确保父容器具有可用高度。标准模式和兼容模式组件提供相同的参数、方法和事件。
+只修改页面、样式和普通业务逻辑时，通常可以继续使用现有基座。自定义调试基座仅用于开发调试，正式发布时需要重新制作正式安装包。
 
-Demo 使用 `UTSAndroid.checkSystemPermissionGranted()` 先检查权限，再按需调用 `requestSystemPermission()`。申请期间会锁定按钮以避免重复请求；用户禁止再次询问时改为引导打开系统设置，从设置返回后自动重新校验。权限被撤销时会卸载抓拍组件并重置当前抓拍会话。
+### Demo App
 
-#### 组件 Props
+<div align="center">
+  <img src="https://www.pgyer.com/app/qrcode/hiface" width="150" alt="扫一扫下载 Demo App" />
+  <p>扫码体验完整功能</p>
+</div>
 
-| 参数 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `performanceMode` | `number` | `1` | 抓拍性能模式：`-1` 无限制、`0` 简单、`1` 快速、`2` 精确 |
-| `needLivenessCheck` | `boolean` | `true` | 是否计算静默活体分数 |
-| `cameraId` | `number` | `0` | 初始镜头：`0` 前置、`1` 后置；初始化时目标不存在会降级到可用镜头 |
-| `linearZoom` | `number` | `0.12` | 线性变焦，范围 `0~1` |
-| `rotationDegrees` | `number` | `-1` | `-1` 自动跟随当前显示方向；也可固定为 `0/90/180/270` |
-| `showFaceCover` | `boolean` | `false` | 是否显示 Android 原生 `FaceCoverView`（圆形遮罩和原生提示）；关闭后内部提示刷新也不会将其重新显示，且不影响 `tips` 事件 |
-| `autoStart` | `boolean` | `true` | 原生 View 就绪后是否自动调用 `start()` |
+## 适用范围
 
-#### 组件方法
+| 推荐场景 | 不建议场景 |
+| --- | --- |
+| 门禁、签到、设备登录、本地身份识别 | 金融支付、14 周岁以下群体 |
 
-| 方法 | 返回值 | 说明 |
-| --- | --- | --- |
-| `start()` | `void` | 使用当前 Props 开始抓拍；重复调用会重启采集会话 |
-| `stop()` | `void` | 停止相机和抓拍会话 |
-| `retry()` | `void` | 每次成功后手动允许 SDK 进入下一轮；成功回调后组件不会自动调用 |
-| `switchCamera(cameraId)` | `void` | 运行期间切换到指定镜头，`0` 前置、`1` 后置 |
-| `toggleCamera()` | `void` | 运行期间在当前实际镜头与另一颗前/后镜头之间切换 |
-| `canSwitchCamera()` | `boolean` | CameraProvider 就绪且另一颗前/后镜头存在时返回 `true` |
+摄像头建议具备清晰成像能力，宽动态不低于 105dB；室外场景建议不低于 120dB。
 
-切换时只重绑 CameraX 的预览和分析用例，抓拍引擎保持运行。目标镜头不存在时保留当前预览并触发 `error`；绑定失败时会尝试恢复原镜头。
+## 更多信息
 
-`retry()` 只在上一次抓拍已经完成时生效；在正在检测时重复调用不会并发开启多轮抓拍。
+- 1:1 人脸验证：[FaceAI 1:1 插件](https://ext.dcloud.net.cn/plugin?id=23881)
+- 原生 Android 功能：[FaceAISDK Android](https://github.com/FaceAISDK/FaceAISDK_Android)
+- 问题反馈：[GitHub Issues](https://github.com/FaceAISDK/FaceSearch_uniapp_plugin/issues)
+- 高精度版本及其他问题：FaceAISDK.Service@gmail.com
 
-#### 组件事件与返回字段
+> 反馈问题时，请注明页面类型、功能、设备型号和复现场景。
 
-| 事件 | 字段 | 类型 | 说明 |
-| --- | --- | --- | --- |
-| `ready` | 无 | - | 原生 View 已创建；不代表 CameraProvider 已完成初始化 |
-| `result` | `croppedBase64` | `string` | SDK 矫正、裁剪后的 224×224 人脸 JPEG Data URL |
-| `result` | `silentScore` | `number` | 静默活体分数；仅在 `needLivenessCheck=true` 时有效 |
-| `result` | `originBase64` | `string` | 本次检测对应的相机原图 JPEG Data URL |
-| `tips` | `code` | `number` | SDK 采集过程提示码 |
-| `tips` | `message` | `string` | 提示码对应的可展示文案 |
-| `error` | `code` | `string` | 错误码，包括权限、初始化、预览、帧处理和摄像头切换错误 |
-| `error` | `message` | `string` | 错误详情 |
-| `camera-change` | `cameraId` | `number` | 切换成功后的实际镜头：`0` 前置、`1` 后置；初始化降级到另一镜头时也会触发 |
-
-### uni-app 兼容模式组件
-
-兼容模式标签为 `face-ai-capture-compat`，仅用于 uni-app 的 app-nvue 或 uni-app x 的 VDOM app-uvue，不支持普通 Vue 页面、鸿蒙和 uni-app x 蒸汽模式：
-
-```vue
-<face-ai-capture-compat
-  ref="captureCompatRef"
-  style="width: 100%; height: 100%;"
-  :performanceMode="1"
-  :needLivenessCheck="true"
-  :cameraId="0"
-  :rotationDegrees="-1"
-  :showFaceCover="false"
-  @result="onResult"
-/>
-```
-
-uni-app x 调用兼容模式组件方法时，需要使用组件生成的原生 Element 类型，不能使用普通 Vue 组件的 `$callMethod`：
-
-```ts
-import { FaceAiCaptureCompatElement } from "uts.sdk.modules.FaceAISearch"
-
-const captureCompatRef = ref<FaceAiCaptureCompatElement | null>(null)
-
-function retryCapture() {
-  captureCompatRef.value?.retry()
-}
-
-function toggleCamera() {
-  captureCompatRef.value?.toggleCamera()
-}
-```
-
-相机预览使用居中裁剪方式铺满组件；分析分辨率固定采用普通的 4:3 模式。当相机画面和组件宽高比不一致时，两侧画面可能被裁掉，但不会再出现上下黑边。
-
-需要显示圆形遮罩和原生提示时，将 `showFaceCover` 设为 `true`。标准模式模板中可写为 `:show-face-cover="true"`，兼容模式可写为 `:showFaceCover="true"`。
-
-### 横竖屏与平板适配
-
-持续抓拍 API 传入 `rotationDegrees=-1` 时，CameraX 会跟随当前显示方向动态更新预览与分析帧；标准组件和兼容组件默认使用该模式。只有定制设备的摄像头方向与系统报告不一致时，才建议显式传入 `0/90/180/270`。
-
-uni-app x 项目需要在 `pages.json` 的 `globalStyle` 或相机所在页面的 `style` 中允许自动旋转：
-
-```json
-{
-  "globalStyle": {
-    "pageOrientation": "auto"
-  }
-}
-```
-
-传统 uni-app 项目还需要在 `manifest.json` 中声明 App 支持的方向：
-
-```json
-{
-  "app-plus": {
-    "screenOrientation": [
-      "portrait-primary",
-      "portrait-secondary",
-      "landscape-primary",
-      "landscape-secondary"
-    ]
-  }
-}
-```
-
-页面布局应根据可用窗口宽高自适应，不要为相机组件使用按屏幕宽度放大的固定 `rpx` 高度。Android 平板还应测试运行中旋转、分屏调整大小以及横屏正反方向。
-
-Android uvue 接收到的兼容模式事件参数是 `Map<string, any>`，可通过 `result.get("croppedBase64")`、`result.get("silentScore")`、`result.get("originBase64")` 读取；uni-app nvue 中按普通事件对象读取。
-
-兼容模式的 `tips`、`error`、`camera-change` 也使用 `Map<string, any>`，字段名与上表一致；标准模式事件直接返回对应的 UTS 类型对象。
-
-> 两张图片均进行 Base64 编码，单次结果数据量较大。持续场景中请及时消费结果，不要长期把所有 Base64 字符串保存在响应式数组里。
+<div align="center">
+  <sub>Powered by FaceAISDK · Copyright © 2026</sub>
+</div>
