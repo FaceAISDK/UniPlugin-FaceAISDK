@@ -328,6 +328,7 @@
 		flex-direction: row;
 		height: 100vh;
 		min-height: 0;
+		align-items: stretch;
 	}
 
 	.menu-panel {
@@ -371,7 +372,7 @@
 		flex-direction: column;
 		min-width: 0;
 		min-height: 0;
-		padding: 12px;
+		padding: 10px;
 		border: 1px solid #d8d8d8;
 		border-radius: 10px;
 		box-sizing: border-box;
@@ -379,7 +380,7 @@
 	}
 
 	.result-box-portrait {
-		height: 240px;
+		height: 176px;
 		margin-top: 12px;
 		flex-shrink: 0;
 	}
@@ -388,6 +389,7 @@
 		width: 42%;
 		margin-left: 12px;
 		flex-shrink: 0;
+		align-self: stretch;
 	}
 
 	.scroll-view-box {
@@ -398,14 +400,14 @@
 
 	.text-content {
 		color: #333333;
-		font-size: 18px;
-		line-height: 26px;
+		font-size: 14px;
+		line-height: 20px;
 		white-space: pre-wrap;
 	}
 
 	.email-text {
-		margin-top: 6px;
+		margin-top: 4px;
 		color: #777777;
-		font-size: 12px;
+		font-size: 11px;
 	}
 </style>

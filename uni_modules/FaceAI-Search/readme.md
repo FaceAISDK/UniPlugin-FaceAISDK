@@ -67,7 +67,7 @@ Demo 首页包含三个清晰分组：
   <img src="https://i.postimg.cc/QVZFgycd/1.png" width="720" alt="制作自定义调试基座" />
 </div>
 
-### 使用自定义基座运行
+### 使用自定义基座运行(必须要自定义基座)
 
 1. 连接已开启 USB 调试的 Android 手机，或启动 ARM 架构 Android 模拟器。
 2. 选择 **运行 → 运行到手机或模拟器 → 运行到 Android App 基座**。

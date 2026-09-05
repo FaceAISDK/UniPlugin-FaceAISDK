@@ -34,11 +34,7 @@
         class="status-panel"
         :class="useWideLayout ? 'status-panel-landscape' : 'status-panel-portrait'"
       >
-        <text class="status-text">{{ statusText }}</text>
-        <text class="status-text">抓拍次数：{{ captureCount }}</text>
-        <text class="status-text">静默活体分数：{{ silentScore }}</text>
-        <text class="status-text">当前相机：{{ currentCameraId == 0 ? '前置' : '后置' }}</text>
-        <view v-if="croppedImageSrc.length > 0" class="result-image-row">
+        <view class="result-image-row">
           <view class="result-image-item">
             <text class="result-image-title">裁剪图</text>
             <image class="result-image" mode="aspectFit" :src="croppedImageSrc" />
@@ -48,6 +44,9 @@
             <image class="result-image" mode="aspectFit" :src="originImageSrc" />
           </view>
         </view>
+        <text class="status-text">抓拍次数：{{ captureCount }}</text>
+        <text class="status-text">静默活体分数：{{ silentScore }}</text>
+        <text class="status-text">当前相机：{{ currentCameraId == 0 ? '前置' : '后置' }}</text>
         <view class="control-row">
           <button
             class="control-button control-button-primary"
@@ -104,7 +103,8 @@ function readStoredBoolean(key: string): boolean {
 }
 
 function toImageSource(base64: string): string {
-  return base64.length == 0 ? "" : `data:image/jpeg;base64,${base64}`
+  if (base64.length == 0 || base64.startsWith("data:image/")) return base64
+  return `data:image/jpeg;base64,${base64}`
 }
 
 const CAMERA_PERMISSIONS: Array<string> = ["android.permission.CAMERA"]
@@ -210,7 +210,6 @@ function onCaptureResult(result: CaptureFaceResult) {
   captureInProgress.value = false
   captureButtonText.value = "再次抓拍"
   captureTipText.value = "已暂停检测，点击“再次抓拍”调用 retry()"
-  statusText.value = `单次抓拍成功，裁剪图 ${result.croppedBase64.length} 字符，原图 ${result.originBase64.length} 字符`
 }
 
 function onCaptureTips(tips: CaptureFaceTips) {
@@ -436,12 +435,11 @@ onResize((options: OnResizeOptions) => {
 .native-view-frame {
   flex: 1;
   min-height: 0;
-  margin-top: 8px;
+  margin-top: 0;
   margin-right: 20px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   margin-left: 20px;
   overflow: hidden;
-  transform: scale(0.8);
 }
 
 .capture-view {
@@ -495,9 +493,9 @@ onResize((options: OnResizeOptions) => {
 }
 
 .status-panel-landscape {
-  width: 280px;
+  width: 310px;
   flex-shrink: 0;
-  justify-content: center;
+  justify-content: flex-start;
   border-left-width: 1px;
   border-left-style: solid;
   border-left-color: #4b95ff;
@@ -513,12 +511,13 @@ onResize((options: OnResizeOptions) => {
 
 .result-image-row {
   flex-direction: row;
-  margin-top: 8px;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 6px;
 }
 
 .result-image-item {
-  flex: 1;
-  min-width: 0;
+  width: 128px;
 }
 
 .result-image-item-last {
@@ -533,8 +532,8 @@ onResize((options: OnResizeOptions) => {
 }
 
 .result-image {
-  width: 100%;
-  height: 96px;
+  width: 128px;
+  height: 128px;
   background-color: #0b3d7a;
 }
 

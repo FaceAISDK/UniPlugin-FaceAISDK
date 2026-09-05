@@ -56,7 +56,7 @@ FaceAI Search 面向门禁、签到、设备登录等本地身份识别场景。
 2. 参考 [DCloud UTS 插件环境说明](https://doc.dcloud.net.cn/uni-app-x/plugin/uts-plugin.html)完成 Android 开发环境配置。
 3. Android 真机开启开发者选项和 USB 调试，并确认 HBuilderX 能识别设备；使用模拟器时请选择 ARM 架构镜像。
 
-### 2. 制作自定义调试基座
+### 2. 制作自定义调试基座（必须要自定义基座）
 
 1. 在 HBuilderX 顶部选择 **运行 → 运行到手机或模拟器 → 制作自定义调试基座**。
 2. 选择 Android 平台，按打包窗口提示确认应用信息并提交云端打包。

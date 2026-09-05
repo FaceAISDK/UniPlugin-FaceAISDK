@@ -76,6 +76,7 @@ class FaceSearchNativeView(context: Context) : FrameLayout(context) {
     private var rotationDegrees = AUTO_ROTATION_DEGREES
     @Volatile
     private var faceCoverVisible = true
+    private var faceCoverLayoutReady = false
     private var searchStartTime = 0L
     @Volatile
     private var started = false
@@ -130,6 +131,17 @@ class FaceSearchNativeView(context: Context) : FrameLayout(context) {
         setBackgroundColor(Color.BLACK)
         previewView.implementationMode = PreviewView.ImplementationMode.PERFORMANCE
         previewView.scaleType = PreviewView.ScaleType.FILL_CENTER
+        faceCoverView.alpha = 0f
+        faceCoverView.visibility = View.INVISIBLE
+        faceCoverView.addOnLayoutChangeListener { _, left, top, right, bottom,
+                                                  oldLeft, oldTop, oldRight, oldBottom ->
+            if (
+                right > left && bottom > top &&
+                (right - left != oldRight - oldLeft || bottom - top != oldBottom - oldTop)
+            ) {
+                updateEmbeddedFaceCoverLayout()
+            }
+        }
         addView(previewView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         addView(graphicOverlay, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         addView(faceCoverView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
@@ -140,10 +152,36 @@ class FaceSearchNativeView(context: Context) : FrameLayout(context) {
         super.onSizeChanged(width, height, oldWidth, oldHeight)
         if (width <= 0 || height <= 0) return
 
-        // FaceCoverView 默认按全屏比例放大圆框；嵌入竖屏组件后，上方提示条会越界。
-        // 竖屏时稍微增加圆框边距，为提示条保留空间；横屏沿用 SDK 默认比例。
-        val marginDivisor = if (height > width) 6 else 5
-        faceCoverView.setMargin(minOf(width, height) / marginDivisor)
+        faceCoverLayoutReady = false
+        faceCoverView.alpha = 0f
+        if (faceCoverVisible) faceCoverView.visibility = View.INVISIBLE
+    }
+
+    private fun updateEmbeddedFaceCoverLayout() {
+        val width = faceCoverView.width
+        val height = faceCoverView.height
+        if (width <= 0 || height <= 0) return
+
+        // 与全屏 UTS API 保持相同圆框比例：竖屏短边留 1/8，横屏留 1/9。
+        val marginDivisor = if (height > width) 8 else 7
+        faceCoverView.setMargin(minOf(width, height) / marginDivisor) //这个margin应该是距离更短边的Margin
+
+        if (height > width) {
+            // SDK 竖屏默认把圆心向上偏移短边的 1/8；嵌入组件时恢复垂直居中。
+            val offsetY = height / 2f - faceCoverView.mCenterPoint.y
+            faceCoverView.mCenterPoint.offset(0f, offsetY)
+            faceCoverView.mArcRectF.offset(0f, offsetY)
+            faceCoverView.mCirclePaddingBottom = 0
+            faceCoverView.mGradientMatrix.setRotate(
+                270f,
+                faceCoverView.mCenterPoint.x,
+                faceCoverView.mCenterPoint.y
+            )
+            faceCoverView.mProgressPaint.shader?.setLocalMatrix(faceCoverView.mGradientMatrix)
+        }
+
+        faceCoverLayoutReady = true
+        applyFaceCoverVisibility()
     }
 
     fun setResultCallback(callback: ((String, Float, String) -> Unit)?) {
@@ -814,7 +852,28 @@ class FaceSearchNativeView(context: Context) : FrameLayout(context) {
             value == 180 || value == 270
 
     private fun applyFaceCoverVisibility() {
-        faceCoverView.visibility = if (faceCoverVisible) View.VISIBLE else View.GONE
+        if (!faceCoverVisible) {
+            faceCoverView.alpha = 0f
+            faceCoverView.visibility = View.GONE
+            return
+        }
+        if (!faceCoverLayoutReady) {
+            faceCoverView.visibility = View.INVISIBLE
+            return
+        }
+
+        val needsStableReveal = faceCoverView.visibility != View.VISIBLE || faceCoverView.alpha == 0f
+        faceCoverView.visibility = View.VISIBLE
+        if (!needsStableReveal) return
+
+        // FaceCoverView 变为可见时会异步播放开圈动画；等该任务入队后直接落到最终帧。
+        faceCoverView.post {
+            if (released || !faceCoverVisible || !faceCoverLayoutReady) return@post
+            faceCoverView.mOpenAnimator?.cancel()
+            faceCoverView.mCurrentRadius = faceCoverView.mTargetRadius
+            faceCoverView.alpha = 1f
+            faceCoverView.invalidate()
+        }
     }
 
     private fun isCurrentSession(currentSession: Long): Boolean =

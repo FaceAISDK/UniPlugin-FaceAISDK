@@ -19,9 +19,7 @@
       </view>
 
       <view class="panel" :class="useWideLayout ? 'panel-landscape' : ''">
-        <text class="demo-text">{{ statusText }}</text>
-        <text class="demo-text">匹配结果：{{ matchesJson }}</text>
-        <text class="demo-text">活体分数：{{ liveness }}</text>
+        <text class="demo-text matches-text">匹配结果：{{ matchesJson }}</text>
         <view class="actions" :class="useWideLayout ? 'actions-landscape' : ''">
           <button
             class="button primary"
@@ -66,7 +64,6 @@ const componentReady = ref(false)
 const searching = ref(false)
 const currentCameraId = ref(0)
 const matchesJson = ref("[]")
-const liveness = ref(0.0)
 const statusText = ref("正在检查相机权限…")
 const useWideLayout = ref(false)
 let pageReady = false
@@ -134,12 +131,13 @@ function onSearchReady() {
 function onResult(result: Map<string, any>) {
   const base64 = mapString(result, "base64")
   matchesJson.value = mapString(result, "matchesJson")
-  liveness.value = mapNumber(result, "liveness")
   statusText.value = `收到搜索回调，场景图 ${base64.length} 字符`
 }
 
 function onTips(tips: Map<string, any>) {
-  statusText.value = `提示 ${mapNumber(tips, 'code')}：${mapString(tips, 'message')}`
+  const code = mapNumber(tips, "code")
+  if (code == 3) return
+  statusText.value = `提示 ${code}：${mapString(tips, 'message')}`
 }
 
 function onError(error: Map<string, any>) {
@@ -237,6 +235,12 @@ onResize((options: OnResizeOptions) => {
   font-size: 16px;
   color: #303133;
   margin-bottom: 8px;
+}
+
+.matches-text {
+  height: 96px;
+  line-height: 24px;
+  overflow: hidden;
 }
 
 .actions {

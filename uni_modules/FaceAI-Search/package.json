@@ -1,12 +1,13 @@
 {
 	"id": "FaceAI-Search",
-	"displayName": "1：N 人脸搜索识别UTS API插件",
-	"version": "2026.08.31",
-	"description": "Android 1:N人脸搜索识别，可用于小区门禁,验证登陆等身份认证;离线不依赖三方服务",
+	"displayName": "人脸搜索识别UTS插件和兼容模式组件，新加人脸采集；各种模式支持",
+	"version": "2026.09.05",
+	"description": "Android 1:N人脸搜索识别，人脸采集；可用于小区门禁,验证登陆等身份认证;离线不依赖三方服务",
 	"keywords": [
         "人脸搜索",
         "离线搜索",
-        "活体检测"
+        "活体检测",
+        "人脸采集"
     ],
 	"repository": "https://github.com/FaceAISDK/FaceSearch_uniapp_plugin",
 	"engines": {
